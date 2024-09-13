@@ -1,1 +1,1 @@
-# kuraz-ai-based-job-matcher-mern-stack
+# Kuraz AI Based Job Matcher -- MERN STACK
