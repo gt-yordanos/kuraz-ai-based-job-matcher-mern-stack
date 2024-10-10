@@ -1,26 +1,19 @@
-// src/components/ThemeToggler.jsx
+import * as React from 'react';
+import DarkModeIcon from '@mui/icons-material/DarkMode'; // Import DarkModeIcon
+import Brightness7Icon from '@mui/icons-material/Brightness7'; // Import Brightness7Icon
+import IconButton from '@mui/material/IconButton'; // Import IconButton
+import { useThemeContext } from '../Contexts/ThemeContext'; // Import your custom Theme Context
 
-import React from 'react';
-import { Switch } from '@mui/material';
-import { useTheme } from '../Contexts/ThemeContext';
-import { Sun, Moon } from '@mui/icons-material'; // Importing icons
-
-const ThemeToggler = () => {
-  const { isDarkMode, toggleTheme } = useTheme();
+export default function ThemeToggler() {
+  const { darkMode, toggleTheme } = useThemeContext();
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      {/* Sun Icon on the left */}
-      <Sun style={{ marginRight: '8px', color: isDarkMode ? '#fff' : '#000' }} />
-      <Switch
-        checked={isDarkMode}
-        onChange={toggleTheme}
-        color="default" // Customize the color if needed
-      />
-      {/* Moon Icon on the right */}
-      <Moon style={{ marginLeft: '8px', color: isDarkMode ? '#fff' : '#000' }} />
-    </div>
+    <IconButton onClick={toggleTheme} aria-label="theme toggler">
+      {darkMode ? (
+        <Brightness7Icon style={{ color: '#f39c12' }} /> // Light mode icon
+      ) : (
+        <DarkModeIcon style={{ color: '#001e3c' }} /> // Dark mode icon
+      )}
+    </IconButton>
   );
-};
-
-export default ThemeToggler;
+}
