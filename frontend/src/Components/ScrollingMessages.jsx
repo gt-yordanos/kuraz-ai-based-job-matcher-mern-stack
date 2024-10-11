@@ -22,7 +22,7 @@ const ScrollingMessages = () => {
   }, []);
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', }}>
       {/* 80% Height: Scrolling container */}
       <Box sx={{ height: '80%', position: 'relative', overflow: 'hidden' }}>
         <Box

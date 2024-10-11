@@ -8,7 +8,7 @@ const App = () => {
     <div style={{overflow: 'hidden', width: '100%'}}>
       <Navbar />
 
-      <div style={{ width: '100%', height: '85vh',display: 'flex', justifyContent: 'center', marginTop: '80px'}}>
+      <div style={{ width: '100%', minHeight: '85vh',display: 'flex', justifyContent: 'center', marginTop: '60px'}}>
         <Home />
       </div>
     </div>

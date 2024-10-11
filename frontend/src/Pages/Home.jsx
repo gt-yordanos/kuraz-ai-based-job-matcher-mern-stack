@@ -1,4 +1,3 @@
-// src/components/Home.jsx
 import React from 'react';
 import { Grid, Paper, Box } from '@mui/material';
 import RecommendedJobs from '../Components/RecommendedJobs';
@@ -6,26 +5,49 @@ import ScrollingMessages from '../Components/ScrollingMessages';
 
 const Home = () => {
   return (
-    <Box 
-      sx={{ 
-        width: '100%', 
-        height: '100%',
-        padding: '20px', 
-        display: 'flex', 
-        flexDirection: 'column' 
+    <Box
+      sx={{
+        width: '100vw',
+        maxWidth: '100vw',
+        overflowX: 'hidden',
+        padding: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
       }}
     >
-      <Grid container spacing={2} sx={{ height: '100%' }}>
-        {/* Left side: Recommended Jobs (40% width) */}
-        <Grid item xs={12} md={5} sx={{ height: '100%' }}>
-          <Paper elevation={3} sx={{ padding: '20px', height: '100%' }}>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          height: 'auto', 
+          '@media (min-width: 900px)': {
+            height: '85vh', // Keep the height for large screens
+          },
+        }}
+      >
+        {/* Left side: Recommended Jobs */}
+        <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+          <Paper
+            elevation={0} 
+            sx={{
+              padding: '20px',
+              height: '100%', // Use full height on large screens
+            }}
+          >
             <RecommendedJobs />
           </Paper>
         </Grid>
 
-        {/* Right side: Scrolling Messages (60% width) */}
-        <Grid item xs={12} md={7} sx={{ height: '100%' }}>
-          <Paper elevation={3} sx={{ padding: '20px', height: '100%' }}>
+        {/* Right side: Scrolling Messages */}
+        <Grid item xs={12} md={6} sx={{ height: '100%' }}>
+          <Paper
+            elevation={0} 
+            sx={{
+              padding: '20px',
+              height: '100%', // Use full height on large screens
+            }}
+          >
             <ScrollingMessages />
           </Paper>
         </Grid>
