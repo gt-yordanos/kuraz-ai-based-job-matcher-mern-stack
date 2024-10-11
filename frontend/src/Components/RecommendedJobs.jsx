@@ -37,6 +37,7 @@ const RecommendedJobs = () => {
         transition: 'box-shadow 0.3s ease-in-out',
         maxWidth: '800px',
         margin: 'auto',
+        height: { xs: 'auto', md: '450px' }, // Ensure height matches the scroller on larger screens
       }}
     >
       <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
@@ -55,7 +56,7 @@ const RecommendedJobs = () => {
             backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0',
             color: theme.palette.mode === 'dark' ? 'white' : 'text.primary',
             borderRadius: '8px',
-            height: '100px',
+            height: '95px',
             boxShadow: 'none',
             transition: 'transform 0.3s ease',
             '&:hover': {
