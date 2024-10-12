@@ -12,6 +12,7 @@ const images = [
 const messages = [
   "Welcome to Kuraz Automated Job Hiring, where AI helps us hire talented individuals for Kuraz Tech.",
   "Kuraz Tech specializes in software development, graphic design, and online tutoring.",
+  "We are an aspiring team that values social relationships and working together.",
   "At Kuraz, we believe skills are essential; everyone is evaluated based on skills, not background.",
   "We offer competitive salaries to attract the best talent in the industry.",
   "Get AI-recommended jobs that suit your profile.",
