@@ -33,11 +33,10 @@ const RecommendedJobs = () => {
         padding: 3,
         backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0',
         borderRadius: '16px',
-        boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.1)',
-        transition: 'box-shadow 0.3s ease-in-out',
         maxWidth: '800px',
         margin: 'auto',
-        height: { xs: 'auto', md: '450px' }, // Ensure height matches the scroller on larger screens
+        height: '450px', // Set height to match ScrollingMessages
+        boxShadow: 'none', // Remove box shadow
       }}
     >
       <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
@@ -57,10 +56,10 @@ const RecommendedJobs = () => {
             color: theme.palette.mode === 'dark' ? 'white' : 'text.primary',
             borderRadius: '8px',
             height: '95px',
-            boxShadow: 'none',
+            boxShadow: 'none', // Remove box shadow
             transition: 'transform 0.3s ease',
             '&:hover': {
-              transform: 'scale(1.03)', // Decreased scale size on hover
+              transform: 'scale(1.03)',
             },
           }}
         >
@@ -73,7 +72,7 @@ const RecommendedJobs = () => {
           <CardContent sx={{ padding: '10px' }}>
             <Typography 
               variant="subtitle1" 
-              sx={{ fontWeight: 'bold', fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' }}}
+              sx={{ fontWeight: 'bold', fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' } }}
               noWrap
             >
               {job.title}
@@ -81,7 +80,7 @@ const RecommendedJobs = () => {
             <Typography 
               variant="body2" 
               color="text.secondary"
-              sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' }}}
+              sx={{ fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' } }}
             >
               Skills: {job.skills}
             </Typography>
@@ -90,7 +89,7 @@ const RecommendedJobs = () => {
               <Typography 
                 variant="body2" 
                 color="text.secondary" 
-                sx={{ marginLeft: 0.5, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' }}}
+                sx={{ marginLeft: 0.5, fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' } }}
               >
                 {job.timePosted}
               </Typography>
