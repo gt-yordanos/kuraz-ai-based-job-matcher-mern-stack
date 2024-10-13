@@ -88,13 +88,13 @@ export default function Navbar() {
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Adjust to 'bottom' to place it below the AppBar
       id={mobileMenuId}
       keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'left' }} // Ensure the transform aligns correctly
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
-      PaperProps={{ style: { width: '250px', top:'100px'} }} // Adjust mobile menu position to 50px from bottom
+      PaperProps={{ style: { width: '250px', marginTop: '8px' } }} // Add marginTop to create a gap between the menu and the AppBar
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2 }}>
         <StableIconButton aria-label="theme toggler"><ThemeToggler /></StableIconButton>
@@ -109,9 +109,10 @@ export default function Navbar() {
       </MobileMenuLinks>
     </Menu>
   );
+  
 
   return (
-    <Box sx={{ flexGrow: 1, position: 'absolute', top: 0, width: '100%'}}>
+    <Box sx={{ flexGrow: 1, width: '100%'}}>
       <AppBar position="static" sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
         <Toolbar>
           {/* Left Menu icon for mobile */}
@@ -135,15 +136,19 @@ export default function Navbar() {
           </Box>
 
           {/* Center nav links for larger screens */}
-          <Box sx={{ display: { xs: 'none', lg: 'flex' }, gap: 3, flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3, flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Link href="#newjobs" underline="none" sx={{ fontWeight: 'bold', color: theme.palette.mode === 'dark' ? 'white' : 'black' }}>New Jobs</Link>
             <Link href="#careerbenefits" underline="none" sx={{ fontWeight: 'bold', color: theme.palette.mode === 'dark' ? 'white' : 'black' }}>Career Benefits</Link>
             <Link href="#careerresources" underline="none" sx={{ fontWeight: 'bold', color: theme.palette.mode === 'dark' ? 'white' : 'black' }}>Career Resources</Link>
             <Link href="#about" underline="none" sx={{ fontWeight: 'bold', color: theme.palette.mode === 'dark' ? 'white' : 'black' }}>About Us</Link>
           </Box>
 
+          <Box sx={{ display: { xs: 'none', md: 'flex', lg: 'none' }, alignItems: 'center', gap: 2 }}>
+            <IconButton size="large"><SearchIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} /></IconButton>
+          </Box>
+
            {/* Center search box for larger screens */}
-           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', alignItems: 'center' }}>
+           <Box sx={{ flexGrow: 1, display: { xs: 'none', lg: 'flex' }, justifyContent: 'center', alignItems: 'center' }}>
             <Search>
               <SearchIconWrapper>
                 <SearchIcon />

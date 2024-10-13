@@ -6,7 +6,9 @@ import Home from './Pages/Home'; // Import the Home component
 const App = () => {
   return (
     <div style={{overflow: 'hidden', width: '100%'}}>
-      <Navbar />
+      <div style={{position: 'fixed', top: '0', width: '100%', zIndex: 50}}>
+        <Navbar />
+      </div>
 
       <div style={{ width: '100%', minHeight: '85vh',display: 'flex', justifyContent: 'center', marginTop: '60px', padding: 0}}>
         <Home />
