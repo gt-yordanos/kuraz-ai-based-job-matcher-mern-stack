@@ -9,14 +9,16 @@ import salary from './salary.png';
 import reviewApplication from './reviewApplication.webp';
 import resume from './resume.jpg';
 import kurazJobLogo from './kurazJobLogo.png';
-import kurazJobLogo2 from './kurazJobLogo2.png';
+import kurazJobAndTech from './kurazJobAndTech.png';
 import interview from './interview.png';
 import aiThinking from './aiThinking.jpg';
 import aiSelecting from './aiSelecting.jpeg';
-
-
-
-
+import techJobs from './techJobs.png';
+import workingAtKuraz from './workingAtKuraz.jpg';
+import working from './working.jpg';
+import proffessionals from './proffessionals.jpg';
+import diverseIndividual from './diverseIndividual.jpg';
+import community from './community.jpg';
 
 
 
@@ -32,11 +34,17 @@ const jobImages = {
     reviewApplication,
     resume,
     kurazJobLogo,
-    kurazJobLogo2,
+    kurazJobAndTech,
     interview,
     aiThinking,
     aiSelecting,
-    
+    aboutUs,
+    techJobs,
+    workingAtKuraz,
+    working,
+    proffessionals,
+    diverseIndividual,
+    community,
 };
 
 export default jobImages;
