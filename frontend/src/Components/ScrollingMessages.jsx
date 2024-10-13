@@ -1,25 +1,31 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Typography, Card, CardContent, CardMedia, useTheme, useMediaQuery } from '@mui/material';
-
-const images = [
-  '/path/to/image1.jpg',
-  '/path/to/image2.jpg',
-  '/path/to/image3.jpg',
-  '/path/to/image4.jpg',
-  '/path/to/image5.jpg',
-];
+import { Box, Card, CardContent, CardMedia, useTheme, useMediaQuery } from '@mui/material';
+import jobImages from '../assets/JobImages'; // Import the images
 
 const messages = [
   "Welcome to Kuraz Automated Job Hiring, where AI helps us hire talented individuals for Kuraz Tech.",
   "Kuraz Tech specializes in software development, graphic design, and online tutoring.",
   "We are an aspiring team that values social relationships and working together.",
   "At Kuraz, we believe skills are essential; everyone is evaluated based on skills, not background.",
+  "Hundreds of development, design, and tech jobs available!",
   "We offer competitive salaries to attract the best talent in the industry.",
   "Get AI-recommended jobs that suit your profile.",
   "Upload your resume and let the AI find the best matches.",
   "Apply easily and let the AI handle the rest!",
   "AI will match your profile with jobs and send interview invitations if you fit.",
-  "Hundreds of development, design, and tech jobs available!",
+];
+
+const images = [
+  jobImages.kurazJobLogo2,
+  jobImages.kurazLogo,
+  jobImages.kurazTeam,
+  jobImages.skill,
+  jobImages.aiSelecting,
+  jobImages.salary,
+  jobImages.aiThinking,
+  jobImages.resume,
+  jobImages.reviewApplication,
+  jobImages.interview,
 ];
 
 const ScrollingMessages = () => {
@@ -46,7 +52,7 @@ const ScrollingMessages = () => {
         behavior: 'smooth',
       });
     }
-  }, [currentMessage]);
+  }, [currentMessage, marginLeft]);
 
   const cardStyles = (index) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0',
@@ -76,7 +82,6 @@ const ScrollingMessages = () => {
         pb: 2,
       }}
     >
-      {/* Upper Section for Sliding Cards */}
       <Box
         ref={scrollRef}
         sx={{
@@ -88,25 +93,21 @@ const ScrollingMessages = () => {
           height: '90%',
         }}
       >
-        {/* Create a continuous loop of messages */}
-        {messages.concat(messages).map((message, index) => (
-          <Card key={index} sx={cardStyles(index % messages.length)}>
+        {messages.map((message, index) => (
+          <Card key={index} sx={cardStyles(index)}>
             <CardMedia
               component="img"
               height="250"
-              image={images[index % images.length] || '/path/to/default.jpg'}
-              alt={`Image for message ${index % messages.length + 1}`}
+              image={images[index] || '/path/to/default.jpg'}
+              alt={`Image for message ${index + 1}`}
             />
             <CardContent>
-              <Typography variant="h6" align="center">
-                {message}
-              </Typography>
+              <div style={{ textAlign: 'center' }}>{message}</div>
             </CardContent>
           </Card>
         ))}
       </Box>
 
-      {/* Lower Section for Pagination */}
       <Box
         sx={{
           display: 'flex',
@@ -116,22 +117,21 @@ const ScrollingMessages = () => {
           pt: 1,
         }}
       >
-        {/* Pagination Dots */}
         {messages.map((_, index) => (
           <Box
             key={index}
             sx={{
-              width: currentMessage === index ? 14 : 6, // Increased width for selected dot
+              width: currentMessage === index ? 14 : 6,
               height: 6,
               borderRadius: '3px',
               backgroundColor: currentMessage === index
-                ? theme.palette.mode === 'dark' ? 'white' : '#333' // White for selected in dark mode
-                : theme.palette.mode === 'dark' ? '#666' : '#b0b0b0', // Lighter shade for unselected in light mode
+                ? theme.palette.mode === 'dark' ? 'white' : '#333'
+                : theme.palette.mode === 'dark' ? '#666' : '#b0b0b0',
               mx: 0.3,
               cursor: 'pointer',
-              transition: 'background-color 0.3s, width 0.3s', // Smooth transition
+              transition: 'background-color 0.3s, width 0.3s',
               '&:hover': {
-                backgroundColor: theme.palette.mode === 'dark' ? '#777' : '#888', // Hover color with higher contrast
+                backgroundColor: theme.palette.mode === 'dark' ? '#777' : '#888',
               },
             }}
             onClick={() => setCurrentMessage(index)}

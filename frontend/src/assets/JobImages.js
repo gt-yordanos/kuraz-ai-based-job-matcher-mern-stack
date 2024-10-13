@@ -9,6 +9,7 @@ import salary from './salary.png';
 import reviewApplication from './reviewApplication.webp';
 import resume from './resume.jpg';
 import kurazJobLogo from './kurazJobLogo.png';
+import kurazJobLogo2 from './kurazJobLogo2.png';
 import interview from './interview.png';
 import aiThinking from './aiThinking.jpg';
 import aiSelecting from './aiSelecting.jpeg';
@@ -31,9 +32,11 @@ const jobImages = {
     reviewApplication,
     resume,
     kurazJobLogo,
+    kurazJobLogo2,
     interview,
     aiThinking,
-    aiSelecting
+    aiSelecting,
+    
 };
 
 export default jobImages;
