@@ -19,7 +19,8 @@ import working from './working.jpg';
 import proffessionals from './proffessionals.jpg';
 import diverseIndividual from './diverseIndividual.jpg';
 import community from './community.jpg';
-
+import aboutUs from './aboutUs.png';
+import applyNow from './applyNow.jpg';
 
 
 const jobImages = {
@@ -45,6 +46,7 @@ const jobImages = {
     proffessionals,
     diverseIndividual,
     community,
+    applyNow
 };
 
 export default jobImages;

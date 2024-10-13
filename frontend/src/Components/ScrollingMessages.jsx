@@ -2,30 +2,50 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Card, CardContent, CardMedia, useTheme, useMediaQuery } from '@mui/material';
 import jobImages from '../assets/JobImages'; // Import the images
 
-const messages = [
-  "Welcome to Kuraz Automated Job Hiring, where AI helps us hire talented individuals for Kuraz Tech.",
-  "Kuraz Tech specializes in software development, graphic design, and online tutoring.",
-  "We are an aspiring team that values social relationships and working together.",
-  "At Kuraz, we believe skills are essential; everyone is evaluated based on skills, not background.",
-  "Hundreds of development, design, and tech jobs available!",
-  "We offer competitive salaries to attract the best talent in the industry.",
-  "Get AI-recommended jobs that suit your profile.",
-  "Upload your resume and let the AI find the best matches.",
-  "Apply easily and let the AI handle the rest!",
-  "AI will match your profile with jobs and send interview invitations if you fit.",
-];
+const messagesWithImages = [
+  {
+    text: "Welcome to Kuraz Automated Job Hiring, where AI helps us hire talented individuals for Kuraz Tech.",
+    image: jobImages.kurazJobAndTech,
+  },
+  {
+    text: "Kuraz Tech specializes in software development, graphic design, and online tutoring.",
+    image: jobImages.workingAtKuraz,
+  },
+  {
+    text: "We are an aspiring team that values social relationships and working together.",
+    image: jobImages.kurazTeam,
+  },
+  {
+    text: "At Kuraz, we believe skills are essential; everyone is evaluated based on skills, not background.",
+    image: jobImages.skill,
+  },
+  {
+    text: "Hundreds of development, design, and tech jobs available!",
+    image: jobImages.techJobs,
+  },
+  {
+    text: "We offer competitive salaries to attract the best talent in the industry.",
+    image: jobImages.salary,
+  },
 
-const images = [
-  jobImages.kurazJobLogo2,
-  jobImages.kurazLogo,
-  jobImages.kurazTeam,
-  jobImages.skill,
-  jobImages.aiSelecting,
-  jobImages.salary,
-  jobImages.aiThinking,
-  jobImages.resume,
-  jobImages.reviewApplication,
-  jobImages.interview,
+  {
+    text: "Upload your resume",
+    image: jobImages.resume,
+  },
+
+  {
+    text: "Apply easily and let the AI handle the rest!",
+    image: jobImages.applyNow,
+  },
+  {
+    text: "AI selects jobs that match your profile.",
+    image: jobImages.aiThinking,
+  },
+  {
+    text: "If a match is found, you will be scheduled an interview imidiately.",
+    image: jobImages.interview,
+  }
+   
 ];
 
 const ScrollingMessages = () => {
@@ -38,7 +58,7 @@ const ScrollingMessages = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentMessage((prev) => (prev + 1) % messages.length);
+      setCurrentMessage((prev) => (prev + 1) % messagesWithImages.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -62,7 +82,7 @@ const ScrollingMessages = () => {
     width: `calc(100% - ${marginLeft}px)`,
     flexShrink: 0,
     marginLeft: `${index === 0 ? marginLeft / 2 : marginLeft}px`,
-    marginRight: `${index === messages.length - 1 ? marginLeft / 2 : 0}px`,
+    marginRight: `${index === messagesWithImages.length - 1 ? marginLeft / 2 : 0}px`,
   });
 
   return (
@@ -93,16 +113,16 @@ const ScrollingMessages = () => {
           height: '90%',
         }}
       >
-        {messages.map((message, index) => (
+        {messagesWithImages.map((item, index) => (
           <Card key={index} sx={cardStyles(index)}>
             <CardMedia
               component="img"
               height="250"
-              image={images[index] || '/path/to/default.jpg'}
+              image={item.image || '/path/to/default.jpg'}
               alt={`Image for message ${index + 1}`}
             />
             <CardContent>
-              <div style={{ textAlign: 'center' }}>{message}</div>
+              <div style={{ textAlign: 'center' }}>{item.text}</div>
             </CardContent>
           </Card>
         ))}
@@ -117,7 +137,7 @@ const ScrollingMessages = () => {
           pt: 1,
         }}
       >
-        {messages.map((_, index) => (
+        {messagesWithImages.map((_, index) => (
           <Box
             key={index}
             sx={{
