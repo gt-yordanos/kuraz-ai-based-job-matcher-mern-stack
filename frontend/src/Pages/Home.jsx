@@ -8,46 +8,21 @@ const Home = () => {
     <Box
       sx={{
         width: '100vw',
-        maxWidth: '100vw',
         overflowX: 'hidden',
         padding: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        boxSizing: 'border-box',
       }}
     >
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          height: 'auto', 
-          '@media (min-width: 900px)': {
-            height: '85vh', // Keep the height for large screens
-          },
-        }}
-      >
+      <Grid container spacing={2}>
         {/* Left side: Recommended Jobs */}
-        <Grid item xs={12} md={6} sx={{ height: '100%' }}>
-          <Paper
-            elevation={0} 
-            sx={{
-              padding: '20px',
-              height: '100%', // Use full height on large screens
-            }}
-          >
+        <Grid item xs={12} md={6}>
+          <Paper elevation={0} sx={{ padding: '20px' }}>
             <RecommendedJobs />
           </Paper>
         </Grid>
 
-        {/* Right side: Scrolling Messages */}
-        <Grid item xs={12} md={6} sx={{ height: '100%' }}>
-          <Paper
-            elevation={0} 
-            sx={{
-              padding: '20px',
-              height: '100%', // Use full height on large screens
-            }}
-          >
+        {/* Right side: Scrolling Messages (reverse order on small screens) */}
+        <Grid item xs={12} md={6} order={{ xs: 1, md: 2 }}>
+          <Paper elevation={0} sx={{ padding: '20px' }}>
             <ScrollingMessages />
           </Paper>
         </Grid>

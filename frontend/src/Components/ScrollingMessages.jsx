@@ -1,60 +1,29 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Box, Card, CardContent, CardMedia, useTheme, useMediaQuery } from '@mui/material';
-import jobImages from '../assets/JobImages'; // Import the images
+import jobImages from '../assets/JobImages';
 
 const messagesWithImages = [
-  {
-    text: "Welcome to Kuraz Automated Job Hiring, where AI helps us hire talented individuals for Kuraz Tech.",
-    image: jobImages.kurazJobAndTech,
-  },
-  {
-    text: "Kuraz Tech specializes in software development, graphic design, and online tutoring.",
-    image: jobImages.workingAtKuraz,
-  },
-  {
-    text: "We are an aspiring team that values social relationships and working together.",
-    image: jobImages.kurazTeam,
-  },
-  {
-    text: "At Kuraz, we believe skills are essential; everyone is evaluated based on skills, not background.",
-    image: jobImages.skill,
-  },
-  {
-    text: "Hundreds of development, design, and tech jobs available!",
-    image: jobImages.techJobs,
-  },
-  {
-    text: "We offer competitive salaries to attract the best talent in the industry.",
-    image: jobImages.salary,
-  },
-
-  {
-    text: "Upload your resume",
-    image: jobImages.resume,
-  },
-
-  {
-    text: "Apply easily and let the AI handle the rest!",
-    image: jobImages.applyNow,
-  },
-  {
-    text: "AI selects jobs that match your profile.",
-    image: jobImages.aiThinking,
-  },
-  {
-    text: "If a match is found, you will be scheduled an interview imidiately.",
-    image: jobImages.interview,
-  }
-   
+  { text: "Welcome to Kuraz Automated Job Hiring, where AI helps us hire talented individuals for Kuraz Tech.", image: jobImages.kurazJobAndTech },
+  { text: "Kuraz Tech specializes in software development, graphic design, and online tutoring.", image: jobImages.workingAtKuraz },
+  { text: "We are an aspiring team that values social relationships and working together.", image: jobImages.kurazTeam },
+  { text: "At Kuraz, we believe skills are essential; everyone is evaluated based on skills, not background.", image: jobImages.skill },
+  { text: "Hundreds of development, design, and tech jobs available!", image: jobImages.techJobs },
+  { text: "We offer competitive salaries to attract the best talent in the industry.", image: jobImages.salary },
+  { text: "Upload your resume", image: jobImages.resume },
+  { text: "Apply easily and let the AI handle the rest!", image: jobImages.applyNow },
+  { text: "AI selects jobs that match your profile.", image: jobImages.aiThinking },
+  { text: "If a match is found, you will be scheduled an interview immediately.", image: jobImages.interview },
 ];
 
 const ScrollingMessages = () => {
   const theme = useTheme();
   const [currentMessage, setCurrentMessage] = useState(0);
   const scrollRef = useRef(null);
-
   const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
   const marginLeft = isMediumScreen ? 100 : 50;
+
+  // Set the container height dynamically based on screen size
+  const containerHeight = useMediaQuery('(max-width: 470px)') ? '270px' : '450px'; // 450px - 40% = 270px
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -66,24 +35,12 @@ const ScrollingMessages = () => {
   useEffect(() => {
     if (scrollRef.current) {
       const cardWidth = scrollRef.current.clientWidth - marginLeft;
-      const scrollPosition = currentMessage * (cardWidth + marginLeft);
       scrollRef.current.scrollTo({
-        left: scrollPosition,
+        left: currentMessage * (cardWidth + marginLeft),
         behavior: 'smooth',
       });
     }
   }, [currentMessage, marginLeft]);
-
-  const cardStyles = (index) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0',
-    color: theme.palette.mode === 'dark' ? 'white' : 'black',
-    borderRadius: '12px',
-    boxShadow: 'none',
-    width: `calc(100% - ${marginLeft}px)`,
-    flexShrink: 0,
-    marginLeft: `${index === 0 ? marginLeft / 2 : marginLeft}px`,
-    marginRight: `${index === messagesWithImages.length - 1 ? marginLeft / 2 : 0}px`,
-  });
 
   return (
     <Box
@@ -97,7 +54,7 @@ const ScrollingMessages = () => {
         overflow: 'hidden',
         position: 'relative',
         maxWidth: '800px',
-        height: '450px',
+        height: containerHeight,
         pt: 4,
         pb: 2,
       }}
@@ -114,13 +71,17 @@ const ScrollingMessages = () => {
         }}
       >
         {messagesWithImages.map((item, index) => (
-          <Card key={index} sx={cardStyles(index)}>
-            <CardMedia
-              component="img"
-              height="250"
-              image={item.image || '/path/to/default.jpg'}
-              alt={`Image for message ${index + 1}`}
-            />
+          <Card key={index} sx={{
+            backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0',
+            color: theme.palette.mode === 'dark' ? 'white' : 'black',
+            borderRadius: '12px',
+            boxShadow: 'none',
+            width: `calc(100% - ${marginLeft}px)`,
+            flexShrink: 0,
+            marginLeft: `${index === 0 ? marginLeft / 2 : marginLeft}px`,
+            marginRight: `${index === messagesWithImages.length - 1 ? marginLeft / 2 : 0}px`,
+          }}>
+            <CardMedia component="img" height="250" image={item.image || '/path/to/default.jpg'} alt={`Image for message ${index + 1}`} />
             <CardContent>
               <div style={{ textAlign: 'center' }}>{item.text}</div>
             </CardContent>
@@ -128,15 +89,7 @@ const ScrollingMessages = () => {
         ))}
       </Box>
 
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '10%',
-          pt: 1,
-        }}
-      >
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '10%', pt: 1 }}>
         {messagesWithImages.map((_, index) => (
           <Box
             key={index}
@@ -150,9 +103,7 @@ const ScrollingMessages = () => {
               mx: 0.3,
               cursor: 'pointer',
               transition: 'background-color 0.3s, width 0.3s',
-              '&:hover': {
-                backgroundColor: theme.palette.mode === 'dark' ? '#777' : '#888',
-              },
+              '&:hover': { backgroundColor: theme.palette.mode === 'dark' ? '#777' : '#888' },
             }}
             onClick={() => setCurrentMessage(index)}
           />
