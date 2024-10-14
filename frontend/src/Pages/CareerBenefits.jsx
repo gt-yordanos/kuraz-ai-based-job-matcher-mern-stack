@@ -24,7 +24,7 @@ const CareerBenefits = () => {
     {
       title: 'Training and Development',
       description: 'We offer comprehensive training programs to enhance your skills and knowledge, ensuring you stay ahead in your career.',
-      image: jobImages.training,
+      image: jobImages.professionalDevelopment,
     },
     {
       title: 'Competitive Salary',
@@ -34,7 +34,7 @@ const CareerBenefits = () => {
     {
       title: 'Professional Growth',
       description: 'We support your career ambitions with clear paths for advancement and opportunities for continuous learning.',
-      image: jobImages.professionalDevelopment,
+      image: jobImages.workLifeBalance,
     },
     {
       title: 'Work-Life Balance',
@@ -77,9 +77,17 @@ const CareerBenefits = () => {
         </Grid>
 
         {/* Encouragement Text and Call to Action */}
-        <Box sx={{ textAlign: 'center', marginTop: '40px', paddingLeft: '50px', paddingRight : '50px'}}>
-          <h2 style={{ marginBottom: '16px' }}>Join the Kuraz Tech Community!</h2>
-          <p style={{ marginBottom: '24px' }}>
+        <Box sx={{ textAlign: 'center', marginTop: '40px' }}>
+          <h2 style={{
+            marginBottom: '16px',
+            fontSize: isExtraSmallScreen ? '20px' : '24px', // Responsive font size
+          }}>
+            Join the Kuraz Tech Community!
+          </h2>
+          <p style={{
+            marginBottom: '24px',
+            fontSize: isExtraSmallScreen ? '14px' : '16px', // Responsive font size
+          }}>
             There is so much to benefit from us! Be part of a thriving community that values your growth and success. Sign up now to unlock exclusive resources and opportunities!
           </p>
           <Button 
@@ -89,7 +97,7 @@ const CareerBenefits = () => {
               marginRight: '10px', 
               backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', 
               color: theme.palette.mode === 'dark' ? '#000' : '#fff', 
-              width: '150px' // Increased width
+              width: isExtraSmallScreen ? '120px' : '150px', // Adjust button width
             }}
             onClick={() => alert('Redirecting to login...')} 
           >
@@ -99,7 +107,7 @@ const CareerBenefits = () => {
             variant="outlined" 
             color="secondary" 
             sx={{ 
-              width: '150px', // Increased width
+              width: isExtraSmallScreen ? '120px' : '150px', // Adjust button width
               borderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
               color: theme.palette.mode === 'dark' ? '#fff' : '#000',
             }}

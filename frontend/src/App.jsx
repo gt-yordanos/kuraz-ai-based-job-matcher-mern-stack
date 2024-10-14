@@ -4,6 +4,7 @@ import Navbar from './Components/Navbar'; // Import the Navbar component
 import Home from './Pages/Home'; // Import the Home component
 import NewJobs from './Pages/NewJobs';
 import CareerBenefits from './Pages/CareerBenefits';
+import AboutUs from './Pages/AboutUs';
 
 const App = () => {
   return (
@@ -22,6 +23,10 @@ const App = () => {
 
       <div id="careerbenefits">
         <CareerBenefits/>
+      </div>
+
+      <div>
+        <AboutUs/>
       </div>
       
     </div>
