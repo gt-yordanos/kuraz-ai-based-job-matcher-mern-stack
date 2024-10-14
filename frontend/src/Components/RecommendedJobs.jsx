@@ -1,20 +1,23 @@
-import React from 'react';
-import { Box, Card, CardContent, CardMedia, useTheme, useMediaQuery } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import jobImages from '../assets/JobImages';
+// RecommendedJobs.js
+import React, { useState } from 'react';
+import { Box, Pagination, useTheme, useMediaQuery } from '@mui/material';
+import SmallJobCard from './SmallJobCard'; // Import the SmallJobCard component
 
 const RecommendedJobs = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery('(max-width:460px)'); // Check if screen size is less than 460px
+  const isMobile = useMediaQuery('(max-width:460px)');
   const jobs = [
-    { title: 'Frontend Developer', skills: 'JavaScript, React, CSS', timePosted: '2 days ago', image: jobImages.frontend },
-    { title: 'Full Stack Developer', skills: 'JavaScript, Node.js, Express', timePosted: '1 week ago', image: jobImages.backend },
-    { title: 'AI Engineer', skills: 'Python, TensorFlow, Machine Learning', timePosted: '3 days ago', image: jobImages.aiEngineer },
+    { title: 'Frontend Developer', skills: 'JavaScript, React, CSS', timePosted: '2 days ago', location: 'New York', deadline: 'Oct 30, 2024' },
+    { title: 'Full Stack Developer', skills: 'JavaScript, Node.js, Express', timePosted: '1 week ago', location: 'San Francisco', deadline: 'Nov 5, 2024' },
+    { title: 'AI Engineer', skills: 'Python, TensorFlow, Machine Learning', timePosted: '3 days ago', location: 'Remote', deadline: 'Nov 1, 2024' },
   ];
 
-  const cardGap = 12;
-  const totalGap = (jobs.length - 1) * cardGap;
-  const cardHeight = `calc((100% - ${totalGap}px) / 3 - 5px)`;
+  const [page, setPage] = useState(1);
+  const jobsPerPage = isMobile ? 1 : 2; // Show only 1 card on smaller screens, 2 on larger screens
+  const handleChange = (event, value) => setPage(value);
+
+  const startIndex = (page - 1) * jobsPerPage;
+  const currentJobs = jobs.slice(startIndex, startIndex + jobsPerPage);
 
   return (
     <Box
@@ -23,56 +26,48 @@ const RecommendedJobs = () => {
         borderRadius: '16px',
         maxWidth: '800px',
         margin: 'auto',
-        height: isMobile ? '400px' : '450px', // Set height based on screen size
+        height: isMobile ? '400px' : '450px',
         boxShadow: 'none',
+        padding: '24px', // Added padding to the container
+        paddingTop: '50px', // Added extra padding to push the top text down
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center', // Center the content vertically
       }}
     >
-      <Box sx={{ width: '100%', height: '18%', padding: 4, marginBottom: 2 }}>
+      <Box sx={{ width: '100%', paddingBottom: '16px' , paddingLeft: '12px'}}>
         <div style={{ fontSize: isMobile ? '1rem' : '1.25rem', fontWeight: 'bold' }}>AI Recommended Jobs</div>
         <div style={{ fontSize: isMobile ? '0.75rem' : '0.875rem', color: theme.palette.text.secondary }}>
           Based on your profile, we found jobs that match your skills and experience.
         </div>
       </Box>
-      <Box sx={{ width: '100%', height: '82%', padding: 4, overflowY: 'auto' }}>
-        {jobs.map((job, index) => (
-          <Card
-            key={index}
-            sx={{
-              display: 'flex',
-              marginBottom: `${cardGap}px`,
-              backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0',
-              color: theme.palette.mode === 'dark' ? 'white' : 'text.primary',
-              borderRadius: '8px',
-              height: cardHeight,
-              boxShadow: 'none',
-              transition: 'transform 0.3s ease',
-              '&:hover': { transform: 'scale(1.03)' },
-              fontFamily: 'Poppins, sans-serif',
-            }}
-          >
-            <CardMedia
-              component="img"
-              sx={{ width: 100, height: '100%', objectFit: 'cover' }}
-              image={job.image}
-              alt={`${job.title} image`}
-            />
-            <CardContent sx={{ padding: '10px' }}>
-              <div style={{ fontSize: isMobile ? '0.875rem' : '1rem', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {job.title}
-              </div>
-              <div style={{ fontSize: isMobile ? '0.75rem' : '0.875rem', color: theme.palette.text.secondary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                Skills: {job.skills}
-              </div>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <AccessTimeIcon fontSize={isMobile ? 'inherit' : 'small'} sx={{ fontSize: isMobile ? '14px' : 'small' }} /> {/* Adjust icon size for mobile */}
-                <div style={{ fontSize: isMobile ? '0.75rem' : '0.875rem', color: theme.palette.text.secondary, marginLeft: 0.5 }}>
-                  {job.timePosted}
-                </div>
-              </Box>
-            </CardContent>
-          </Card>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row', // Column layout for mobile, row for larger screens
+          gap: '12px',
+          justifyContent: 'center', // Center the cards inside the container
+          alignItems: 'center', // Align cards in the center
+          height: '100%',
+        }}
+      >
+        {currentJobs.map((job, index) => (
+          <SmallJobCard key={index} job={job} isMobile={isMobile} />
         ))}
       </Box>
+      <Pagination
+        count={Math.ceil(jobs.length / jobsPerPage)}
+        page={page}
+        onChange={handleChange}
+        sx={{
+          marginTop: '16px',
+          display: 'flex',
+          justifyContent: 'center',
+          '& .MuiPaginationItem-root': {
+            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+          },
+        }}
+      />
     </Box>
   );
 };
