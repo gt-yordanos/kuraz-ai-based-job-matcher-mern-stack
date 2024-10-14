@@ -1,8 +1,7 @@
-import React from 'react'; 
+import React from 'react';
 import {
   Card,
   CardContent,
-  CardActions,
   Button,
 } from '@mui/material';
 import { School } from '@mui/icons-material';
@@ -16,12 +15,12 @@ const CourseCard = ({ resource }) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 'auto',
-    marginBottom: '8px',
     padding: '8px 16px',
     fontFamily: 'Poppins, sans-serif',
     transition: 'none',
-    '&:hover': {},
+    position: 'absolute', // Set the button's position to absolute
+    bottom: '16px', // Fixed distance from the bottom
+    right: '16px', // Fixed distance from the right
   };
 
   const titleStyle = {
@@ -40,36 +39,36 @@ const CourseCard = ({ resource }) => {
       padding: '16px',
       display: 'flex',
       flexDirection: 'column',
+      position: 'relative', // Make the card container relative
       height: '250px',
+      minHeight: '200px',
     }}>
-      <CardContent>
+      <CardContent sx={{ flexGrow: 1 }}>
         <h2 style={{ display: 'flex', alignItems: 'center', ...titleStyle }}>
           <School sx={{ verticalAlign: 'middle', marginRight: '8px' }} />
           {resource.title}
         </h2>
         <p style={descriptionStyle}>{resource.description}</p>
       </CardContent>
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
-        <Button
-          size="small"
-          variant="contained"
-          sx={buttonStyle}
-          href={resource.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          onMouseEnter={(e) => {
-            const arrowIcon = e.currentTarget.querySelector('.arrow-icon');
-            if (arrowIcon) arrowIcon.style.transform = 'translateX(5px)';
-          }}
-          onMouseLeave={(e) => {
-            const arrowIcon = e.currentTarget.querySelector('.arrow-icon');
-            if (arrowIcon) arrowIcon.style.transform = 'translateX(0)';
-          }}
-        >
-          Go to the Course 
-          <ArrowForwardIcon sx={{ marginLeft: '5px', transition: 'transform 0.2s' }} className="arrow-icon" />
-        </Button>
-      </CardActions>
+      <Button
+        size="small"
+        variant="contained"
+        sx={buttonStyle}
+        href={resource.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        onMouseEnter={(e) => {
+          const arrowIcon = e.currentTarget.querySelector('.arrow-icon');
+          if (arrowIcon) arrowIcon.style.transform = 'translateX(5px)';
+        }}
+        onMouseLeave={(e) => {
+          const arrowIcon = e.currentTarget.querySelector('.arrow-icon');
+          if (arrowIcon) arrowIcon.style.transform = 'translateX(0)';
+        }}
+      >
+        Go to the Course 
+        <ArrowForwardIcon sx={{ marginLeft: '5px', transition: 'transform 0.2s' }} className="arrow-icon" />
+      </Button>
     </Card>
   );
 };
