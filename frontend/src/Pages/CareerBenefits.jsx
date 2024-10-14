@@ -24,7 +24,7 @@ const CareerBenefits = () => {
     {
       title: 'Training and Development',
       description: 'We offer comprehensive training programs to enhance your skills and knowledge, ensuring you stay ahead in your career.',
-      image: jobImages.professionalDevelopment,
+      image: jobImages.training,
     },
     {
       title: 'Competitive Salary',
@@ -34,7 +34,7 @@ const CareerBenefits = () => {
     {
       title: 'Professional Growth',
       description: 'We support your career ambitions with clear paths for advancement and opportunities for continuous learning.',
-      image: jobImages.workLifeBalance,
+      image: jobImages.professionalDevelopment,
     },
     {
       title: 'Work-Life Balance',

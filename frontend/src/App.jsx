@@ -5,6 +5,8 @@ import Home from './Pages/Home'; // Import the Home component
 import NewJobs from './Pages/NewJobs';
 import CareerBenefits from './Pages/CareerBenefits';
 import AboutUs from './Pages/AboutUs';
+import { Carpenter } from '@mui/icons-material';
+import CareerResources from './Pages/CareerResources';
 
 const App = () => {
   return (
@@ -25,6 +27,11 @@ const App = () => {
         <CareerBenefits/>
       </div>
 
+      <div>
+        <CareerResources/>
+      </div>
+
+      
       <div>
         <AboutUs/>
       </div>
