@@ -2,6 +2,7 @@
 import React from 'react';
 import Navbar from './Components/Navbar'; // Import the Navbar component
 import Home from './Pages/Home'; // Import the Home component
+import NewJobs from './Pages/NewJobs';
 
 const App = () => {
   return (
@@ -13,6 +14,11 @@ const App = () => {
       <div style={{ width: '100%', minHeight: '85vh',display: 'flex', justifyContent: 'center', marginTop: '60px', padding: 0}}>
         <Home />
       </div>
+
+      <div id="newjobs">
+      <NewJobs/>
+      </div>
+      
     </div>
   );
 };
