@@ -3,6 +3,7 @@ import React from 'react';
 import Navbar from './Components/Navbar'; // Import the Navbar component
 import Home from './Pages/Home'; // Import the Home component
 import NewJobs from './Pages/NewJobs';
+import CareerBenefits from './Pages/CareerBenefits';
 
 const App = () => {
   return (
@@ -17,6 +18,10 @@ const App = () => {
 
       <div id="newjobs">
       <NewJobs/>
+      </div>
+
+      <div id="careerbenefits">
+        <CareerBenefits/>
       </div>
       
     </div>

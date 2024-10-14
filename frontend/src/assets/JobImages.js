@@ -21,6 +21,11 @@ import diverseIndividual from './diverseIndividual.jpg';
 import community from './community.jpg';
 import aboutUs from './aboutUs.png';
 import applyNow from './applyNow.jpg';
+import workLifeBalance from './workLifeBalance.jpg';
+import professionalDevelopment from './professionalDevelopment.jpg';
+import training from './training.png';
+
+
 
 
 const jobImages = {
@@ -46,7 +51,10 @@ const jobImages = {
     proffessionals,
     diverseIndividual,
     community,
-    applyNow
+    applyNow,
+    workLifeBalance,
+    professionalDevelopment,
+    training
 };
 
 export default jobImages;

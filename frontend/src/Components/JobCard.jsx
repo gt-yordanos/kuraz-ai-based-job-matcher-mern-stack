@@ -66,6 +66,7 @@ const JobCard = ({ job }) => {
             width: '100%',
             backgroundColor: isDarkMode ? '#fff' : '#000',
             color: isDarkMode ? '#000' : '#fff',
+             fontFamily: 'Poppins, sans-serif', 
             '&:hover': {
               backgroundColor: isDarkMode ? '#e0e0e0' : '#333',
             },

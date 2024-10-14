@@ -54,7 +54,7 @@ const SmallJobCard = ({ job, isMobile }) => {
           </span>
         </Box>
       </CardContent>
-      <Box sx={{ padding: '8px 0' }}>
+      <Box sx={{ padding: '8px 5px' }}>
         <Button
           variant="contained"
           sx={{
@@ -62,6 +62,7 @@ const SmallJobCard = ({ job, isMobile }) => {
             height: '40px', // Reduced button height
             backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
             color: theme.palette.mode === 'dark' ? '#000' : '#fff',
+            fontFamily: 'Poppins, sans-serif', 
             '&:hover': {
               backgroundColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333',
             },
