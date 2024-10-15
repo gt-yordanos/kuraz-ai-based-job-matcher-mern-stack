@@ -1,0 +1,18 @@
+// backend/models/Application.js
+import mongoose from 'mongoose';
+
+const ApplicationSchema = new mongoose.Schema({
+    applicantId: { type: mongoose.Schema.Types.ObjectId, ref: 'Applicant', required: true },
+    jobId: { type: mongoose.Schema.Types.ObjectId, ref: 'Job', required: true },
+    coverLetter: { type: String }, // URL to the cover letter or text
+    status: {
+        type: String,
+        enum: ['Applied', 'Under Review', 'Interview', 'Rejected', 'Accepted'],
+        default: 'Applied',
+    },
+    applicationDate: { type: Date, default: Date.now },
+    feedback: { type: String }, // Feedback from HR or recruitment
+    createdAt: { type: Date, default: Date.now },
+});
+
+export default mongoose.models.Application || mongoose.model('Application', ApplicationSchema);
