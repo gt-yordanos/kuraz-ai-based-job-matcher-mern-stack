@@ -1,28 +1,207 @@
-// AboutUs.jsx
 import React from 'react';
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Avatar,
+  Button,
+  Divider,
+  useTheme,
+  useMediaQuery,
+} from '@mui/material';
+import { LinkedIn } from '@mui/icons-material';
+import jobImages from '../assets/JobImages';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const AboutUs = () => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+  const isMediumScreen = useMediaQuery('(max-width:768px)');
+  const isSmallScreen = useMediaQuery('(max-width:375px)');
+
+  const containerStyle = {
+    padding: isSmallScreen ? '8px' : '15px',
+    color: isDarkMode ? '#fff' : '#000',
+    minHeight: '100vh',
+  };
+
+  const headerStyle = {
+    fontSize: '32px',
+    color: isDarkMode ? '#fff' : '#000',
+    textAlign: 'center',
+    marginBottom: '24px',
+  };
+
+  const cardStyle = {
+    backgroundColor: isDarkMode ? '#242424' : '#e0e0e0',
+    color: isDarkMode ? '#fff' : '#000',
+    borderRadius: '12px',
+    boxShadow: 'none',
+    padding: '10px',
+    height: '100%',
+  };
+
+  const teamData = [
+    {
+      name: 'Bisrategebriel Fisseha',
+      role: 'CEO',
+      education: 'Addis Ababa Science and Technology University',
+      company: 'Kuraz Technologies',
+      image: jobImages.bisrategebrielFisseha,
+      linkedin: 'https://linkedin.com/in/bisrategebriel',
+    },
+    {
+      name: 'Tito Frezer',
+      role: 'CTO',
+      education: 'Addis Ababa Science and Technology University',
+      company: 'Kuraz Technologies',
+      image: jobImages.titoFrezer,
+      linkedin: 'https://linkedin.com/in/titofrezer',
+    },
+    {
+      name: 'Biruk Mamo',
+      role: 'Co-Founder',
+      education: 'Addis Ababa Science and Technology University',
+      company: 'Kuraz Technologies',
+      image: jobImages.birukMamo,
+      linkedin: 'https://linkedin.com/in/birukmamo',
+    },
+    {
+      name: 'Yordanos Genene',
+      role: 'Lead Developer',
+      education: 'Haramaya University',
+      company: 'Developer of Kuraz Automated Job Hiring',
+      image: jobImages.yordanosTefera,
+      linkedin: 'https://linkedin.com/in/yordanosgenene',
+    },
+  ];
+
+  const services = [
+    {
+      title: 'Graphic Design',
+      description: 'High-quality graphic design services for businesses.',
+      image: jobImages.skill,
+    },
+    {
+      title: 'Software Development',
+      description: 'Custom software solutions to meet your business needs.',
+      image: jobImages.working,
+    },
+    {
+      title: 'Online Learning',
+      description: 'Educational programs for high school students and career growth.',
+      image: jobImages.professionalDevelopment,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-blue-800 mb-6">About Us</h1>
-        <p className="text-gray-600 mb-6">
-          Kuraz Tech is a leading company in software development, graphic design, and online learning. Our mission is to empower businesses and individuals through innovative technology solutions and creative design.
+    <Box sx={containerStyle}>
+      <Box sx={{ maxWidth: '1200px', margin: '0 auto', padding: '15px' }}>
+        <h1 style={headerStyle}>About Kuraz Technologies</h1>
+
+        <Box sx={{ textAlign: 'center', marginBottom: '24px' }}>
+          <img src={jobImages.kurazLogo} alt="Kuraz Logo" style={{ maxWidth: '150px' }} />
+        </Box>
+
+        <Divider sx={{ marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
+
+        <p style={{ marginBottom: '24px', fontSize: '18px' }}>
+          Kuraz Technologies is a startup founded in 2018 by students from Addis Ababa Science and Technology University.
+          We specialize in graphic design, software development, and online learning, aiming to become a leading tech
+          company in Ethiopia. Our latest innovation, Kuraz AI, is an automated job hiring tool designed to streamline
+          recruitment processes.
         </p>
-        <div className="flex flex-wrap">
-          <div className="w-full md:w-1/2 p-4">
-            <img src="path/to/company-photo1.jpg" alt="Our Team" className="rounded-lg" />
-            <h2 className="text-xl font-semibold text-blue-600 mt-4">Our Team</h2>
-            <p className="text-gray-500 mt-2">We are a diverse team of professionals with a passion for technology and creativity.</p>
-          </div>
-          <div className="w-full md:w-1/2 p-4">
-            <img src="path/to/company-photo2.jpg" alt="Our Vision" className="rounded-lg" />
-            <h2 className="text-xl font-semibold text-blue-600 mt-4">Our Vision</h2>
-            <p className="text-gray-500 mt-2">To be a global leader in technology and design, delivering high-quality solutions to our clients.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+
+        <Divider sx={{ marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
+
+        <h2 style={headerStyle}>Our Team</h2>
+        <Grid container spacing={2} sx={{ marginBottom: '24px' }}>
+          {teamData.map((member, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Card sx={cardStyle}>
+                <CardContent>
+                  <Avatar src={member.image} alt={member.name} sx={{ width: '80px', height: '80px', margin: '0 auto' }} />
+                  <h3 style={{ textAlign: 'center', margin: '16px 0 8px' }}>{member.name}</h3>
+                  <p style={{ textAlign: 'center', fontSize: '14px' }}>{member.role}</p>
+                  <p style={{ textAlign: 'center', fontSize: '14px', color: '#757575' }}>{member.education}</p>
+                  <p style={{ textAlign: 'center', fontSize: '14px' }}>{member.company}</p>
+                  <Button
+                    variant="outlined"
+                    startIcon={<LinkedIn />}
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      width: '100%',
+                      marginTop: '10px',
+                      backgroundColor: isDarkMode ? '#fff' : '#000',
+                      color: isDarkMode ? '#000' : '#fff',
+                      border: `1px solid ${isDarkMode ? '#000' : '#fff'}`,
+                    }}
+                  >
+                    LinkedIn Profile
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Divider sx={{ marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
+
+        <h2 style={headerStyle}>Our Services</h2>
+        <Grid container spacing={2}>
+          {services.map((service, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Card sx={cardStyle}>
+                <CardContent>
+                  <img src={service.image} alt={service.title} style={{ maxWidth: '100%', marginBottom: '16px' }} />
+                  <h3 style={{ textAlign: 'center', margin: '0 0 8px' }}>{service.title}</h3>
+                  <p style={{ textAlign: 'center', fontSize: '14px' }}>{service.description}</p>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Divider sx={{ marginTop: '24px', marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
+
+        <h2 style={headerStyle}>Collaborations and Achievements</h2>
+        <Box sx={{ textAlign: 'center', marginBottom: '24px' }}>
+          <img src={jobImages.collaboration} alt="Collaboration" style={{ maxWidth: '100%', marginBottom: '16px' }} />
+          <p style={{ fontSize: '18px' }}>
+            Kuraz Technologies collaborates with Ethio Telecom to enhance digital infrastructure across Ethiopia.
+            Additionally, we have received a $60,000 grant from the MasterCard Foundation to support our e-learning
+            initiatives, aimed at empowering students and young professionals.
+          </p>
+        </Box>
+
+        <Divider sx={{ marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
+
+        <h2 style={headerStyle}>Contact Us</h2>
+        <p style={{ textAlign: 'center', fontSize: '18px' }}>
+          Email: <a style={{textDecoration: 'none', color: 'black'}} href="mailto:info@kuraztechnologies.com">info@kuraztechnologies.com</a>
+        </p>
+        <p style={{ textAlign: 'center', fontSize: '18px' }}>
+          Phone: <a style={{textDecoration: 'none', color: 'black'}} href="tel:+2519XXXXXXX">+251 9XX XXX XXX</a>
+        </p>
+
+        <Divider sx={{ marginTop: '24px', marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
+
+        <h2 style={headerStyle}>Find Us</h2>
+        <MapContainer center={[9.03, 38.74]} zoom={13} style={{ height: '300px', width: '100%' }}>
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+          />
+          <Marker position={[9.03, 38.74]}>
+            <Popup>Our Office Location</Popup>
+          </Marker>
+        </MapContainer>
+      </Box>
+    </Box>
   );
 };
 

@@ -24,6 +24,11 @@ import applyNow from './applyNow.jpg';
 import workLifeBalance from './workLifeBalance.jpg';
 import professionalDevelopment from './professionalDevelopment.jpg';
 import training from './training.png';
+import titoFrezer from './titoFrezer.jfif';
+import yordanosTefera from './yordanosTefera.jpg';
+import birukMamo from './birukMamo.jfif';
+import bisrategebrielFisseha from './bisrategebrielFisseha.jfif';
+
 
 
 
@@ -54,7 +59,11 @@ const jobImages = {
     applyNow,
     workLifeBalance,
     professionalDevelopment,
-    training
+    training,
+    titoFrezer,
+    yordanosTefera,
+    birukMamo,
+    bisrategebrielFisseha
 };
 
 export default jobImages;
