@@ -10,7 +10,7 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import { LinkedIn } from '@mui/icons-material';
+import { LinkedIn, Email, Phone, LocationOn } from '@mui/icons-material';
 import jobImages from '../assets/JobImages';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -181,13 +181,22 @@ const AboutUs = () => {
         <Divider sx={{ marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
 
         <h2 style={headerStyle}>Contact Us</h2>
-        <p style={{ textAlign: 'center', fontSize: '18px' }}>
-          Email: <a style={{textDecoration: 'none', color: 'black'}} href="mailto:info@kuraztechnologies.com">info@kuraztechnologies.com</a>
+        <p style={{ textAlign: 'center', fontSize: '18px', color: theme.palette.text.primary }}>
+          <Email sx={{ verticalAlign: 'middle', marginRight: '8px' }} /> 
+          <a style={{ textDecoration: 'none', color: theme.palette.text.primary }} href="mailto:info@kuraztechnologies.com">
+            info@kuraztechnologies.com
+          </a>
         </p>
-        <p style={{ textAlign: 'center', fontSize: '18px' }}>
-          Phone: <a style={{textDecoration: 'none', color: 'black'}} href="tel:+2519XXXXXXX">+251 9XX XXX XXX</a>
+        <p style={{ textAlign: 'center', fontSize: '18px', color: theme.palette.text.primary }}>
+          <Phone sx={{ verticalAlign: 'middle', marginRight: '8px' }} /> 
+          <a style={{ textDecoration: 'none', color: theme.palette.text.primary }} href="tel:+2519XXXXXXX">
+            +251 9XX XXX XXX
+          </a>
         </p>
-
+        <p style={{ textAlign: 'center', fontSize: '18px', color: theme.palette.text.primary }}>
+          <LocationOn sx={{ verticalAlign: 'middle', marginRight: '8px' }} /> 
+          Addis Ababa, 22 Megenegna, Gulagul
+        </p>
         <Divider sx={{ marginTop: '24px', marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
 
         <h2 style={headerStyle}>Find Us</h2>
