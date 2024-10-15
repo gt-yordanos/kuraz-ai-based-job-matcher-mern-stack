@@ -25,13 +25,23 @@ const AboutUs = () => {
     padding: isSmallScreen ? '8px' : '15px',
     color: isDarkMode ? '#fff' : '#000',
     minHeight: '100vh',
+    paddingLeft: isMediumScreen ? '0' : '30px', // Add left padding on larger screens
+    paddingRight: isMediumScreen ? '0' : '30px', // Add right padding on larger screens
   };
 
   const headerStyle = {
-    fontSize: '32px',
+    fontSize: isSmallScreen ? '24px' : '32px', // Decrease header size on small screens
     color: isDarkMode ? '#fff' : '#000',
     textAlign: 'center',
     marginBottom: '24px',
+  };
+
+  const paragraphStyle = {
+    marginBottom: '44px',
+    marginBottom: '44px',
+    fontSize: isSmallScreen ? '14px' : '18px',
+    paddingLeft: isSmallScreen ? '4px' : '60px',
+    paddingRight: isSmallScreen ? '4px' : '60px',
   };
 
   const cardStyle = {
@@ -74,7 +84,7 @@ const AboutUs = () => {
       education: 'Haramaya University',
       company: 'Developer of Kuraz Automated Job Hiring',
       image: jobImages.yordanosTefera,
-      linkedin: 'https://linkedin.com/in/yordanosgenene',
+      linkedin: 'https://www.linkedin.com/in/yordanosgtefera/',
     },
   ];
 
@@ -107,7 +117,7 @@ const AboutUs = () => {
 
         <Divider sx={{ marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
 
-        <p style={{ marginBottom: '24px', fontSize: '18px' }}>
+        <p style={paragraphStyle}>
           Kuraz Technologies is a startup founded in 2018 by students from Addis Ababa Science and Technology University.
           We specialize in graphic design, software development, and online learning, aiming to become a leading tech
           company in Ethiopia. Our latest innovation, Kuraz AI, is an automated job hiring tool designed to streamline
@@ -171,7 +181,7 @@ const AboutUs = () => {
         <h2 style={headerStyle}>Collaborations and Achievements</h2>
         <Box sx={{ textAlign: 'center', marginBottom: '24px' }}>
           <img src={jobImages.collaboration} alt="Collaboration" style={{ maxWidth: '100%', marginBottom: '16px' }} />
-          <p style={{ fontSize: '18px' }}>
+          <p style={paragraphStyle}>
             Kuraz Technologies collaborates with Ethio Telecom to enhance digital infrastructure across Ethiopia.
             Additionally, we have received a $60,000 grant from the MasterCard Foundation to support our e-learning
             initiatives, aimed at empowering students and young professionals.
@@ -181,32 +191,27 @@ const AboutUs = () => {
         <Divider sx={{ marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
 
         <h2 style={headerStyle}>Contact Us</h2>
-        <p style={{ textAlign: 'center', fontSize: '18px', color: theme.palette.text.primary }}>
+        <p style={{ textAlign: 'center', fontSize: paragraphStyle.fontSize, color: theme.palette.text.primary }}>
           <Email sx={{ verticalAlign: 'middle', marginRight: '8px' }} /> 
           <a style={{ textDecoration: 'none', color: theme.palette.text.primary }} href="mailto:info@kuraztechnologies.com">
             info@kuraztechnologies.com
           </a>
         </p>
-        <p style={{ textAlign: 'center', fontSize: '18px', color: theme.palette.text.primary }}>
-          <Phone sx={{ verticalAlign: 'middle', marginRight: '8px' }} /> 
-          <a style={{ textDecoration: 'none', color: theme.palette.text.primary }} href="tel:+2519XXXXXXX">
-            +251 9XX XXX XXX
-          </a>
+        <p style={{ textAlign: 'center', fontSize: paragraphStyle.fontSize }}>
+          <Phone sx={{ verticalAlign: 'middle', marginRight: '8px' }} />
+          +251 123 456 789
         </p>
-        <p style={{ textAlign: 'center', fontSize: '18px', color: theme.palette.text.primary }}>
-          <LocationOn sx={{ verticalAlign: 'middle', marginRight: '8px' }} /> 
-          Addis Ababa, 22 Megenegna, Gulagul
+        <p style={{ textAlign: 'center', fontSize: paragraphStyle.fontSize }}>
+          <LocationOn sx={{ verticalAlign: 'middle', marginRight: '8px' }} />
+          Addis Ababa, Ethiopia
         </p>
-        <Divider sx={{ marginTop: '24px', marginBottom: '24px', backgroundColor: isDarkMode ? '#fff' : '#000' }} />
 
-        <h2 style={headerStyle}>Find Us</h2>
-        <MapContainer center={[9.03, 38.74]} zoom={13} style={{ height: '300px', width: '100%' }}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
-          />
+        <MapContainer center={[9.03, 38.74]} zoom={13} style={{ height: '400px', marginTop: '24px' }}>
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <Marker position={[9.03, 38.74]}>
-            <Popup>Our Office Location</Popup>
+            <Popup>
+              Kuraz Technologies Office
+            </Popup>
           </Marker>
         </MapContainer>
       </Box>

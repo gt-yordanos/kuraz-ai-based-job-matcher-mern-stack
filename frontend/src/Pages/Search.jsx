@@ -1,104 +1,44 @@
-import React, { useState } from 'react';
-import { Box, TextField, Typography, Button, CircularProgress, Card, CardContent } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Skeleton from '@mui/material/Skeleton';
+import { useThemeContext } from '../Contexts/ThemeContext'; // Adjust the import path as needed
 
 const Search = () => {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setResults([]);
-
-    try {
-      // Fetch results from an API or perform a search based on the query
-      const response = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
-      const data = await response.json();
-      
-      if (!response.ok) throw new Error(data.message || 'Something went wrong');
-      
-      setResults(data.results); // Adjust according to your API response
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { darkMode } = useThemeContext(); // Access darkMode from the ThemeContext
 
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start',
         alignItems: 'center',
-        height: '100vh',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        bgcolor: darkMode ? '#242424' : '#e0e0e0', // Use the context value for background color
         padding: 2,
-        backgroundColor: '#000',
-        color: '#FFF',
+        width: '97%',
+        margin: '0 auto',
       }}
     >
-      <Typography variant="h4" component="h1" gutterBottom>
-        Search for Jobs
-      </Typography>
-      <form onSubmit={handleSearch} style={{ width: '100%', maxWidth: '600px', marginBottom: '2rem' }}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Type your search query..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+      {[...Array(5)].map((_, index) => (
+        <Card
+          key={index}
           sx={{
+            width: '90%',
             marginBottom: 2,
-            input: {
-              color: '#FFF',
-            },
-            fieldset: {
-              borderColor: '#FFF',
-            },
+            bgcolor: darkMode ? '#333' : '#fff', // Use the context value for card background
+            boxShadow: 'none', // Remove shadow
           }}
-        />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          Search
-        </Button>
-      </form>
-      
-      {/* Results Section */}
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: '600px',
-          backgroundColor: '#222',
-          padding: 2,
-          borderRadius: 1,
-          boxShadow: 1,
-          color: '#FFF',
-        }}
-      >
-        <Typography variant="h6" component="h2" gutterBottom>
-          Search Results
-        </Typography>
-        
-        {loading && <CircularProgress />}
-        
-        {error && <Typography color="error">{error}</Typography>}
-        
-        {!loading && results.length === 0 && <Typography>No results found.</Typography>}
-        
-        {results.map(result => (
-          <Card key={result.id} sx={{ marginBottom: 1, backgroundColor: '#333', color: '#FFF' }}>
-            <CardContent>
-              <Typography variant="body1">{result.title}</Typography>
-              <Typography variant="body2">{result.description}</Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+        >
+          <CardContent>
+            <Skeleton variant="text" width="80%" height={30} />
+            <Skeleton variant="text" width="60%" animation="wave" height={30} />
+            <Skeleton variant="rectangular" height={60} />
+          </CardContent>
+        </Card>
+      ))}
     </Box>
   );
 };

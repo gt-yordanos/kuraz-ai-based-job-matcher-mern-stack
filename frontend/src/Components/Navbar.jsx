@@ -15,7 +15,9 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ThemeToggler from './ThemeToggler';
 import { useTheme } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 // Styled components for search bar and mobile menu links
 const Search = styled('div')(({ theme }) => ({
@@ -48,9 +50,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
   },
 }));
 
@@ -71,14 +70,21 @@ const MobileMenuLinks = styled(Box)(({ theme }) => ({
     color: theme.palette.mode === 'dark' ? 'white' : 'black',
     padding: theme.spacing(1),
     fontWeight: 'bold',
+    borderBottom: 'none', // Remove any default border
   },
 }));
 
 export default function Navbar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [selectedPage, setSelectedPage] = React.useState('');
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  React.useEffect(() => {
+    setSelectedPage(location.pathname);
+  }, [location.pathname]);
 
   const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
   const handleMobileMenuOpen = (event) => setMobileMoreAnchorEl(event.currentTarget);
@@ -109,10 +115,54 @@ export default function Navbar() {
         </StableIconButton>
       </Box>
       <MobileMenuLinks>
-        <Link href="#newjobs">New Jobs</Link>
-        <Link href="#careerbenefits">Career Benefits</Link>
-        <Link href="#careerresources">Career Resources</Link>
-        <Link href="#about">About Us</Link>
+        <Link
+          to="/newjobs"
+          onClick={() => {
+            setSelectedPage('/newjobs');
+            handleMobileMenuClose(); // Close the mobile menu on link click
+          }}
+          style={{
+            borderBottom: selectedPage === '/newjobs' ? '3px solid #ff9800' : 'none',
+          }}
+        >
+          New Jobs
+        </Link>
+        <Link
+          to="/careerbenefits"
+          onClick={() => {
+            setSelectedPage('/careerbenefits');
+            handleMobileMenuClose(); // Close the mobile menu on link click
+          }}
+          style={{
+            borderBottom: selectedPage === '/careerbenefits' ? '3px solid #ff9800' : 'none',
+          }}
+        >
+          Career Benefits
+        </Link>
+        <Link
+          to="/careerresources"
+          onClick={() => {
+            setSelectedPage('/careerresources');
+            handleMobileMenuClose(); // Close the mobile menu on link click
+          }}
+          style={{
+            borderBottom: selectedPage === '/careerresources' ? '3px solid #ff9800' : 'none',
+          }}
+        >
+          Career Resources
+        </Link>
+        <Link
+          to="/about"
+          onClick={() => {
+            setSelectedPage('/about');
+            handleMobileMenuClose(); // Close the mobile menu on link click
+          }}
+          style={{
+            borderBottom: selectedPage === '/about' ? '3px solid #ff9800' : 'none',
+          }}
+        >
+          About Us
+        </Link>
       </MobileMenuLinks>
     </Menu>
   );
@@ -131,7 +181,7 @@ export default function Navbar() {
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: 'block', md: 'block' }, flexGrow: 1, textAlign: { md: 'left', xs: 'center' } }}>
-            <Link href="#home" style={{ textDecoration: 'none' }}>
+            <Link to="/" style={{ textDecoration: 'none' }}>
               <Box component="img" src={KurazJobLogo} alt="Kuraz Job Logo" sx={{ height: 32 }} />
             </Link>
           </Box>
@@ -144,10 +194,50 @@ export default function Navbar() {
             </StableIconButton>
           </Box>
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3, flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Link href="#newjobs" style={{ textDecoration: 'none', fontWeight: 'bold', color: theme.palette.mode === 'dark' ? 'white' : 'black' }}>New Jobs</Link>
-            <Link href="#careerbenefits" style={{ textDecoration: 'none', fontWeight: 'bold', color: theme.palette.mode === 'dark' ? 'white' : 'black' }}>Career Benefits</Link>
-            <Link href="#careerresources" style={{ textDecoration: 'none', fontWeight: 'bold', color: theme.palette.mode === 'dark' ? 'white' : 'black' }}>Career Resources</Link>
-            <Link href="#about" style={{ textDecoration: 'none', fontWeight: 'bold', color: theme.palette.mode === 'dark' ? 'white' : 'black' }}>About Us</Link>
+            <Link
+              to="/newjobs"
+              style={{
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                borderBottom: selectedPage === '/newjobs' ? '3px solid #ff9800' : 'none',
+              }}
+            >
+              New Jobs
+            </Link>
+            <Link
+              to="/careerbenefits"
+              style={{
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                borderBottom: selectedPage === '/careerbenefits' ? '3px solid #ff9800' : 'none',
+              }}
+            >
+              Career Benefits
+            </Link>
+            <Link
+              to="/careerresources"
+              style={{
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                borderBottom: selectedPage === '/careerresources' ? '3px solid #ff9800' : 'none',
+              }}
+            >
+              Career Resources
+            </Link>
+            <Link
+              to="/about"
+              style={{
+                textDecoration: 'none',
+                fontWeight: 'bold',
+                color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                borderBottom: selectedPage === '/about' ? '3px solid #ff9800' : 'none',
+              }}
+            >
+              About Us
+            </Link>
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', lg: 'flex' }, justifyContent: 'center', alignItems: 'center' }}>
             <Search>
@@ -164,16 +254,44 @@ export default function Navbar() {
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
             <StableIconButton aria-label="theme toggler"><ThemeToggler /></StableIconButton>
             <StableIconButton aria-label="show new mails">
-              <Badge badgeContent={4} color="error"><MailIcon /></Badge>
+              <Badge badgeContent={4} color="error">
+                <MailIcon />
+              </Badge>
             </StableIconButton>
             <StableIconButton aria-label="show new notifications">
-              <Badge badgeContent={17} color="error"><NotificationsIcon /></Badge>
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
             </StableIconButton>
-            <StableIconButton aria-label="account of current user"><AccountCircle /></StableIconButton>
+            <StableIconButton aria-label="account of current user">
+              <AccountCircle />
+            </StableIconButton>
           </Box>
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
+      {location.pathname === '/search' && (
+        <AppBar position="fixed" sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
+          <Toolbar>
+            <IconButton onClick={() => navigate(-1)} aria-label="back" sx={{ mr: 2 }}>
+              <ArrowBackIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} />
+            </IconButton>
+            <Search sx={{ flexGrow: 1 }}>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ 'aria-label': 'search' }}
+                sx={{ width: '100%', height: 40 }} // Adjust height as needed
+              />
+            </Search>
+            <IconButton aria-label="filter" sx={{ ml: 2 }}>
+              <FilterListIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+      )}
     </Box>
   );
 }

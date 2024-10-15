@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Box, Grid, useTheme, useMediaQuery, Button } from '@mui/material';
 import ExpandableCard from '../Components/ExpandableCard'; // Import the ExpandableCard component
 import jobImages from '../assets/JobImages'; // Import job images
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const CareerBenefits = () => {
   const theme = useTheme();
   const isExtraSmallScreen = useMediaQuery('(max-width:375px)');
+  const navigate = useNavigate(); // Initialize navigate
 
   const containerStyle = {
     padding: isExtraSmallScreen ? '4px' : '15px',
@@ -99,7 +101,7 @@ const CareerBenefits = () => {
               color: theme.palette.mode === 'dark' ? '#000' : '#fff', 
               width: isExtraSmallScreen ? '120px' : '150px', // Adjust button width
             }}
-            onClick={() => alert('Redirecting to login...')} 
+            onClick={() => navigate('/login')} // Navigate to login
           >
             Login
           </Button>
@@ -111,7 +113,7 @@ const CareerBenefits = () => {
               borderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
               color: theme.palette.mode === 'dark' ? '#fff' : '#000',
             }}
-            onClick={() => alert('Redirecting to sign up...')}
+            onClick={() => navigate('/signup')} // Navigate to sign up
           >
             Sign Up
           </Button>
