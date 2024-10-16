@@ -3,31 +3,33 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
 const ApplicantSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
-    resume: { type: String, required: true }, // URL to the resume
-    skills: [{ type: String, required: true }], // Array of skills
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true }, 
+    email: { type: String, required: true, unique: true }, 
+    phone: { type: String }, 
+    resume: { type: String }, 
+    skills: [{ type: String }],
     experience: [
         {
-            jobTitle: { type: String, required: true },
-            company: { type: String, required: true },
-            startDate: { type: Date, required: true },
-            endDate: { type: Date, required: true },
+            jobTitle: { type: String},
+            company: { type: String},
+            startDate: { type: Date},
+            endDate: { type: Date},
             description: { type: String },
         },
     ],
     education: [
         {
-            degree: { type: String, required: true },
-            institution: { type: String, required: true },
-            graduationYear: { type: Number, required: true },
+            degree: { type: String},
+            institution: { type: String},
+            graduationYear: { type: Number},
         },
     ],
-    location: { type: String, required: true }, // City or area of residence
+    location: { type: String },
+    birthday: { type: Date },
     createdAt: { type: Date, default: Date.now },
-    rank: { type: Number, default: 0 }, // Add rank field
-    password: { type: String, required: true }, // Add password field
+    rank: { type: Number, default: 0 },
+    password: { type: String, required: true },
 });
 
 // Hash password before saving
@@ -38,4 +40,3 @@ ApplicantSchema.pre('save', async function (next) {
 });
 
 export default mongoose.models.Applicant || mongoose.model('Applicant', ApplicantSchema);
-
