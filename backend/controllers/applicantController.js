@@ -1,16 +1,36 @@
 // backend/controllers/applicantController.js
-import Applicant from '../models/Applicant.js';
+import Applicant from '../models/Applicant.js'; 
 import bcrypt from 'bcrypt';
+import generateToken from '../utils/generateToken.js';
 
 // Create a new applicant
 export const createApplicant = async (req, res) => {
     const applicantData = req.body;
     try {
         const applicant = new Applicant(applicantData);
+        applicant.calculateProfileCompletion(); // Calculate profile completion
         await applicant.save();
         res.status(201).json(applicant);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+// Login an applicant
+export const loginApplicant = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const applicant = await Applicant.findOne({ email });
+        if (!applicant) return res.status(401).json({ message: 'Invalid email or password' });
+
+        const isMatch = await bcrypt.compare(password, applicant.password);
+        if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
+
+        // Generate JWT token
+        const token = generateToken(applicant._id);
+        res.status(200).json({ token, applicantId: applicant._id });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -76,4 +96,15 @@ export const searchApplicantsByName = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+};
+
+// Export all functions
+export default {
+    createApplicant,
+    loginApplicant,
+    getAllApplicants,
+    getApplicantById,
+    updateApplicant,
+    deleteApplicant,
+    searchApplicantsByName,
 };

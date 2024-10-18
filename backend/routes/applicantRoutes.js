@@ -2,6 +2,7 @@
 import express from 'express';
 import {
     createApplicant,
+    loginApplicant,
     getAllApplicants,
     getApplicantById,
     updateApplicant,
@@ -13,6 +14,7 @@ const router = express.Router();
 
 // Define routes
 router.post('/', createApplicant); // Create a new applicant
+router.post('/login', loginApplicant); // Login an applicant
 router.get('/', getAllApplicants); // Get all applicants
 router.get('/search', searchApplicantsByName); // Search applicants by name
 router.get('/:id', getApplicantById); // Get a specific applicant by ID

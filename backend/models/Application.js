@@ -1,4 +1,3 @@
-// backend/models/Application.js
 import mongoose from 'mongoose';
 
 const ApplicationSchema = new mongoose.Schema({
@@ -12,9 +11,6 @@ const ApplicationSchema = new mongoose.Schema({
     },
     applicationDate: { type: Date, default: Date.now },
     feedback: { type: String },
-    createdAt: { type: Date, default: Date.now },
-
-    
     interviewDate: { type: Date },
     interviewers: [{ type: String }],
     interviewStatus: {
@@ -22,6 +18,9 @@ const ApplicationSchema = new mongoose.Schema({
         enum: ['Scheduled', 'Completed', 'Canceled'],
         default: 'Scheduled',
     },
+    score: { type: Number, default: 0 },
+    rank: { type: Number },
+    processedForRanking: { type: Boolean, default: false }, // Track if ranking has been processed
 });
 
 export default mongoose.models.Application || mongoose.model('Application', ApplicationSchema);
