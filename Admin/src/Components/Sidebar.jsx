@@ -1,89 +1,91 @@
 import React, { useState } from 'react';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Divider, IconButton } from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import PeopleIcon from '@mui/icons-material/People';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import LogoutIcon from '@mui/icons-material/Logout'; // Logout icon
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'; // Collapse icon
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'; // Expand icon
+import { Box, List, ListItem, ListItemIcon, ListItemText, Divider, IconButton, useTheme } from '@mui/material';
+import { Dashboard, People, Assessment, PostAdd, Logout, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import ThemeToggler from './ThemeToggler';
+import Images from '../assets/Images.js';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const theme = useTheme(); // Get the current theme
+  const toggleCollapse = () => setCollapsed(prev => !prev);
 
-  const toggleCollapse = () => {
-    setCollapsed((prev) => !prev);
-  };
+  const menuItems = [
+    { text: 'Dashboard', icon: <Dashboard />, path: '/' },
+    { text: 'Job Statistics', icon: <Assessment />, path: '/statistics' },
+    { text: 'Applicants', icon: <People />, path: '/applicants' },
+    { text: 'Leaderboard', icon: <Assessment />, path: '/leaderboard' },
+    { text: 'Post Job', icon: <PostAdd />, path: '/post-job' },
+  ];
+
+  // Define colors based on the theme
+  const selectedBgColor = theme.palette.mode === 'light' ? '#f0f0f0' : '#424242'; // Light gray for selected in light mode, dark gray for dark mode
+  const hoverBgColor = theme.palette.mode === 'light' ? '#e0e0e0' : '#616161'; // Slightly darker gray for hover in light mode, medium gray for dark mode
 
   return (
     <Box
       sx={{
-        width: collapsed ? 90 : 250, // Decreased width in collapsed mode
+        width: collapsed ? 85 : 230,
         bgcolor: 'background.paper',
         height: '100vh',
-        padding: '20px',
-        boxShadow: 3,
+        p: 2,
+        boxShadow: 5,
         transition: 'width 0.3s',
       }}
     >
-      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
-        <ThemeToggler />
-        <IconButton onClick={toggleCollapse} sx={{ ml: 1 }}>
-          {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />} {/* Toggle icon based on state */}
-        </IconButton>
+      <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <img
+          src={Images.KurazJobLogo}
+          alt="KurazJob Logo"
+          style={{ height: collapsed ? '25px' : '40px', transition: 'height 0.3s', marginBottom: '10px' }}
+        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <ThemeToggler sx={{ fontSize: '24px' }} />
+          <IconButton onClick={toggleCollapse} sx={{ fontSize: '24px' }}>
+            {collapsed ? <ChevronRight /> : <ChevronLeft />}
+          </IconButton>
+        </Box>
       </Box>
-
       <Divider sx={{ mb: 2 }} />
-
       <List>
-        {[
-          { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-          { text: 'Job Statistics', icon: <AssessmentIcon />, path: '/statistics' },
-          { text: 'Applicants', icon: <PeopleIcon />, path: '/applicants' },
-          { text: 'Leaderboard', icon: <AssessmentIcon />, path: '/leaderboard' },
-          { text: 'Post Job', icon: <PostAddIcon />, path: '/post-job' },
-        ].map((item) => (
+        {menuItems.map(({ text, icon, path }) => (
           <ListItem
             button
             component={Link}
-            to={item.path}
-            key={item.text}
+            to={path}
+            key={text}
             sx={{
               borderRadius: 1,
-              '&:hover': { bgcolor: 'action.hover' },
-              backgroundColor: location.pathname === item.path ? 'action.selected' : 'transparent',
-              transition: 'background-color 0.3s',
-              paddingLeft: collapsed ? '8px' : '16px',
-              height: '56px',
-              justifyContent: collapsed ? 'center' : 'flex-start', // Center icons in collapsed mode
+              backgroundColor: location.pathname === path ? selectedBgColor : 'transparent',
+              '&:hover': { backgroundColor: hoverBgColor },
+              pl: collapsed ? 1 : 2,
+              height: '40px',
+              justifyContent: 'flex-start',
             }}
+            selected={location.pathname === path}
           >
-            <ListItemIcon sx={{ color: 'text.primary', minWidth: '40px', display: 'flex', justifyContent: 'center' }}>
-              {item.icon}
+            <ListItemIcon sx={{ color: 'text.primary', minWidth: 40, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              {icon}
             </ListItemIcon>
-            <ListItemText primary={item.text} sx={{ opacity: collapsed ? 0 : 1 }} />
+            <ListItemText primary={text} sx={{ opacity: collapsed ? 0 : 1, display: 'flex', alignItems: 'center' }} />
           </ListItem>
         ))}
       </List>
-
       <Divider sx={{ mt: 2 }} />
-
       <List>
         <ListItem
           button
           sx={{
             borderRadius: 1,
-            '&:hover': { bgcolor: 'action.hover' },
+            '&:hover': { backgroundColor: hoverBgColor },
             justifyContent: collapsed ? 'center' : 'flex-start',
           }}
         >
-          <ListItemIcon sx={{ color: 'text.primary', minWidth: '40px', display: 'flex', justifyContent: 'center' }}>
-            <LogoutIcon />
+          <ListItemIcon sx={{ color: 'text.primary', minWidth: 40, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Logout />
           </ListItemIcon>
-          <ListItemText primary="Logout" sx={{ opacity: collapsed ? 0 : 1 }} />
+          <ListItemText primary="Logout" sx={{ opacity: collapsed ? 0 : 1, display: 'flex', alignItems: 'center' }} />
         </ListItem>
       </List>
     </Box>
