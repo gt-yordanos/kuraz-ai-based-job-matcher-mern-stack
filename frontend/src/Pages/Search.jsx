@@ -10,12 +10,14 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import icons
 import WorkIcon from '@mui/icons-material/Work';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CodeIcon from '@mui/icons-material/Code'; // Import code icon
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Search = () => {
   const { darkMode } = useThemeContext();
   const { query } = useSearch(); // Use query from context
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -55,7 +57,11 @@ const Search = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 2 }}>
       {results.length > 0 ? (
         results.map((job) => (
-          <Card key={job._id} sx={{ width: '90%', marginBottom: 2, bgcolor: darkMode ? '#333' : '#e0e0e0', boxShadow: 'none' }}>
+          <Card 
+            key={job._id} 
+            sx={{ width: '90%', marginBottom: 2, bgcolor: darkMode ? '#333' : '#e0e0e0', boxShadow: 'none', cursor: 'pointer' }} 
+            onClick={() => navigate(`/apply/${job._id}`)} // Navigate on click
+          >
             <CardContent>
               <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>{job.title}</h2>
               <p style={{ fontSize: '0.875rem', margin: '0.25rem 0' }}>{job.description}</p>
