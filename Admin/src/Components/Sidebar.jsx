@@ -1,63 +1,68 @@
-import React from 'react';
-import { Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Divider, IconButton } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import PostAddIcon from '@mui/icons-material/PostAdd';
-import { Link } from 'react-router-dom';
+import MenuIcon from '@mui/icons-material/Menu'; // New icon for collapsing the sidebar
+import { Link, useLocation } from 'react-router-dom';
 import ThemeToggler from './ThemeToggler';
 
 const Sidebar = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+
+  const toggleCollapse = () => {
+    setCollapsed((prev) => !prev);
+  };
+
   return (
     <Box
       sx={{
-        width: 250,
+        width: collapsed ? 80 : 250, // Increased width on collapse
         bgcolor: 'background.paper',
         height: '100vh',
-        padding: '10px',
-        boxShadow: 2,
+        padding: '20px',
+        boxShadow: 3,
+        transition: 'width 0.3s',
       }}
     >
-      <List>
-        <ListItem button component={Link} to="/">
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/statistics">
-          <ListItemIcon>
-            <AssessmentIcon />
-          </ListItemIcon>
-          <ListItemText primary="Job Statistics" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/applicants">
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
-          <ListItemText primary="Applicants" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/leaderboard">
-          <ListItemIcon>
-            <AssessmentIcon />
-          </ListItemIcon>
-          <ListItemText primary="Leaderboard" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/post-job">
-          <ListItemIcon>
-            <PostAddIcon />
-          </ListItemIcon>
-          <ListItemText primary="Post Job" />
-        </ListItem>
-      </List>
-
-      <Box sx={{ marginTop: 'auto' }}>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
         <ThemeToggler />
+        <IconButton onClick={toggleCollapse} sx={{ ml: 1 }}>
+          <MenuIcon /> {/* Updated collapse icon */}
+        </IconButton>
       </Box>
+
+      <Divider sx={{ mb: 2 }} />
+
+      <List>
+        {[
+          { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+          { text: 'Job Statistics', icon: <AssessmentIcon />, path: '/statistics' },
+          { text: 'Applicants', icon: <PeopleIcon />, path: '/applicants' },
+          { text: 'Leaderboard', icon: <AssessmentIcon />, path: '/leaderboard' },
+          { text: 'Post Job', icon: <PostAddIcon />, path: '/post-job' },
+        ].map((item) => (
+          <ListItem
+            button
+            component={Link}
+            to={item.path}
+            key={item.text}
+            sx={{
+              borderRadius: 1,
+              '&:hover': { bgcolor: 'action.hover' },
+              backgroundColor: location.pathname === item.path ? 'action.selected' : 'transparent',
+              transition: 'background-color 0.3s',
+            }}
+          >
+            <ListItemIcon sx={{ color: 'text.primary' }}>
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.text} sx={{ opacity: collapsed ? 0 : 1 }} />
+          </ListItem>
+        ))}
+      </List>
     </Box>
   );
 };

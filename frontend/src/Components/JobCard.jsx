@@ -14,6 +14,7 @@ import EventIcon from '@mui/icons-material/Event';
 import { useAuth } from '../Contexts/AuthContext'; // Adjust the path as necessary
 import MessagePopup from './MessagePopup'; // Adjust the path as necessary
 
+
 const JobCard = ({ job }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
