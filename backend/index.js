@@ -1,7 +1,7 @@
-// backend/index.js
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors'; // Import CORS middleware
 import applicantRoutes from './routes/applicantRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware to parse JSON requests
 app.use(express.json());
+app.use(cors()); // Enable CORS for all routes
 
 // Connect to MongoDB using connection string from environment variable
 const connectToDatabase = async () => {

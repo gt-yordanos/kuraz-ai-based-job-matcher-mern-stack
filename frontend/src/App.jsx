@@ -12,24 +12,31 @@ import Search from './Pages/Search';
 
 const App = () => {
   return (
-    <div style={{ overflow: 'hidden', width: '100%' }}>
-       <div style={{ position: 'fixed', top: '0', width: '100%', zIndex: 50}}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh', 
+      overflow: 'hidden', 
+      width: '100%' 
+    }}>
+      <div style={{ position: 'fixed', top: '0', width: '100%', zIndex: 50 }}>
         <Navbar />
       </div>
-      <div style={{marginTop: '80px'}}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/newjobs" element={<NewJobs />} />
-        <Route path="/careerbenefits" element={<CareerBenefits />} />
-        <Route path="/careerresources" element={<CareerResources />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/signup" element={<SignUpLogin />} />
-        <Route path="/login" element={<SignUpLogin />} />
-        <Route path="/search" element={<Search />} />
-      </Routes>
+      <div style={{ marginTop: '80px', flex: 1 }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/newjobs" element={<NewJobs />} />
+          <Route path="/careerbenefits" element={<CareerBenefits />} />
+          <Route path="/careerresources" element={<CareerResources />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/signup" element={<SignUpLogin />} />
+          <Route path="/login" element={<SignUpLogin />} />
+          <Route path="/search" element={<Search />} />
+        </Routes>
       </div>
-      
-      <Footer />
+      <div style={{ width: '100%' }}>
+        <Footer />
+      </div>
     </div>
   );
 };

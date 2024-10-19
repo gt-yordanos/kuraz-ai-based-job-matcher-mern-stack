@@ -18,7 +18,7 @@ const Footer = () => {
 
   return (
     <Box sx={{ ...footerStyle }}>
-      <Box sx={{ maxWidth: '1200px', margin: '0 auto', padding: '5px' }}>
+      <Box sx={{ maxWidth: '1200px', margin: '0 auto', paddingX: '5px' }}>
         <p style={{ fontSize: '14px', fontWeight: 'bold' }}> {/* Made text bold */}
           &copy; {new Date().getFullYear()} Kuraz Technologies. All rights reserved.
         </p>
