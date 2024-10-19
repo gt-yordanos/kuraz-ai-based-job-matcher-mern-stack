@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import Axios from 'axios';
 
 const AuthContext = createContext();
@@ -10,6 +10,16 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    // Check for the token in localStorage when the component mounts
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Optionally, you can verify the token or fetch user info based on it
+      // For now, we will assume the token is valid and extract user info if available
+      setUser(token); // Assuming token or user info can be set directly, adjust as needed
+    }
+  }, []);
+
   const login = async (email, password) => {
     try {
       const response = await Axios.post('http://localhost:5000/api/applicants/login', { email, password });
@@ -20,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signUp = async (firstName, lastName, birthday, email, password) => { // Adjusted to destructure parameters
+  const signUp = async (firstName, lastName, birthday, email, password) => {
     try {
       const response = await Axios.post('http://localhost:5000/api/applicants', {
         firstName,
@@ -35,8 +45,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('token'); // Clear the token on logout
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, signUp }}>
+    <AuthContext.Provider value={{ user, login, signUp, logout }}>
       {children}
     </AuthContext.Provider>
   );

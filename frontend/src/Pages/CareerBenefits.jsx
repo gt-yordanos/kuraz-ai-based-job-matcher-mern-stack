@@ -3,11 +3,13 @@ import { Box, Grid, useTheme, useMediaQuery, Button } from '@mui/material';
 import ExpandableCard from '../Components/ExpandableCard'; // Import the ExpandableCard component
 import jobImages from '../assets/JobImages'; // Import job images
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useAuth } from '../Contexts/AuthContext'; // Import useAuth to access auth context
 
 const CareerBenefits = () => {
   const theme = useTheme();
   const isExtraSmallScreen = useMediaQuery('(max-width:375px)');
   const navigate = useNavigate(); // Initialize navigate
+  const { user } = useAuth(); // Get user from AuthContext
 
   const containerStyle = {
     padding: isExtraSmallScreen ? '4px' : '15px',
@@ -79,45 +81,47 @@ const CareerBenefits = () => {
         </Grid>
 
         {/* Encouragement Text and Call to Action */}
-        <Box sx={{ textAlign: 'center', marginTop: '40px' }}>
-          <h2 style={{
-            marginBottom: '16px',
-            fontSize: isExtraSmallScreen ? '20px' : '24px', // Responsive font size
-          }}>
-            Join the Kuraz Tech Community!
-          </h2>
-          <p style={{
-            marginBottom: '24px',
-            fontSize: isExtraSmallScreen ? '14px' : '16px', // Responsive font size
-          }}>
-            There is so much to benefit from us! Be part of a thriving community that values your growth and success. Sign up now to unlock exclusive resources and opportunities!
-          </p>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            sx={{ 
-              marginRight: '10px', 
-              backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', 
-              color: theme.palette.mode === 'dark' ? '#000' : '#fff', 
-              width: isExtraSmallScreen ? '120px' : '150px', // Adjust button width
-            }}
-            onClick={() => navigate('/login')} // Navigate to login
-          >
-            Login
-          </Button>
-          <Button 
-            variant="outlined" 
-            color="secondary" 
-            sx={{ 
-              width: isExtraSmallScreen ? '120px' : '150px', // Adjust button width
-              borderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
-              color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-            }}
-            onClick={() => navigate('/signup')} // Navigate to sign up
-          >
-            Sign Up
-          </Button>
-        </Box>
+        {!user && ( // Check if user is not logged in
+          <Box sx={{ textAlign: 'center', marginTop: '40px' }}>
+            <h2 style={{
+              marginBottom: '16px',
+              fontSize: isExtraSmallScreen ? '20px' : '24px', // Responsive font size
+            }}>
+              Join the Kuraz Tech Community!
+            </h2>
+            <p style={{
+              marginBottom: '24px',
+              fontSize: isExtraSmallScreen ? '14px' : '16px', // Responsive font size
+            }}>
+              There is so much to benefit from us! Be part of a thriving community that values your growth and success. Sign up now to unlock exclusive resources and opportunities!
+            </p>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              sx={{ 
+                marginRight: '10px', 
+                backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', 
+                color: theme.palette.mode === 'dark' ? '#000' : '#fff', 
+                width: isExtraSmallScreen ? '120px' : '150px', // Adjust button width
+              }}
+              onClick={() => navigate('/login')} // Navigate to login
+            >
+              Login
+            </Button>
+            <Button 
+              variant="outlined" 
+              color="secondary" 
+              sx={{ 
+                width: isExtraSmallScreen ? '120px' : '150px', // Adjust button width
+                borderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
+                color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+              }}
+              onClick={() => navigate('/signup')} // Navigate to sign up
+            >
+              Sign Up
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   );
