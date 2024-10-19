@@ -15,7 +15,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CalendarToday from '@mui/icons-material/CalendarToday';
 import { useAuth } from '../Contexts/AuthContext';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
+import MessagePopup from '../Components/MessagePopup'; // Import the MessagePopup component
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: '16px',
@@ -49,7 +50,7 @@ const SignUpLogin = () => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   const isSmallScreen = useMediaQuery('(max-width:375px)');
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate(); 
 
   const containerStyle = {
     backgroundColor: isDarkMode ? '#242424' : '#e0e0e0',
@@ -69,7 +70,7 @@ const SignUpLogin = () => {
     marginTop: '16px',
   };
 
-  const { login, signUp, currentUser } = useAuth(); // Destructure currentUser from useAuth
+  const { login, signUp, user } = useAuth(); 
 
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -82,43 +83,22 @@ const SignUpLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [messagePopupOpen, setMessagePopupOpen] = useState(false);
 
   useEffect(() => {
-    // Redirect to home if user is logged in
-    if (currentUser) {
-      navigate('/'); // Redirect to home
+    if (user) {
+      setSuccessMessage('You are already logged in.');
+      setMessagePopupOpen(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
     }
-  }, [currentUser, navigate]); // Add currentUser as a dependency
+  }, [user, navigate]);
 
   const handleToggle = () => {
     setIsLogin((prev) => !prev);
     setErrors({});
     setSuccessMessage('');
-  };
-
-  const isStrongPassword = (password) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(password);
-
-  const validateForm = () => {
-    const newErrors = {};
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email) newErrors.email = 'Email is required';
-    else if (!emailPattern.test(email)) newErrors.email = 'Invalid email address';
-
-    if (!isLogin) {
-      if (!firstName) newErrors.firstName = 'First name is required';
-      if (!lastName) newErrors.lastName = 'Last name is required';
-      if (!birthDate) newErrors.birthDate = 'Birth date is required';
-      if (!password) newErrors.password = 'Password is required';
-      else if (!isStrongPassword(password)) {
-        newErrors.password = 'Password must be at least 8 characters long, include an uppercase letter, a number, and a special character.';
-      }
-      if (!confirmPassword) newErrors.confirmPassword = 'Confirm Password is required';
-      else if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    return newErrors;
   };
 
   const handleSubmit = async (event) => {
@@ -131,18 +111,14 @@ const SignUpLogin = () => {
         if (isLogin) {
           await login(email, password);
           setSuccessMessage('Login successful!');
-          navigate('/'); // Redirect to home after successful login
+          navigate('/'); 
         } else {
           await signUp(firstName, lastName, birthDate, email, password);
           setSuccessMessage('Sign-up successful! You can now log in.');
           setIsLogin(true);
         }
       } catch (error) {
-        if (error.message.includes('E11000 duplicate key error')) {
-          setErrors((prev) => ({ ...prev, email: 'Email is already registered.' })); // Update email error
-        } else {
-          setErrors({ form: error.message });
-        }
+        setErrors({ form: error.message });
       }
     } else {
       setErrors(validationErrors);
@@ -152,7 +128,6 @@ const SignUpLogin = () => {
 
   const handleInputChange = (e, field) => {
     const { value } = e.target;
-  
     switch (field) {
       case 'email':
         setEmail(value);
@@ -175,12 +150,14 @@ const SignUpLogin = () => {
       default:
         break;
     }
-  
-    // Validate the specific field to update errors for only that field
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [field]: validateForm()[field] || null, // Set to null if no error
+      [field]: validateForm()[field] || null,
     }));
+  };
+
+  const handleClosePopup = () => {
+    setMessagePopupOpen(false);
   };
 
   return (
@@ -190,44 +167,12 @@ const SignUpLogin = () => {
       </h1>
       <form onSubmit={handleSubmit} style={{ padding: '0 16px' }}>
         {errors.form && <div style={{ color: 'red', marginBottom: '16px' }}>{errors.form}</div>}
-        {successMessage && <div style={{ color: 'green', marginBottom: '16px' }}>{successMessage}</div>}
-        {!isLogin && (
-          <>
-            <StyledTextField
-              label="First Name"
-              variant="outlined"
-              fullWidth
-              value={firstName}
-              onChange={(e) => handleInputChange(e, 'firstName')}
-              error={!!errors.firstName}
-              helperText={errors.firstName}
-            />
-            <StyledTextField
-              label="Last Name"
-              variant="outlined"
-              fullWidth
-              value={lastName}
-              onChange={(e) => handleInputChange(e, 'lastName')}
-              error={!!errors.lastName}
-              helperText={errors.lastName}
-            />
-            <StyledTextField
-              label="Birth Date"
-              type="date"
-              variant="outlined"
-              fullWidth
-              value={birthDate}
-              onChange={(e) => handleInputChange(e, 'birthDate')}
-              error={!!errors.birthDate}
-              helperText={errors.birthDate}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-
-        
-              }}
-            />
-          </>
-        )}
+        <MessagePopup 
+          message={successMessage} 
+          messageType="success" 
+          open={messagePopupOpen} 
+          onClose={handleClosePopup} 
+        />
         <StyledTextField
           label="Email"
           variant="outlined"
@@ -249,7 +194,10 @@ const SignUpLogin = () => {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword((prev) => !prev)}>
+                <IconButton
+                  onClick={() => setShowPassword((show) => !show)}
+                  edge="end"
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
@@ -257,33 +205,62 @@ const SignUpLogin = () => {
           }}
         />
         {!isLogin && (
-          <StyledTextField
-            label="Confirm Password"
-            type={showPassword ? 'text' : 'password'}
-            variant="outlined"
-            fullWidth
-            value={confirmPassword}
-            onChange={(e) => handleInputChange(e, 'confirmPassword')}
-            error={!!errors.confirmPassword}
-            helperText={errors.confirmPassword}
-          />
+          <>
+            <StyledTextField
+              label="Confirm Password"
+              type={showPassword ? 'text' : 'password'}
+              variant="outlined"
+              fullWidth
+              value={confirmPassword}
+              onChange={(e) => handleInputChange(e, 'confirmPassword')}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword}
+            />
+            <StyledTextField
+              label="First Name"
+              variant="outlined"
+              fullWidth
+              value={firstName}
+              onChange={(e) => handleInputChange(e, 'firstName')}
+              error={!!errors.firstName}
+              helperText={errors.firstName}
+            />
+            <StyledTextField
+              label="Last Name"
+              variant="outlined"
+              fullWidth
+              value={lastName}
+              onChange={(e) => handleInputChange(e, 'lastName')}
+              error={!!errors.lastName}
+              helperText={errors.lastName}
+            />
+            <StyledTextField
+              label="Birth Date"
+              variant="outlined"
+              fullWidth
+              type="date"
+              value={birthDate}
+              onChange={(e) => handleInputChange(e, 'birthDate')}
+              error={!!errors.birthDate}
+              helperText={errors.birthDate}
+              InputLabelProps={{ shrink: true }}
+            />
+          </>
         )}
         <Button
           type="submit"
-          variant="contained"
           sx={buttonStyle}
           disabled={loading}
         >
           {loading ? <CircularProgress size={24} /> : isLogin ? 'Login' : 'Sign Up'}
         </Button>
+        <Button
+          onClick={handleToggle}
+          sx={{ marginTop: '16px', width: '100%' }}
+        >
+          {isLogin ? 'Switch to Sign Up' : 'Switch to Login'}
+        </Button>
       </form>
-      <Grid container justifyContent="center" sx={{ marginTop: '16px' }}>
-        <Grid item>
-          <Button onClick={handleToggle}>
-            {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Login'}
-          </Button>
-        </Grid>
-      </Grid>
     </Box>
   );
 };
