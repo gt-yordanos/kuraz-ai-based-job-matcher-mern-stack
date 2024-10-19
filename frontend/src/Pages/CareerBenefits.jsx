@@ -8,9 +8,8 @@ import { useAuth } from '../Contexts/AuthContext'; // Import useAuth to access a
 const CareerBenefits = () => {
   const theme = useTheme();
   const isExtraSmallScreen = useMediaQuery('(max-width:375px)');
-  const navigate = useNavigate(); // Initialize navigate
-  const { user } = useAuth(); // Get user from AuthContext
-
+  const navigate = useNavigate();
+  const { user } = useAuth(); 
   const containerStyle = {
     padding: isExtraSmallScreen ? '4px' : '15px',
     minHeight: '100vh',

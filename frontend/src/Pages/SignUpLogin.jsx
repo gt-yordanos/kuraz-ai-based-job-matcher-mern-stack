@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import {
   Box,
   Button,
   TextField,
-  Grid,
   IconButton,
   InputAdornment,
   useTheme,
@@ -13,13 +12,13 @@ import {
 import { styled } from '@mui/material/styles';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import CalendarToday from '@mui/icons-material/CalendarToday';
 import { useAuth } from '../Contexts/AuthContext';
-import { useNavigate } from 'react-router-dom'; 
-import MessagePopup from '../Components/MessagePopup'; // Import the MessagePopup component
+import { useNavigate } from 'react-router-dom';
+import MessagePopup from '../Components/MessagePopup';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: '16px',
+  width: '100%', // Ensures the width is 100%
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
       borderWidth: 2,
@@ -41,16 +40,13 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   '& .MuiFormHelperText-root': {
     color: 'red',
   },
-  '& .MuiInputBase-input::placeholder': {
-    color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-  },
 }));
 
 const SignUpLogin = () => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   const isSmallScreen = useMediaQuery('(max-width:375px)');
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const containerStyle = {
     backgroundColor: isDarkMode ? '#242424' : '#e0e0e0',
@@ -70,24 +66,20 @@ const SignUpLogin = () => {
     marginTop: '16px',
   };
 
-  const { login, signUp, user } = useAuth(); 
+  const { login, signUp, user } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [messagePopupOpen, setMessagePopupOpen] = useState(false);
+  const [popupMessageType, setPopupMessageType] = useState('success');
+  const [birthDate, setBirthDate] = useState('');
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (user) {
-      setSuccessMessage('You are already logged in.');
+      setSuccessMessage('Logged in Successfully!.');
       setMessagePopupOpen(true);
       setTimeout(() => {
         navigate('/');
@@ -97,63 +89,80 @@ const SignUpLogin = () => {
 
   const handleToggle = () => {
     setIsLogin((prev) => !prev);
-    setErrors({});
     setSuccessMessage('');
+    setMessagePopupOpen(false);
+    setErrors({});
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
     setSuccessMessage('');
-    const validationErrors = validateForm();
+    setErrors({});
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    const firstName = formData.get('firstName');
+    const lastName = formData.get('lastName');
+    const confirmPassword = formData.get('confirmPassword');
+
+    const validationErrors = validateForm(email, password, confirmPassword, firstName, lastName, birthDate);
+    setErrors(validationErrors);
+
     if (Object.keys(validationErrors).length === 0) {
       try {
         if (isLogin) {
           await login(email, password);
-          setSuccessMessage('Login successful!');
-          navigate('/'); 
+          setSuccessMessage('Logged in successfully!');
+          setPopupMessageType('success');
+          setMessagePopupOpen(true);
+          setTimeout(() => {
+            navigate('/');
+          }, 2000);
         } else {
           await signUp(firstName, lastName, birthDate, email, password);
           setSuccessMessage('Sign-up successful! You can now log in.');
+          setPopupMessageType('success');
           setIsLogin(true);
+          setMessagePopupOpen(true);
         }
       } catch (error) {
-        setErrors({ form: error.message });
+        const message = error.message.includes('E11000 duplicate key error') 
+          ? 'This email is already registered. Please use a different email.'
+          : error.message;
+
+        setSuccessMessage(message);
+        setPopupMessageType('error');
+        setMessagePopupOpen(true);
       }
     } else {
-      setErrors(validationErrors);
+      setSuccessMessage('Please fix the errors below.');
+      setPopupMessageType('error');
+      setMessagePopupOpen(true);
     }
     setLoading(false);
   };
 
-  const handleInputChange = (e, field) => {
-    const { value } = e.target;
-    switch (field) {
-      case 'email':
-        setEmail(value);
-        break;
-      case 'password':
-        setPassword(value);
-        break;
-      case 'confirmPassword':
-        setConfirmPassword(value);
-        break;
-      case 'firstName':
-        setFirstName(value);
-        break;
-      case 'lastName':
-        setLastName(value);
-        break;
-      case 'birthDate':
-        setBirthDate(value);
-        break;
-      default:
-        break;
+  const validateForm = (email, password, confirmPassword, firstName, lastName, birthDate) => {
+    const errors = {};
+    if (!email) errors.email = 'Email is required.';
+    if (!password) errors.password = 'Password is required.';
+    if (isLogin) {
+      // No password strength validation for login
+    } else {
+      if (password.length < 8) errors.password = 'Password must be at least 8 characters.';
+      if (!/[A-Z]/.test(password)) errors.password = 'Password must contain at least one uppercase letter.';
+      if (!/[0-9]/.test(password)) errors.password = 'Password must contain at least one number.';
+      if (!confirmPassword) errors.confirmPassword = 'Confirm Password is required.';
+      if (password !== confirmPassword) errors.confirmPassword = 'Passwords do not match.';
+      if (!firstName) errors.firstName = 'First Name is required.';
+      if (!lastName) errors.lastName = 'Last Name is required.';
+      if (!birthDate) errors.birthDate = 'Birth Date is required.';
+      const age = new Date().getFullYear() - new Date(birthDate).getFullYear();
+      if (age < 18) errors.birthDate = 'You must be at least 18 years old.';
     }
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: validateForm()[field] || null,
-    }));
+    return errors;
   };
 
   const handleClosePopup = () => {
@@ -166,29 +175,54 @@ const SignUpLogin = () => {
         {isLogin ? 'Login' : 'Sign Up'}
       </h1>
       <form onSubmit={handleSubmit} style={{ padding: '0 16px' }}>
-        {errors.form && <div style={{ color: 'red', marginBottom: '16px' }}>{errors.form}</div>}
         <MessagePopup 
           message={successMessage} 
-          messageType="success" 
+          messageType={popupMessageType} 
           open={messagePopupOpen} 
           onClose={handleClosePopup} 
         />
+        {!isLogin && (
+          <>
+            <StyledTextField
+              name="firstName"
+              label="First Name"
+              variant="outlined"
+              error={!!errors.firstName}
+              helperText={errors.firstName}
+            />
+            <StyledTextField
+              name="lastName"
+              label="Last Name"
+              variant="outlined"
+              error={!!errors.lastName}
+              helperText={errors.lastName}
+            />
+            <StyledTextField
+              name="birthDate"
+              label="Birth Date"
+              type="date" // Change to a normal date input
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              error={!!errors.birthDate}
+              helperText={errors.birthDate}
+            />
+          </>
+        )}
         <StyledTextField
+          name="email"
           label="Email"
           variant="outlined"
-          fullWidth
-          value={email}
-          onChange={(e) => handleInputChange(e, 'email')}
           error={!!errors.email}
           helperText={errors.email}
         />
         <StyledTextField
+          name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
           variant="outlined"
-          fullWidth
-          value={password}
-          onChange={(e) => handleInputChange(e, 'password')}
           error={!!errors.password}
           helperText={errors.password}
           InputProps={{
@@ -205,47 +239,14 @@ const SignUpLogin = () => {
           }}
         />
         {!isLogin && (
-          <>
-            <StyledTextField
-              label="Confirm Password"
-              type={showPassword ? 'text' : 'password'}
-              variant="outlined"
-              fullWidth
-              value={confirmPassword}
-              onChange={(e) => handleInputChange(e, 'confirmPassword')}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword}
-            />
-            <StyledTextField
-              label="First Name"
-              variant="outlined"
-              fullWidth
-              value={firstName}
-              onChange={(e) => handleInputChange(e, 'firstName')}
-              error={!!errors.firstName}
-              helperText={errors.firstName}
-            />
-            <StyledTextField
-              label="Last Name"
-              variant="outlined"
-              fullWidth
-              value={lastName}
-              onChange={(e) => handleInputChange(e, 'lastName')}
-              error={!!errors.lastName}
-              helperText={errors.lastName}
-            />
-            <StyledTextField
-              label="Birth Date"
-              variant="outlined"
-              fullWidth
-              type="date"
-              value={birthDate}
-              onChange={(e) => handleInputChange(e, 'birthDate')}
-              error={!!errors.birthDate}
-              helperText={errors.birthDate}
-              InputLabelProps={{ shrink: true }}
-            />
-          </>
+          <StyledTextField
+            name="confirmPassword"
+            label="Confirm Password"
+            type={showPassword ? 'text' : 'password'}
+            variant="outlined"
+            error={!!errors.confirmPassword}
+            helperText={errors.confirmPassword}
+          />
         )}
         <Button
           type="submit"

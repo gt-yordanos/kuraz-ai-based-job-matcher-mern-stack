@@ -18,6 +18,9 @@ import { useTheme } from '@mui/material/styles';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import { useAuth } from '../Contexts/AuthContext';
+import { useMediaQuery, Button } from '@mui/material';
+import ProfileMenu from './ProfileMenu.jsx';
 
 // Styled components for search bar and mobile menu links
 const Search = styled('div')(({ theme }) => ({
@@ -81,6 +84,18 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const { user } = useAuth(); 
+  const [profileMenuAnchorEl, setProfileMenuAnchorEl] = React.useState(null);
+
+  const isProfileMenuOpen = Boolean(profileMenuAnchorEl);
+
+  const handleProfileMenuOpen = (event) => {
+    setProfileMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setProfileMenuAnchorEl(null);
+  };
 
   React.useEffect(() => {
     setSelectedPage(location.pathname);
@@ -99,70 +114,41 @@ export default function Navbar() {
       transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
-      PaperProps={{ style: { width: '250px', marginTop: '8px' } }}
+      PaperProps={{ style: { width: '250px', marginTop: '8px', backgroundColor: theme.palette.background.paper } }} // Ensure background color changes with theme
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 2 }}>
         <StableIconButton aria-label="theme toggler"><ThemeToggler /></StableIconButton>
-        <StableIconButton aria-label="show new mails">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </StableIconButton>
-        <StableIconButton aria-label="show new notifications">
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </StableIconButton>
+        {user ? (
+          <>
+            <StableIconButton aria-label="show new mails">
+              <Badge badgeContent={4} color="error">
+                <MailIcon />
+              </Badge>
+            </StableIconButton>
+            <StableIconButton aria-label="show new notifications">
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </StableIconButton>
+          </>
+        ) : null}
       </Box>
       <MobileMenuLinks>
-        <Link
-          to="/newjobs"
-          onClick={() => {
-            setSelectedPage('/newjobs');
-            handleMobileMenuClose(); // Close the mobile menu on link click
-          }}
-          style={{
-            borderBottom: selectedPage === '/newjobs' ? '3px solid #ff9800' : 'none',
-          }}
-        >
-          New Jobs
-        </Link>
-        <Link
-          to="/careerbenefits"
-          onClick={() => {
-            setSelectedPage('/careerbenefits');
-            handleMobileMenuClose(); // Close the mobile menu on link click
-          }}
-          style={{
-            borderBottom: selectedPage === '/careerbenefits' ? '3px solid #ff9800' : 'none',
-          }}
-        >
-          Career Benefits
-        </Link>
-        <Link
-          to="/careerresources"
-          onClick={() => {
-            setSelectedPage('/careerresources');
-            handleMobileMenuClose(); // Close the mobile menu on link click
-          }}
-          style={{
-            borderBottom: selectedPage === '/careerresources' ? '3px solid #ff9800' : 'none',
-          }}
-        >
-          Career Resources
-        </Link>
-        <Link
-          to="/about"
-          onClick={() => {
-            setSelectedPage('/about');
-            handleMobileMenuClose(); // Close the mobile menu on link click
-          }}
-          style={{
-            borderBottom: selectedPage === '/about' ? '3px solid #ff9800' : 'none',
-          }}
-        >
-          About Us
-        </Link>
+        {['/newjobs', '/careerbenefits', '/careerresources', '/about'].map((path, index) => (
+          <Link
+            key={index}
+            to={path}
+            onClick={() => {
+              setSelectedPage(path);
+              handleMobileMenuClose();
+            }}
+            style={{
+              borderBottom: selectedPage === path ? '3px solid #ff9800' : 'none',
+            }}
+          >
+            {path === '/newjobs' ? 'New Jobs' : path.replace('/', '').replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+          </Link>
+        ))}
       </MobileMenuLinks>
     </Menu>
   );
@@ -175,70 +161,49 @@ export default function Navbar() {
     <Box sx={{ flexGrow: 1, width: '100%' }}>
       <AppBar position="static" sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
         <Toolbar>
+          {/* Mobile Menu Button */}
           <Box sx={{ display: { xs: 'block', md: 'none' } }}>
             <IconButton size="large" aria-label="open drawer" onClick={handleMobileMenuOpen}>
               <MenuIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} />
             </IconButton>
           </Box>
+
+          {/* Logo */}
           <Box sx={{ display: { xs: 'block', md: 'block' }, flexGrow: 1, textAlign: { md: 'left', xs: 'center' } }}>
             <Link to="/" style={{ textDecoration: 'none' }}>
               <Box component="img" src={KurazJobLogo} alt="Kuraz Job Logo" sx={{ height: 32 }} />
             </Link>
           </Box>
+
+          {/* Mobile Search and Account Icons */}
           <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 2 }}>
             <IconButton size="large" onClick={handleSearchClick}>
               <SearchIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} />
             </IconButton>
-            <StableIconButton aria-label="account of current user">
+            <StableIconButton aria-label="account of current user" onClick={handleProfileMenuOpen}>
               <AccountCircle />
             </StableIconButton>
           </Box>
+
+          {/* Navigation Links */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3, flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Link
-              to="/newjobs"
-              style={{
-                textDecoration: 'none',
-                fontWeight: 'bold',
-                color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                borderBottom: selectedPage === '/newjobs' ? '3px solid #ff9800' : 'none',
-              }}
-            >
-              New Jobs
-            </Link>
-            <Link
-              to="/careerbenefits"
-              style={{
-                textDecoration: 'none',
-                fontWeight: 'bold',
-                color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                borderBottom: selectedPage === '/careerbenefits' ? '3px solid #ff9800' : 'none',
-              }}
-            >
-              Career Benefits
-            </Link>
-            <Link
-              to="/careerresources"
-              style={{
-                textDecoration: 'none',
-                fontWeight: 'bold',
-                color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                borderBottom: selectedPage === '/careerresources' ? '3px solid #ff9800' : 'none',
-              }}
-            >
-              Career Resources
-            </Link>
-            <Link
-              to="/about"
-              style={{
-                textDecoration: 'none',
-                fontWeight: 'bold',
-                color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                borderBottom: selectedPage === '/about' ? '3px solid #ff9800' : 'none',
-              }}
-            >
-              About Us
-            </Link>
+            {['/newjobs', '/careerbenefits', '/careerresources', '/about'].map((path, index) => (
+              <Link
+                key={index}
+                to={path}
+                style={{
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                  borderBottom: selectedPage === path ? '3px solid #ff9800' : 'none',
+                }}
+              >
+                {path === '/newjobs' ? 'New Jobs' : path.replace('/', '').replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+              </Link>
+            ))}
           </Box>
+
+          {/* Search Bar for Desktop */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', lg: 'flex' }, justifyContent: 'center', alignItems: 'center' }}>
             <Search>
               <SearchIconWrapper>
@@ -251,25 +216,75 @@ export default function Navbar() {
               />
             </Search>
           </Box>
+          {/* Theme Toggler and User Account/Notification Icons */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-            <StableIconButton aria-label="theme toggler"><ThemeToggler /></StableIconButton>
-            <StableIconButton aria-label="show new mails">
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </StableIconButton>
-            <StableIconButton aria-label="show new notifications">
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </StableIconButton>
-            <StableIconButton aria-label="account of current user">
-              <AccountCircle />
-            </StableIconButton>
+            {user ? (
+              <>
+                <StableIconButton aria-label="theme toggler">
+                  <ThemeToggler />
+                </StableIconButton>
+                <StableIconButton aria-label="show new mails">
+                  <Badge badgeContent={4} color="error">
+                    <MailIcon />
+                  </Badge>
+                </StableIconButton>
+                <StableIconButton aria-label="show new notifications">
+                  <Badge badgeContent={17} color="error">
+                    <NotificationsIcon />
+                  </Badge>
+                </StableIconButton>
+                <StableIconButton aria-label="account of current user" onClick={handleProfileMenuOpen}>
+                  <AccountCircle />
+                </StableIconButton>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    marginRight: '10px',
+                    backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
+                    color: theme.palette.mode === 'dark' ? '#000' : '#fff',
+                    font: 'Poppins',
+                  }}
+                  onClick={() => navigate('/login')} // Navigate to login
+                >
+                  Login
+                </Button>
+
+                <Button 
+                  variant="outlined" 
+                  color="secondary" 
+                  sx={{ 
+                    borderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
+                    color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+                  }}
+                  onClick={() => navigate('/signup')} // Navigate to sign up
+                >
+                  Sign Up
+                </Button>
+
+                <StableIconButton aria-label="theme toggler">
+                  <ThemeToggler />
+                </StableIconButton>
+              </>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Mobile Menu */}
       {renderMobileMenu}
+
+      {/* Profile Menu */}
+      <ProfileMenu
+        anchorEl={profileMenuAnchorEl}
+        isOpen={isProfileMenuOpen}
+        onClose={handleProfileMenuClose}
+      />
+
+      {/* Search Bar on Search Page */}
       {location.pathname === '/search' && (
         <AppBar position="fixed" sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
           <Toolbar>
