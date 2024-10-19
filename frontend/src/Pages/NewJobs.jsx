@@ -1,4 +1,3 @@
-// NewJobs.js
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, useTheme, useMediaQuery, CircularProgress } from '@mui/material';
 import JobCard from '../Components/JobCard'; // Import the JobCard component
@@ -17,6 +16,10 @@ const NewJobs = () => {
     padding: isExtraSmallScreen ? '4px' : '15px',
     minHeight: '100vh',
     color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   };
 
   const headerStyle = {
@@ -46,7 +49,9 @@ const NewJobs = () => {
   if (loading) {
     return (
       <Box sx={containerStyle}>
-        <CircularProgress />
+        <CircularProgress
+          sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#000' }}
+        />
       </Box>
     );
   }

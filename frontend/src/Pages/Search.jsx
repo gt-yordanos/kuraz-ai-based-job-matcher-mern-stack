@@ -5,18 +5,23 @@ import CardContent from '@mui/material/CardContent';
 import Skeleton from '@mui/material/Skeleton';
 import { useThemeContext } from '../Contexts/ThemeContext';
 import { useSearch } from '../Contexts/SearchContext'; // Adjust the path
+import { useAuth } from '../Contexts/AuthContext'; // Import AuthContext
 import axios from 'axios';
 import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import icons
 import WorkIcon from '@mui/icons-material/Work';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CodeIcon from '@mui/icons-material/Code'; // Import code icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import MessagePopup from '../Components/MessagePopup'; // Import the message popup component
 
 const Search = () => {
   const { darkMode } = useThemeContext();
   const { query } = useSearch(); // Use query from context
+  const { user } = useAuth(); // Get user info from AuthContext
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState('');
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
@@ -36,6 +41,15 @@ const Search = () => {
 
     fetchResults();
   }, [query]); // Depend on query to refetch when it changes
+
+  const handleCardClick = (jobId) => {
+    if (user) {
+      navigate(`/apply/${jobId}`); // Navigate if user is logged in
+    } else {
+      setMessage('Please log in to apply for this job.');
+      setShowMessage(true); // Show error message
+    }
+  };
 
   if (loading) {
     return (
@@ -60,7 +74,7 @@ const Search = () => {
           <Card 
             key={job._id} 
             sx={{ width: '90%', marginBottom: 2, bgcolor: darkMode ? '#333' : '#e0e0e0', boxShadow: 'none', cursor: 'pointer' }} 
-            onClick={() => navigate(`/apply/${job._id}`)} // Navigate on click
+            onClick={() => handleCardClick(job._id)} // Use the new click handler
           >
             <CardContent>
               <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>{job.title}</h2>
@@ -87,6 +101,12 @@ const Search = () => {
       ) : (
         <p>No results found for "{query}"</p>
       )}
+      <MessagePopup 
+        message={message} 
+        messageType="error" 
+        open={showMessage} 
+        onClose={() => setShowMessage(false)} 
+      />
     </Box>
   );
 };
