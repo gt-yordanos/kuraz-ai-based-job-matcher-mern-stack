@@ -9,6 +9,7 @@ import CareerResources from './Pages/CareerResources';
 import Footer from './Components/Footer';
 import SignUpLogin from './Pages/SignUpLogin';
 import Search from './Pages/Search';
+import Apply from './Pages/Apply'; // Import the Apply component
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
           <Route path="/signup" element={<SignUpLogin />} />
           <Route path="/login" element={<SignUpLogin />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/apply/:id" element={<Apply />} /> {/* Add the Apply route */}
         </Routes>
       </div>
       <div style={{ width: '100%' }}>

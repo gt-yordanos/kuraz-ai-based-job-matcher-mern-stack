@@ -1,11 +1,17 @@
 // NewJobs.js
-import React from 'react';
-import { Box, Grid, useTheme, useMediaQuery } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Grid, useTheme, useMediaQuery, CircularProgress } from '@mui/material';
 import JobCard from '../Components/JobCard'; // Import the JobCard component
+import Apply from './Apply'; // Import the Apply component
+import axios from 'axios';
 
 const NewJobs = () => {
   const theme = useTheme();
   const isExtraSmallScreen = useMediaQuery('(max-width:375px)');
+  const [jobs, setJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const containerStyle = {
     padding: isExtraSmallScreen ? '4px' : '15px',
@@ -20,57 +26,47 @@ const NewJobs = () => {
     marginBottom: '24px',
   };
 
-  const jobData = [
-    {
-      title: 'Frontend Developer',
-      location: 'Addis Ababa, Ethiopia',
-      skills: 'React, JavaScript, CSS',
-      timePosted: '2 days ago',
-      deadline: '30th October 2024',
-    },
-    {
-      title: 'Backend Developer',
-      location: 'Addis Ababa, Ethiopia',
-      skills: 'Node.js, Express, MongoDB',
-      timePosted: '1 week ago',
-      deadline: '15th November 2024',
-    },
-    {
-      title: 'UI/UX Designer',
-      location: 'Addis Ababa, Ethiopia',
-      skills: 'Figma, Adobe XD, User Research',
-      timePosted: '3 days ago',
-      deadline: '1st November 2024',
-    },
-    {
-      title: 'Data Analyst',
-      location: 'Addis Ababa, Ethiopia',
-      skills: 'Excel, SQL, Python',
-      timePosted: '5 days ago',
-      deadline: '10th November 2024',
-    },
-    {
-      title: 'Full Stack Developer',
-      location: 'Addis Ababa, Ethiopia',
-      skills: 'MongoDB, Express, React, Node.js',
-      timePosted: '1 week ago',
-      deadline: '20th November 2024',
-    },
-    {
-      title: 'AI Engineer',
-      location: 'Addis Ababa, Ethiopia',
-      skills: 'Python, TensorFlow, Machine Learning',
-      timePosted: '1 day ago',
-      deadline: '25th November 2024',
-    },
-    {
-      title: 'Mobile Developer',
-      location: 'Addis Ababa, Ethiopia',
-      skills: 'React Native, Java, Swift',
-      timePosted: '3 days ago',
-      deadline: '5th December 2024',
-    },
-  ];
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/jobs'); // Adjust the URL as necessary
+        console.log('API Response:', response.data);
+        setJobs(response.data); // Adjust based on your API response structure
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch jobs');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={containerStyle}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={containerStyle}>
+        <h2>{error}</h2>
+      </Box>
+    );
+  }
+
+  // Check if jobs is an array
+  if (!Array.isArray(jobs)) {
+    return (
+      <Box sx={containerStyle}>
+        <h2>No jobs found or invalid response format.</h2>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={containerStyle}>
@@ -83,12 +79,13 @@ const NewJobs = () => {
       >
         <h1 style={headerStyle}>New Job Openings</h1>
         <Grid container spacing={2}>
-          {jobData.map((job, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-              <JobCard job={job} /> {/* Use JobCard component */}
+          {jobs.map((job) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={job._id}>
+              <JobCard job={job} />
             </Grid>
           ))}
         </Grid>
+        {selectedJob && <Apply job={selectedJob} />}
       </Box>
     </Box>
   );

@@ -1,4 +1,3 @@
-// JobCard.js
 import React from 'react';
 import {
   Card,
@@ -7,6 +6,7 @@ import {
   Button,
   useTheme,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CodeIcon from '@mui/icons-material/Code';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -15,6 +15,7 @@ import EventIcon from '@mui/icons-material/Event';
 const JobCard = ({ job }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
+  const navigate = useNavigate(); // Use useNavigate hook
 
   const cardStyle = {
     backgroundColor: isDarkMode ? '#242424' : '#e0e0e0',
@@ -41,6 +42,18 @@ const JobCard = ({ job }) => {
     deadline: { fontSize: '14px', marginBottom: '4px' },
   };
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const handleApplyClick = () => {
+    navigate(`/apply/${job._id}`); // Navigate to the apply page with the job ID
+  };
+
   return (
     <Card sx={cardStyle}>
       <CardContent sx={{ paddingBottom: '4px' }}>
@@ -49,24 +62,26 @@ const JobCard = ({ job }) => {
           <LocationOnIcon sx={{ fontSize: '14px' }} /> {job.location}
         </p>
         <p style={textSize.skills}>
-          <CodeIcon sx={{ fontSize: '14px' }} /> {job.skills}
+          <CodeIcon sx={{ fontSize: '14px' }} /> 
+          {` ${job.requirements.join(', ')}`} 
         </p>
         <p style={textSize.timePosted}>
-          <AccessTimeIcon sx={{ fontSize: '14px' }} /> {job.timePosted}
+          <AccessTimeIcon sx={{ fontSize: '14px' }} /> {formatDate(job.postedDate)}
         </p>
         <p style={textSize.deadline}>
-          <EventIcon sx={{ fontSize: '14px' }} /> {job.deadline}
+          <EventIcon sx={{ fontSize: '14px' }} /> {formatDate(job.deadline)}
         </p>
       </CardContent>
 
       <CardActions sx={{ paddingTop: '4px' }}>
         <Button
           variant="contained"
+          onClick={handleApplyClick} // Attach click handler
           sx={{
             width: '100%',
             backgroundColor: isDarkMode ? '#fff' : '#000',
             color: isDarkMode ? '#000' : '#fff',
-             fontFamily: 'Poppins, sans-serif', 
+            fontFamily: 'Poppins, sans-serif', 
             '&:hover': {
               backgroundColor: isDarkMode ? '#e0e0e0' : '#333',
             },
