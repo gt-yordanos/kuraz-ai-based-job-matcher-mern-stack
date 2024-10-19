@@ -21,6 +21,7 @@ const ApplicationSchema = new mongoose.Schema({
     score: { type: Number, default: 0 },
     rank: { type: Number },
     processedForRanking: { type: Boolean, default: false }, // Track if ranking has been processed
+    resume: { type: String }, // URL or file path to the resume used for this application
 });
 
 export default mongoose.models.Application || mongoose.model('Application', ApplicationSchema);

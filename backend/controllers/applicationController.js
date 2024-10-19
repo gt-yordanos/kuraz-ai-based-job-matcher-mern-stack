@@ -1,9 +1,28 @@
 import Application from '../models/Application.js';
+import Applicant from '../models/Applicant.js'; // Import the Applicant model
 
 // Create a new application
 export const createApplication = async (req, res) => {
     try {
-        const application = new Application(req.body);
+        const { applicantId, jobId, coverLetter, uploadedResume } = req.body;
+
+        // Get the existing applicant's data
+        const applicant = await Applicant.findById(applicantId);
+        if (!applicant) {
+            return res.status(404).json({ message: 'Applicant not found' });
+        }
+
+        // Determine which resume to use
+        const resumeToUse = uploadedResume || applicant.resume;
+
+        // Create a new application
+        const application = new Application({
+            applicantId,
+            jobId,
+            coverLetter,
+            resume: resumeToUse,
+        });
+
         await application.save();
         res.status(201).json(application);
     } catch (error) {

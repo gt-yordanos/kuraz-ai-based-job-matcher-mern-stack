@@ -34,6 +34,12 @@ const connectToDatabase = async () => {
     }
 };
 
+// Check for critical environment variables
+if (!process.env.MONGO_URI) {
+    console.error('MONGO_URI is not defined in .env');
+    process.exit(1); // Exit if critical variable is missing
+}
+
 // Initialize the database connection
 connectToDatabase();
 
@@ -45,6 +51,23 @@ app.use('/api/hr', hrStaffRoutes);           // HR staff management routes
 app.use('/api/leaderboard', leaderboardRoutes); // Leaderboard routes
 app.use('/api/analytics', analyticsRoutes);   // Analytics routes
 app.use('/api/recommended-jobs', recommendedJobRoutes); // Recommended jobs routes
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Internal Server Error' });
+});
+
+// Graceful shutdown
+const shutdown = () => {
+    mongoose.connection.close(() => {
+        console.log('MongoDB connection closed');
+        process.exit(0);
+    });
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
 // Start the server
 app.listen(PORT, () => {
