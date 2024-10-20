@@ -26,7 +26,7 @@ const SearchContainer = styled(Box)(({ theme }) => ({
 const Search = styled('div')(({ theme, darkMode }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: darkMode ? '#444' : '#f5f5f5', // Search bar background
+  backgroundColor: darkMode ? '#444' : '#f5f5f5', 
   width: '90%',
   boxShadow: theme.shadows[2],
 }));
@@ -76,11 +76,7 @@ const AllJobs = () => {
 
     fetchResults();
   }, [query]);
-
-  const handleCardClick = (jobId) => {
-    navigate(`/apply/${jobId}`);
-  };
-
+  
   return (
     <Box sx={{ padding: 2, width: '100%', display: 'flex', flexDirection: 'column' }}>
       <Toolbar sx={{ width: '100%' }}>
@@ -131,7 +127,6 @@ const AllJobs = () => {
                     boxShadow: 'none', 
                     cursor: 'pointer' 
                   }} 
-                  onClick={() => handleCardClick(job._id)}
                 >
                   <CardContent>
                     <h2 style={{ fontSize: '1.5rem', margin: '0.5rem 0' }}>{job.title}</h2>
