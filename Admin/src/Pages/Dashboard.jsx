@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; 
 import {
   Box,
   Typography,
@@ -43,6 +43,9 @@ const barData = [
   { name: 'Job B', applications: 80 },
   { name: 'Job C', applications: 140 },
   { name: 'Job D', applications: 100 },
+  { name: 'Job E', applications: 90 },
+  { name: 'Job F', applications: 110 },
+  { name: 'Job G', applications: 95 },
 ];
 
 const diversityData = [
@@ -117,7 +120,7 @@ const Dashboard = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="applications" fill="#00C49F" />
+                <Bar dataKey="applications" fill="#00C49F" barSize={15} />
               </BarChart>
             </ResponsiveContainer>
           </Paper>
