@@ -13,13 +13,16 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
 } from 'recharts';
 
-// Sample data
+// Sample data for various charts
 const pieData = [
   { name: 'Applications Received', value: 400 },
   { name: 'Interviews Scheduled', value: 300 },
@@ -35,18 +38,30 @@ const lineData = [
   { name: 'May', applicants: 600, jobs: 400 },
 ];
 
-// Define color palette for pie chart
+const barData = [
+  { name: 'Job A', applications: 120 },
+  { name: 'Job B', applications: 80 },
+  { name: 'Job C', applications: 140 },
+  { name: 'Job D', applications: 100 },
+];
+
+const diversityData = [
+  { name: 'Male', value: 300 },
+  { name: 'Female', value: 200 },
+  { name: 'Other', value: 50 },
+];
+
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const Dashboard = () => {
   return (
     <Box sx={{ padding: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Dashboard
+        Job Analytics Dashboard
       </Typography>
       
       <Grid container spacing={2}>
-        {/* Pie Chart */}
+        {/* Job Application Statistics */}
         <Grid item xs={12} md={6}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Job Application Statistics</Typography>
@@ -60,18 +75,20 @@ const Dashboard = () => {
                   outerRadius={80}
                   fill="#8884d8"
                   paddingAngle={5}
+                  dataKey="value"
                 >
                   {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
+                <Legend verticalAlign="top" align="right" />
               </PieChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
 
-        {/* Line Graph */}
+        {/* Applicants vs Jobs Over Time */}
         <Grid item xs={12} md={6}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Applicants vs Jobs Over Time</Typography>
@@ -81,6 +98,7 @@ const Dashboard = () => {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
+                <Legend />
                 <Line type="monotone" dataKey="applicants" stroke="#0088FE" />
                 <Line type="monotone" dataKey="jobs" stroke="#FFBB28" />
               </LineChart>
@@ -88,7 +106,49 @@ const Dashboard = () => {
           </Paper>
         </Grid>
 
-        {/* Progress Bar */}
+        {/* Applications per Job */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ padding: 2 }}>
+            <Typography variant="h6">Applications per Job</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={barData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="applications" fill="#00C49F" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
+
+        {/* Diversity Metrics */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ padding: 2 }}>
+            <Typography variant="h6">Diversity Metrics</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={diversityData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {diversityData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend verticalAlign="top" align="right" />
+              </PieChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
+
+        {/* Application Progress */}
         <Grid item xs={12}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Application Progress</Typography>
