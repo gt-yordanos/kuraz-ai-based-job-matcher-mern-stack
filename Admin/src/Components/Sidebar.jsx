@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, List, ListItem, ListItemIcon, ListItemText, Divider, IconButton, useTheme } from '@mui/material';
-import { Dashboard, People, Assessment, PostAdd, Logout, ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { Dashboard, People, Work, PostAdd, Logout, ChevronLeft, ChevronRight, Assessment } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import ThemeToggler from './ThemeToggler';
 import Images from '../assets/Images.js';
@@ -13,15 +13,15 @@ const Sidebar = () => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/' },
-    { text: 'Job Statistics', icon: <Assessment />, path: '/statistics' },
+    { text: 'All Jobs', icon: <Work />, path: '/jobs' },
     { text: 'Applicants', icon: <People />, path: '/applicants' },
     { text: 'Leaderboard', icon: <Assessment />, path: '/leaderboard' },
     { text: 'Post Job', icon: <PostAdd />, path: '/post-job' },
   ];
 
-  // Define colors based on the theme
-  const selectedBgColor = theme.palette.mode === 'light' ? '#f0f0f0' : '#424242'; // Light gray for selected in light mode, dark gray for dark mode
-  const hoverBgColor = theme.palette.mode === 'light' ? '#e0e0e0' : '#616161'; // Slightly darker gray for hover in light mode, medium gray for dark mode
+  // Define colors based on the theme with increased contrast for light mode
+  const selectedBgColor = theme.palette.mode === 'light' ? '#d9d9d9' : '#424242'; // Darker light gray for selected
+  const hoverBgColor = theme.palette.mode === 'light' ? '#c0c0c0' : '#616161'; // Darker gray for hover in light mode
 
   return (
     <Box
