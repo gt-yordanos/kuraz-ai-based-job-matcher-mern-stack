@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './Components/Navbar';
 import Home from './Pages/Home';
@@ -11,14 +11,14 @@ import SignUpLogin from './Pages/SignUpLogin';
 import Search from './Pages/Search';
 import Apply from './Pages/Apply';
 import KurazAIApp from './Components/KurazAIApp';
-import { Fab } from '@mui/material';
-import { Chat } from '@mui/icons-material';
+import { Fab, Tooltip } from '@mui/material'; 
+import AssistantIcon from '@mui/icons-material/Assistant'; 
 
 const App = () => {
   const [showAssistant, setShowAssistant] = useState(false);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', overflow: 'hidden', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', overflow: 'hidden', width: '100%', position: 'relative' }}>
       <div style={{ position: 'fixed', top: '0', width: '100%', zIndex: 50 }}>
         <Navbar />
       </div>
@@ -39,17 +39,33 @@ const App = () => {
         <Footer />
       </div>
 
-      {/* Floating Chat Button */}
-      <Fab
-        color="primary"
-        aria-label="chat"
-        sx={{ position: 'fixed', bottom: 20, right: 20 }}
-        onClick={() => setShowAssistant(true)}
-      >
-        <Chat />
-      </Fab>
+      {/* Floating Chat Button with Assistant Icon */}
+      <Tooltip title="Connect with Kuraz AI Assistant" arrow>
+        <Fab
+          color="primary"
+          aria-label="chat"
+          sx={{ position: 'fixed', bottom: 20, right: 20, width: '56px', height: '56px', zIndex: 100 }} // Set zIndex for button
+          onClick={() => setShowAssistant(true)}
+        >
+          <AssistantIcon />
+        </Fab>
+      </Tooltip>
 
-      {showAssistant && <KurazAIApp onClose={() => setShowAssistant(false)} />}
+      {/* Kuraz AI App */}
+      {showAssistant && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          right: 0,
+          zIndex: 200, // Higher zIndex to cover the button
+          width: '300px',
+          height: '400px',
+          transition: 'transform 0.3s ease',
+          transform: 'translateY(0)',
+        }}>
+          <KurazAIApp onClose={() => setShowAssistant(false)} />
+        </div>
+      )}
     </div>
   );
 };
