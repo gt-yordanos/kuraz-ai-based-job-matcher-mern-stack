@@ -28,6 +28,7 @@ import titoFrezer from './titoFrezer.jfif';
 import yordanosTefera from './yordanosTefera.jpg';
 import birukMamo from './birukMamo.jfif';
 import bisrategebrielFisseha from './bisrategebrielFisseha.jfif';
+import aiBot from './aiBot.jpg';
 
 
 
@@ -63,7 +64,8 @@ const jobImages = {
     titoFrezer,
     yordanosTefera,
     birukMamo,
-    bisrategebrielFisseha
+    bisrategebrielFisseha,
+    aiBot
 };
 
 export default jobImages;
