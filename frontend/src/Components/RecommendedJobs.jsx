@@ -4,11 +4,13 @@ import SmallJobCard from './SmallJobCard';
 import AssistantIcon from '@mui/icons-material/Assistant';
 import jobImages from '../assets/JobImages.js'; // Adjust this import to your actual path
 import { useAuth } from '../Contexts/AuthContext'; // Make sure this path is correct
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const RecommendedJobs = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width:460px)');
   const { user } = useAuth(); // Get the user from AuthContext
+  const navigate = useNavigate();
 
   const jobs = [
     { title: 'Frontend Developer', skills: 'JavaScript, React, CSS', timePosted: '2 days ago', location: 'New York', deadline: 'Oct 30, 2024' },
@@ -120,7 +122,7 @@ const RecommendedJobs = () => {
               border: 'none',
               width: '130px'
             }}
-            href="/login"
+            onClick={() => navigate('/login')} // Navigate to sign up
           >
             Login
           </Button>
@@ -131,7 +133,7 @@ const RecommendedJobs = () => {
               borderColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
                width: '130px'
             }}
-            href="/login"
+            onClick={() => navigate('/signup')} // Navigate to sign up
           >
             Sign Up
           </Button>

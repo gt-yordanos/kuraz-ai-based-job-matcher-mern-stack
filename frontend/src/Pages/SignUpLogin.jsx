@@ -13,12 +13,12 @@ import { styled } from '@mui/material/styles';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useAuth } from '../Contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import MessagePopup from '../Components/MessagePopup';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: '16px',
-  width: '100%', // Ensures the width is 100%
+  width: '100%',
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
       borderWidth: 2,
@@ -47,6 +47,7 @@ const SignUpLogin = () => {
   const isDarkMode = theme.palette.mode === 'dark';
   const isSmallScreen = useMediaQuery('(max-width:375px)');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const containerStyle = {
     backgroundColor: isDarkMode ? '#242424' : '#e0e0e0',
@@ -57,6 +58,7 @@ const SignUpLogin = () => {
     margin: '50px auto',
     fontFamily: 'Poppins, sans-serif',
     boxShadow: isDarkMode ? 'none' : '0 0 10px rgba(0, 0, 0, 0.1)',
+    width: isSmallScreen ? '97%' : 'auto',
   };
 
   const buttonStyle = {
@@ -68,7 +70,7 @@ const SignUpLogin = () => {
 
   const { login, signUp, user } = useAuth();
 
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(location.pathname === '/login');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -76,6 +78,10 @@ const SignUpLogin = () => {
   const [popupMessageType, setPopupMessageType] = useState('success');
   const [birthDate, setBirthDate] = useState('');
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    setIsLogin(location.pathname === '/login');
+  }, [location.pathname]);
 
   useEffect(() => {
     if (user) {
@@ -200,7 +206,7 @@ const SignUpLogin = () => {
             <StyledTextField
               name="birthDate"
               label="Birth Date"
-              type="date" // Change to a normal date input
+              type="date" 
               InputLabelProps={{
                 shrink: true,
               }}
