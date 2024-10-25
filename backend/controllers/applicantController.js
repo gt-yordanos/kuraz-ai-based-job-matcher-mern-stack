@@ -1,4 +1,3 @@
-// backend/controllers/applicantController.js
 import Applicant from '../models/Applicant.js'; 
 import bcrypt from 'bcrypt';
 import generateToken from '../utils/generateToken.js';
@@ -26,7 +25,6 @@ export const loginApplicant = async (req, res) => {
         const isMatch = await bcrypt.compare(password, applicant.password);
         if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
 
-        // Generate JWT token
         const token = generateToken(applicant._id);
         res.status(200).json({ token, applicantId: applicant._id });
     } catch (error) {
@@ -60,6 +58,12 @@ export const getApplicantById = async (req, res) => {
 export const updateApplicant = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
+
+    if (updates.password) {
+        const hashedPassword = await bcrypt.hash(updates.password, 10);
+        updates.password = hashedPassword;
+    }
+
     try {
         const applicant = await Applicant.findByIdAndUpdate(id, updates, { new: true });
         if (!applicant) return res.status(404).json({ message: 'Applicant not found' });
@@ -83,12 +87,12 @@ export const deleteApplicant = async (req, res) => {
 
 // Search applicants by name
 export const searchApplicantsByName = async (req, res) => {
-    const { name } = req.query; // Get the name from query parameters
+    const { name } = req.query;
     try {
         const applicants = await Applicant.find({
             $or: [
-                { firstName: { $regex: name, $options: 'i' } }, // Case-insensitive search in firstName
-                { lastName: { $regex: name, $options: 'i' } }   // Case-insensitive search in lastName
+                { firstName: { $regex: name, $options: 'i' } },
+                { lastName: { $regex: name, $options: 'i' } }
             ]
         });
         
