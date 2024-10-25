@@ -51,25 +51,31 @@ const ScrollingMessages = () => {
   const scrollRef = useRef(null);
 
   const isMediumScreen = useMediaQuery(theme.breakpoints.up('md'));
-  const isSmallScreen = useMediaQuery('(max-width: 460px)'); // Check for small screens
+  const isSmallScreen = useMediaQuery('(max-width: 460px)'); 
   const marginLeft = isMediumScreen ? 100 : 50;
 
   useEffect(() => {
+    const scrollToMessage = () => {
+      if (scrollRef.current) {
+        const cardWidth = scrollRef.current.clientWidth - marginLeft;
+        const scrollPosition = currentMessage * (cardWidth + marginLeft);
+        console.log(`Card Width: ${cardWidth}, Scroll Position: ${scrollPosition}`); // Debug logs
+        scrollRef.current.scrollTo({
+          left: scrollPosition,
+          behavior: 'smooth',
+        });
+      }
+    };
+
+    // Initial scroll to the first message
+    scrollToMessage();
+
     const interval = setInterval(() => {
       setCurrentMessage((prev) => (prev + 1) % messagesWithImages.length);
+      requestAnimationFrame(scrollToMessage);
     }, 3000);
-    return () => clearInterval(interval);
-  }, []);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      const cardWidth = scrollRef.current.clientWidth - marginLeft;
-      const scrollPosition = currentMessage * (cardWidth + marginLeft);
-      scrollRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth',
-      });
-    }
+    return () => clearInterval(interval);
   }, [currentMessage, marginLeft]);
 
   const cardStyles = (index) => ({
@@ -95,7 +101,7 @@ const ScrollingMessages = () => {
         overflow: 'hidden',
         position: 'relative',
         maxWidth: '800px',
-        height: isSmallScreen ? '370px' : '450px', // Set height for small screens
+        height: isSmallScreen ? '370px' : '450px',
         pt: 4,
         pb: 2,
       }}
@@ -104,11 +110,16 @@ const ScrollingMessages = () => {
         ref={scrollRef}
         sx={{
           display: 'flex',
-          overflowX: 'hidden',
+          overflowX: 'scroll', // Keep scrolling functionality
           scrollSnapType: 'x mandatory',
           scrollBehavior: 'smooth',
           width: '100%',
-          height: '90%', // Maintain 90% height for consistency
+          height: '90%',
+          '&::-webkit-scrollbar': {
+            display: 'none', // Hide scrollbar for WebKit browsers
+          },
+          '-ms-overflow-style': 'none',  // Hide scrollbar for Internet Explorer and Edge
+          'scrollbar-width': 'none',  // Hide scrollbar for Firefox
         }}
       >
         {messagesWithImages.map((item, index) => (
@@ -123,7 +134,7 @@ const ScrollingMessages = () => {
               <div
                 style={{
                   textAlign: 'center',
-                  fontSize: isSmallScreen ? '0.8rem' : '1rem', // Adjust font size based on screen size
+                  fontSize: isSmallScreen ? '0.8rem' : '1rem',
                 }}
               >
                 {item.text}
@@ -138,7 +149,7 @@ const ScrollingMessages = () => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          height: isSmallScreen ? '10%' : '10%', // Maintain 10% height for pagination
+          height: '10%',
           pt: 1,
         }}
       >
