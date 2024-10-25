@@ -250,7 +250,7 @@ export default function Navbar() {
                     color: theme.palette.mode === 'dark' ? '#000' : '#fff',
                     font: 'Poppins',
                   }}
-                  onClick={() => navigate('/login')} // Navigate to login
+                  onClick={() => navigate('/login')}
                 >
                   Login
                 </Button>
