@@ -1,4 +1,3 @@
-// backend/routes/applicantRoutes.js
 import express from 'express';
 import {
     createApplicant,

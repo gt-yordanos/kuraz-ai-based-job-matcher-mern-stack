@@ -30,21 +30,33 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const SwitchContainer = styled(Box)(({ theme }) => ({
-  display: 'flex', justifyContent: 'center', backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0',
-  borderRadius: 50, padding: 4, marginBottom: 1, width: 190, margin: '0 auto',
+  display: 'flex',
+  justifyContent: 'center',
+  backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0',
+  borderRadius: 50,
+  padding: 4,
+  marginBottom: 1,
+  width: 190,
+  margin: '0 auto',
 }));
 
 const SwitchButton = styled('div')(({ selected, theme }) => ({
-  padding: '8px 16px', borderRadius: 20, cursor: 'pointer', margin: '0 2px', textAlign: 'center', flexGrow: 1,
+  padding: '8px 16px',
+  borderRadius: 20,
+  cursor: 'pointer',
+  margin: '0 2px',
+  textAlign: 'center',
+  flexGrow: 1,
   backgroundColor: selected ? (theme.palette.mode === 'dark' ? '#fff' : '#000') : 'transparent',
-  color: selected ? (theme.palette.mode === 'dark' ? '#000' : '#fff') : 'inherit', fontSize: 16,
+  color: selected ? (theme.palette.mode === 'dark' ? '#000' : '#fff') : 'inherit',
+  fontSize: 16,
 }));
 
 const SignUpLogin = () => {
   const { login, signUp, user } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
-  const isSmallScreen = useMediaQuery('(max-width:375px)');
+  const isSmallScreen = useMediaQuery('(max-width:430px)');
   const { pathname } = useLocation();
 
   const [isLogin, setIsLogin] = useState(pathname === '/login');
@@ -129,7 +141,18 @@ const SignUpLogin = () => {
         <SwitchButton selected={isLogin} onClick={() => handleToggle('login')}>Login</SwitchButton>
         <SwitchButton selected={!isLogin} onClick={() => handleToggle('signup')}>Sign Up</SwitchButton>
       </SwitchContainer>
-      <Box sx={{ borderRadius: 4, border: `1px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`, maxWidth: 400, margin: '30px auto', fontFamily: 'Poppins, sans-serif', boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 10px rgba(0,0,0,0.1)', width: isSmallScreen ? '97%' : 'auto', padding: 5 }}>
+      <Box 
+        sx={{ 
+          borderRadius: 4, 
+          border: `1px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`, 
+          maxWidth: 400, 
+          margin: '30px auto', 
+          fontFamily: 'Poppins, sans-serif', 
+          boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 10px rgba(0,0,0,0.1)', 
+          width: isSmallScreen ? '97%' : 'auto', // Set width to 97% below 430px
+          padding: 5 
+        }}
+      >
         <h1 style={{ textAlign: 'center', marginBottom: 24 }}>{isLogin ? 'Login' : 'Sign Up'}</h1>
         <form onSubmit={handleSubmit}>
           <MessagePopup message={successMessage} messageType={popupMessageType} open={messagePopupOpen} onClose={() => setMessagePopupOpen(false)} />

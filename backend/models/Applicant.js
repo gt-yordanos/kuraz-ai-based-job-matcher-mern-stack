@@ -26,9 +26,10 @@ const ApplicantSchema = new mongoose.Schema({
     ],
     location: { type: String }, // Applicant's location
     birthday: { type: Date },
+    gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
     createdAt: { type: Date, default: Date.now },
     password: { type: String, required: true },
-    profileCompletion: { type: Number, default: 0 }, // Optional: Calculate how complete the profile is (0-100)
+    profileCompletion: { type: Number, default: 0 }, // Calculate how complete the profile is (0-100)
 });
 
 // Hash password before saving
@@ -38,16 +39,25 @@ ApplicantSchema.pre('save', async function (next) {
     next();
 });
 
-// Method to calculate the applicant's profile completeness score (optional)
+// Method to calculate the applicant's profile completeness score
 ApplicantSchema.methods.calculateProfileCompletion = function () {
     let score = 0;
-    if (this.firstName && this.lastName) score += 20;
-    if (this.email) score += 20;
-    if (this.skills && this.skills.length > 0) score += 20;
-    if (this.experience && this.experience.length > 0) score += 20;
-    if (this.education && this.education.length > 0) score += 20;
-    this.profileCompletion = score;
-    return score;
+    const totalFields = 10; // Total fields considered for completeness scoring
+
+    if (this.firstName) score += 10;
+    if (this.lastName) score += 10;
+    if (this.email) score += 10;
+    if (this.phone) score += 10; // Consider phone if provided
+    if (this.resume) score += 10; // Consider resume if provided
+    if (this.skills && this.skills.length > 0) score += 10;
+    if (this.experience && this.experience.length > 0) score += 10;
+    if (this.education && this.education.length > 0) score += 10;
+    if (this.location) score += 10; // Consider location if provided
+    if (this.birthday) score += 10; // Consider birthday if provided
+    if (this.gender) score += 10; // Consider gender if provided
+
+    this.profileCompletion = (score / totalFields) * 100; // Calculate percentage score
+    return this.profileCompletion;
 };
 
 export default mongoose.models.Applicant || mongoose.model('Applicant', ApplicantSchema);
