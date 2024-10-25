@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, TextField, IconButton, InputAdornment, useTheme, useMediaQuery, CircularProgress,
+  Box, TextField, IconButton, InputAdornment, useTheme, useMediaQuery, CircularProgress, Typography, Link, MenuItem,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Visibility from '@mui/icons-material/Visibility';
@@ -53,7 +53,7 @@ const SwitchButton = styled('div')(({ selected, theme }) => ({
 }));
 
 const SignUpLogin = () => {
-  const { login, signUp, user } = useAuth();
+  const { login, signUp, user, resetPassword } = useAuth(); // Assuming resetPassword is a method in your AuthContext
   const theme = useTheme();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery('(max-width:430px)');
@@ -66,7 +66,10 @@ const SignUpLogin = () => {
   const [messagePopupOpen, setMessagePopupOpen] = useState(false);
   const [popupMessageType, setPopupMessageType] = useState('success');
   const [birthDate, setBirthDate] = useState('');
+  const [gender, setGender] = useState('');
   const [errors, setErrors] = useState({});
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
 
   useEffect(() => {
     setIsLogin(pathname === '/login');
@@ -86,6 +89,7 @@ const SignUpLogin = () => {
     setSuccessMessage('');
     setMessagePopupOpen(false);
     setErrors({});
+    setShowForgotPassword(false); // Reset forgot password state
   };
 
   const handleSubmit = async (e) => {
@@ -93,8 +97,25 @@ const SignUpLogin = () => {
     setLoading(true);
     setSuccessMessage('');
     setErrors({});
+    
+    if (showForgotPassword) {
+      try {
+        await resetPassword(forgotEmail);
+        setSuccessMessage('Password reset email sent!');
+        setPopupMessageType('success');
+        setMessagePopupOpen(true);
+        setForgotEmail('');
+      } catch (error) {
+        setSuccessMessage(error.message);
+        setPopupMessageType('error');
+        setMessagePopupOpen(true);
+      }
+      setLoading(false);
+      return;
+    }
+    
     const { email, password, firstName, lastName, confirmPassword } = Object.fromEntries(new FormData(e.currentTarget));
-    const validationErrors = validateForm(email, password, confirmPassword, firstName, lastName, birthDate);
+    const validationErrors = validateForm(email, password, confirmPassword, firstName, lastName, birthDate, gender);
 
     if (Object.keys(validationErrors).length) {
       setErrors(validationErrors);
@@ -103,7 +124,7 @@ const SignUpLogin = () => {
       setMessagePopupOpen(true);
     } else {
       try {
-        const action = isLogin ? login(email, password) : signUp(firstName, lastName, birthDate, email, password);
+        const action = isLogin ? login(email, password) : signUp(firstName, lastName, birthDate, gender, email, password);
         await action;
         setSuccessMessage(isLogin ? 'Logged in successfully!' : 'Sign-up successful! You can now log in.');
         setPopupMessageType('success');
@@ -118,7 +139,7 @@ const SignUpLogin = () => {
     setLoading(false);
   };
 
-  const validateForm = (email, password, confirmPassword, firstName, lastName, birthDate) => {
+  const validateForm = (email, password, confirmPassword, firstName, lastName, birthDate, gender) => {
     const errors = {};
     if (!email) errors.email = 'Email is required.';
     if (!password) errors.password = 'Password is required.';
@@ -130,6 +151,7 @@ const SignUpLogin = () => {
       if (!firstName) errors.firstName = 'First Name is required.';
       if (!lastName) errors.lastName = 'Last Name is required.';
       if (!birthDate) errors.birthDate = 'Birth Date is required.';
+      if (!gender) errors.gender = 'Gender is required.';
       if (new Date().getFullYear() - new Date(birthDate).getFullYear() < 18) errors.birthDate = 'Must be at least 18.';
     }
     return errors;
@@ -149,23 +171,98 @@ const SignUpLogin = () => {
           margin: '30px auto', 
           fontFamily: 'Poppins, sans-serif', 
           boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 10px rgba(0,0,0,0.1)', 
-          width: isSmallScreen ? '97%' : 'auto', // Set width to 97% below 430px
+          width: isSmallScreen ? '97%' : 'auto', 
           padding: 5 
         }}
       >
         <h1 style={{ textAlign: 'center', marginBottom: 24 }}>{isLogin ? 'Login' : 'Sign Up'}</h1>
         <form onSubmit={handleSubmit}>
           <MessagePopup message={successMessage} messageType={popupMessageType} open={messagePopupOpen} onClose={() => setMessagePopupOpen(false)} />
-          {!isLogin && ['firstName', 'lastName', 'birthDate'].map((field) => (
-            <StyledTextField key={field} name={field} label={field.replace(/^\w/, (c) => c.toUpperCase())} variant="outlined" type={field === 'birthDate' ? 'date' : 'text'} error={!!errors[field]} helperText={errors[field]} InputLabelProps={field === 'birthDate' ? { shrink: true } : null} value={field === 'birthDate' ? birthDate : undefined} onChange={(e) => field === 'birthDate' && setBirthDate(e.target.value)} />
-          ))}
-          {['email', 'password'].map((field) => (
-            <StyledTextField key={field} name={field} label={field.replace(/^\w/, (c) => c.toUpperCase())} variant="outlined" type={field === 'password' && !showPassword ? 'password' : 'text'} error={!!errors[field]} helperText={errors[field]} InputProps={field === 'password' ? { endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> } : null} />
-          ))}
-          {!isLogin && <StyledTextField name="confirmPassword" label="Confirm Password" variant="outlined" type={showPassword ? 'text' : 'password'} error={!!errors.confirmPassword} helperText={errors.confirmPassword} />}
-          <button type="submit" style={{ width: '100%', border: 'none', padding: 12, borderRadius: 8, backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', color: theme.palette.mode === 'dark' ? '#000' : '#fff', cursor: 'pointer', marginTop: 16, height: 48, fontSize: 16 }} disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : isLogin ? 'Login' : 'Sign Up'}
-          </button>
+          {showForgotPassword ? (
+            <>
+              <StyledTextField 
+                name="forgotEmail" 
+                label="Enter your email" 
+                variant="outlined" 
+                type="email" 
+                value={forgotEmail} 
+                onChange={(e) => setForgotEmail(e.target.value)} 
+              />
+              <button type="submit" style={{ width: '100%', border: 'none', padding: 12, borderRadius: 8, backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', color: theme.palette.mode === 'dark' ? '#000' : '#fff', cursor: 'pointer', marginTop: 16, height: 48, fontSize: 16 }} disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : 'Send Reset Link'}
+              </button>
+              <Typography variant="body2" align="center" sx={{ marginTop: 2 }}>
+                <Link href="#" onClick={() => setShowForgotPassword(false)}>Back to Login</Link>
+              </Typography>
+            </>
+          ) : (
+            <>
+              {!isLogin && (
+                <>
+                  <StyledTextField 
+                    name="firstName" 
+                    label="First Name" 
+                    variant="outlined" 
+                    error={!!errors.firstName} 
+                    helperText={errors.firstName} 
+                  />
+                  <StyledTextField 
+                    name="lastName" 
+                    label="Last Name" 
+                    variant="outlined" 
+                    error={!!errors.lastName} 
+                    helperText={errors.lastName} 
+                  />
+                  <StyledTextField 
+                    name="birthDate" 
+                    label="Birth Date" 
+                    variant="outlined" 
+                    type="date" 
+                    error={!!errors.birthDate} 
+                    helperText={errors.birthDate} 
+                    InputLabelProps={{ shrink: true }} 
+                    onChange={(e) => setBirthDate(e.target.value)} 
+                  />
+                  <StyledTextField
+                    select
+                    name="gender"
+                    label="Gender"
+                    variant="outlined"
+                    error={!!errors.gender}
+                    helperText={errors.gender}
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                  >
+                    <MenuItem value=""><em>None</em></MenuItem>
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="female">Female</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </StyledTextField>
+                </>
+              )}
+              {['email', 'password'].map((field) => (
+                <StyledTextField 
+                  key={field} 
+                  name={field} 
+                  label={field.replace(/^\w/, (c) => c.toUpperCase())} 
+                  variant="outlined" 
+                  type={field === 'password' && !showPassword ? 'password' : 'text'} 
+                  error={!!errors[field]} 
+                  helperText={errors[field]} 
+                  InputProps={field === 'password' ? { endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> } : null} 
+                />
+              ))}
+              {!isLogin && <StyledTextField name="confirmPassword" label="Confirm Password" variant="outlined" type={showPassword ? 'text' : 'password'} error={!!errors.confirmPassword} helperText={errors.confirmPassword} />}
+              <button type="submit" style={{ width: '100%', border: 'none', padding: 12, borderRadius: 8, backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', color: theme.palette.mode === 'dark' ? '#000' : '#fff', cursor: 'pointer', marginTop: 16, height: 48, fontSize: 16 }} disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : isLogin ? 'Login' : 'Sign Up'}
+              </button>
+              {isLogin && (
+                <Typography variant="body2" align="center" sx={{ marginTop: 2, color: theme.palette.mode === 'dark' ? '#fff' : '#000' }}>
+                  <Link href="#" onClick={() => setShowForgotPassword(true)}>Forgot Password?</Link>
+                </Typography>
+              )}
+            </>
+          )}
         </form>
       </Box>
     </>
