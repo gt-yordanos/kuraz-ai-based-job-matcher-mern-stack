@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState } from 'react'; 
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './Components/Navbar';
@@ -10,6 +11,7 @@ import Footer from './Components/Footer';
 import SignUpLogin from './Pages/SignUpLogin';
 import Search from './Pages/Search';
 import Apply from './Pages/Apply';
+import Profile from './Pages/Profile'; // Import the Profile component
 import KurazAIApp from './Components/KurazAIApp';
 import { Fab, Tooltip } from '@mui/material'; 
 import AssistantIcon from '@mui/icons-material/Assistant'; 
@@ -33,6 +35,7 @@ const App = () => {
           <Route path="/login" element={<SignUpLogin />} />
           <Route path="/search" element={<Search />} />
           <Route path="/apply/:id" element={<Apply />} />
+          <Route path="/profile" element={<Profile />} /> {/* Add Profile route */}
         </Routes>
       </div>
       <div style={{ width: '100%' }}>
@@ -44,7 +47,7 @@ const App = () => {
         <Fab
           color="primary"
           aria-label="chat"
-          sx={{ position: 'fixed', bottom: 20, right: 20, width: '56px', height: '56px', zIndex: 100 }} // Set zIndex for button
+          sx={{ position: 'fixed', bottom: 20, right: 20, width: '56px', height: '56px', zIndex: 100 }}
           onClick={() => setShowAssistant(true)}
         >
           <AssistantIcon />
@@ -57,7 +60,7 @@ const App = () => {
           position: 'fixed',
           bottom: 0,
           right: 0,
-          zIndex: 200, // Higher zIndex to cover the button
+          zIndex: 200,
           width: '300px',
           height: '400px',
           transition: 'transform 0.3s ease',
