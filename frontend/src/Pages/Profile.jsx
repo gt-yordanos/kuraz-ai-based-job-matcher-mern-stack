@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box, TextField, Button, CircularProgress, useTheme, LinearProgress,
 } from '@mui/material';
@@ -7,7 +8,7 @@ import { FaUser, FaGraduationCap, FaBriefcase, FaArrowRight, FaArrowLeft, FaPlus
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import { useAuth } from '../Contexts/AuthContext';
 import Axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; // Updated import for jwt-decode
+import { jwtDecode } from 'jwt-decode';
 import MessagePopup from '../Components/MessagePopup';
 
 // Styled components
@@ -54,7 +55,8 @@ const NavButton = styled(Button)(({ theme }) => ({
 }));
 
 const Profile = () => {
-  const { user } = useAuth(); // Get user from Auth context
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const theme = useTheme();
 
   const [profileData, setProfileData] = useState({
@@ -69,13 +71,25 @@ const Profile = () => {
   const [popupType, setPopupType] = useState('success');
   const [profileScore, setProfileScore] = useState(0);
 
-  // Function to fetch profile data
+  // Redirect if user is not logged in with a delay
+  useEffect(() => {
+    if (user) {
+      fetchProfileData();
+    } else {
+      const timer = setTimeout(() => {
+        navigate('/login');
+      }, 3000); // Delay of 3 seconds
+
+      return () => clearTimeout(timer); // Cleanup on unmount or when user changes
+    }
+  }, [user, navigate]);
+
   const fetchProfileData = async () => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const decodedToken = jwtDecode(token); // Use jwtDecode directly
-        const userId = decodedToken.id; // Adjust this based on your token structure
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.id;
         const { data } = await Axios.get(`http://localhost:5000/api/applicants/${userId}`);
         setProfileData(data);
         setProfileScore(data.profileCompletion);
@@ -84,11 +98,6 @@ const Profile = () => {
       }
     }
   };
-
-  // Call fetchProfileData when component is mounted
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
 
   const handleChange = ({ target: { name, value } }) => setProfileData(prev => ({ ...prev, [name]: value }));
 
@@ -179,7 +188,7 @@ const Profile = () => {
         {profileData.experience.map((exp, index) => (
           <div key={index}>
             {['jobTitle', 'company', 'startDate', 'endDate', 'description'].map(field => (
-              <StyledTextField key={field} name={field} label={field.charAt(0).toUpperCase() + field.slice(1)} value={exp[field]} onChange={e => handleArrayChange(index, field, e.target.value, 'experience')} required={field !== 'description'} multiline={field === 'description'} rows={field === 'description' ? 4 : 1} />
+              <StyledTextField key={field} name={field} label={field.charAt(0).toUpperCase() + field.slice(1)} value={exp[field]} onChange={e => handleArrayChange(index, field, e.target.value, 'experience')} required />
             ))}
           </div>
         ))}
@@ -187,9 +196,10 @@ const Profile = () => {
       </>,
       <>
         <h2><TipsAndUpdatesIcon /> Skills</h2>
-        <StyledTextField name="skills" label="Skills (comma separated)" value={profileData.skills.join(', ')} onChange={e => handleChange({ target: { name: 'skills', value: e.target.value.split(',').map(skill => skill.trim()) } })} />
-      </>
+        <StyledTextField name="skills" label="Skills (comma separated)" value={profileData.skills.join(', ')} onChange={e => handleChange({ target: { name: 'skills', value: e.target.value.split(', ') } })} />
+      </>,
     ];
+
     return stepContent[step];
   };
 
@@ -203,7 +213,9 @@ const Profile = () => {
         <p>{profileScore.toFixed(0)}%</p>
         <SwitchContainer>
           {[FaUser, FaGraduationCap, FaBriefcase, TipsAndUpdatesIcon].map((Icon, index) => (
-            <SwitchButton key={index} selected={step === index} onClick={() => setStep(index)}><Icon /></SwitchButton>
+            <SwitchButton key={index} selected={step === index} onClick={() => setStep(index)}>
+              <Icon />
+            </SwitchButton>
           ))}
         </SwitchContainer>
       </div>
