@@ -6,7 +6,7 @@ import {
     updateApplication,
     deleteApplication,
 } from '../controllers/applicationController.js';
-import { validateApplication } from '../middleware/validationMiddleware.js'; // Example validation middleware
+import { validateApplication } from '../middleware/validationMiddleware.js'; // Import the validation middleware
 
 const router = express.Router();
 

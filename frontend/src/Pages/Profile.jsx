@@ -48,11 +48,20 @@ const SwitchButton = styled('div')(({ selected, theme }) => ({
 }));
 
 const ButtonStyled = styled(Button)(({ theme, variant }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? (variant === 'upload' ? '#fff' : '#000') : (variant === 'upload' ? '#000' : '#fff'),
-  color: theme.palette.mode === 'dark' ? '#000' : '#fff',
-  '&:hover': { backgroundColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333' },
+  backgroundColor: variant === 'nav' 
+    ? (theme.palette.mode === 'dark' ? '#fff' : '#000')  // Background color for nav buttons
+    : (theme.palette.mode === 'dark' ? '#fff' : '#000'),  // Background color for other buttons
+  color: variant === 'nav' 
+    ? (theme.palette.mode === 'dark' ? '#000' : '#fff')    // Text color for nav buttons
+    : theme.palette.mode === 'dark' ? '#000' : '#fff',      // Text color for other buttons
+  '&:hover': { 
+    backgroundColor: variant === 'nav' 
+      ? (theme.palette.mode === 'dark' ? '#666' : '#ccc') // Hover color for nav buttons
+      : (theme.palette.mode === 'dark' ? '#e0e0e0' : '#333') 
+  },
   ...(variant === 'nav' && { width: '120px' }),
 }));
+
 
 const Profile = () => {
   const { user } = useAuth();

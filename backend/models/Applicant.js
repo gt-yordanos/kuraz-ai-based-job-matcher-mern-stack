@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const ApplicantSchema = new mongoose.Schema({
     firstName: { type: String, required: true },
@@ -70,8 +70,7 @@ ApplicantSchema.methods.calculateProfileCompletion = function () {
     const totalFields = baseFields + (this.experience.length * 10) + (this.education.length * 10);
 
     // Calculate and return the profile completion percentage
-    this.profileCompletion = Math.min((score / totalFields) * 100, 100);
-    return this.profileCompletion;
+    return Math.min((score / totalFields) * 100, 100);
 };
 
 // Optional: Separate method for explicit updates
@@ -80,4 +79,6 @@ ApplicantSchema.methods.updateProfileCompletion = function () {
     return this.save();
 };
 
-export default mongoose.models.Applicant || mongoose.model('Applicant', ApplicantSchema);
+// Export the model
+const Applicant = mongoose.models.Applicant || mongoose.model('Applicant', ApplicantSchema);
+export default Applicant;
