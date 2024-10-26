@@ -59,7 +59,6 @@ const ScrollingMessages = () => {
       if (scrollRef.current) {
         const cardWidth = scrollRef.current.clientWidth - marginLeft;
         const scrollPosition = currentMessage * (cardWidth + marginLeft);
-        console.log(`Card Width: ${cardWidth}, Scroll Position: ${scrollPosition}`); // Debug logs
         scrollRef.current.scrollTo({
           left: scrollPosition,
           behavior: 'smooth',
@@ -67,16 +66,29 @@ const ScrollingMessages = () => {
       }
     };
 
-    // Initial scroll to the first message
-    scrollToMessage();
+    scrollToMessage(); // Scroll to the current message
 
     const interval = setInterval(() => {
       setCurrentMessage((prev) => (prev + 1) % messagesWithImages.length);
-      requestAnimationFrame(scrollToMessage);
     }, 3000);
 
     return () => clearInterval(interval);
   }, [currentMessage, marginLeft]);
+
+  useEffect(() => {
+    const scrollToMessage = () => {
+      if (scrollRef.current) {
+        const cardWidth = scrollRef.current.clientWidth - marginLeft;
+        const scrollPosition = currentMessage * (cardWidth + marginLeft);
+        scrollRef.current.scrollTo({
+          left: scrollPosition,
+          behavior: 'smooth',
+        });
+      }
+    };
+
+    scrollToMessage(); // Trigger scroll when currentMessage changes
+  }, [currentMessage]);
 
   const cardStyles = (index) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0',
@@ -110,16 +122,16 @@ const ScrollingMessages = () => {
         ref={scrollRef}
         sx={{
           display: 'flex',
-          overflowX: 'scroll', // Keep scrolling functionality
+          overflowX: 'scroll',
           scrollSnapType: 'x mandatory',
           scrollBehavior: 'smooth',
           width: '100%',
           height: '90%',
           '&::-webkit-scrollbar': {
-            display: 'none', // Hide scrollbar for WebKit browsers
+            display: 'none',
           },
-          '-ms-overflow-style': 'none',  // Hide scrollbar for Internet Explorer and Edge
-          'scrollbar-width': 'none',  // Hide scrollbar for Firefox
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
         }}
       >
         {messagesWithImages.map((item, index) => (
