@@ -6,7 +6,7 @@ const ApplicantSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String },
-    resume: { type: String }, // URL or file path to the resume
+    resume: { type: String }, 
     skills: [{ type: String }], // List of skills
     experience: [
         {
@@ -27,6 +27,7 @@ const ApplicantSchema = new mongoose.Schema({
     location: { type: String }, // Applicant's location
     birthday: { type: Date },
     gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+    jobType: { type: String, enum: ['Full-Time', 'Part-Time', 'Intern', 'Other'], required: true }, // New job type field
     createdAt: { type: Date, default: Date.now },
     password: { type: String, required: true },
     profileCompletion: { type: Number, default: 0 }, // Calculate how complete the profile is (0-100)
@@ -42,7 +43,7 @@ ApplicantSchema.pre('save', async function (next) {
 // Method to calculate the applicant's profile completeness score
 ApplicantSchema.methods.calculateProfileCompletion = function () {
     let score = 0;
-    const totalFields = 10; // Total fields considered for completeness scoring
+    const totalFields = 11; // Updated total fields considered for completeness scoring
 
     if (this.firstName) score += 10;
     if (this.lastName) score += 10;
@@ -55,6 +56,7 @@ ApplicantSchema.methods.calculateProfileCompletion = function () {
     if (this.location) score += 10; // Consider location if provided
     if (this.birthday) score += 10; // Consider birthday if provided
     if (this.gender) score += 10; // Consider gender if provided
+    if (this.jobType) score += 10; // Consider job type if provided
 
     this.profileCompletion = (score / totalFields) * 100; // Calculate percentage score
     return this.profileCompletion;

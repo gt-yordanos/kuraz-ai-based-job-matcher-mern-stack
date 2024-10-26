@@ -49,6 +49,7 @@ const UploadButton = styled(Button)(({ theme }) => ({
 const NavButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
   color: theme.palette.mode === 'dark' ? '#000' : '#fff',
+  width: '120px', // Increased width for navigation buttons
   '&:hover': {
     backgroundColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333',
   },
@@ -64,23 +65,22 @@ const Profile = () => {
     gender: '', skills: [], experience: [{}], education: [{}], location: '', resume: null,
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0);
   const [openPopup, setOpenPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
   const [popupType, setPopupType] = useState('success');
   const [profileScore, setProfileScore] = useState(0);
 
-  // Redirect if user is not logged in with a delay
   useEffect(() => {
     if (user) {
       fetchProfileData();
     } else {
       const timer = setTimeout(() => {
         navigate('/login');
-      }, 3000); // Delay of 3 seconds
+      }, 3000);
 
-      return () => clearTimeout(timer); // Cleanup on unmount or when user changes
+      return () => clearTimeout(timer);
     }
   }, [user, navigate]);
 
@@ -95,7 +95,11 @@ const Profile = () => {
         setProfileScore(data.profileCompletion);
       } catch (error) {
         console.error('Token decoding failed or fetching profile failed:', error);
+      } finally {
+        setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
   };
 
@@ -116,7 +120,7 @@ const Profile = () => {
     const file = e.target.files[0];
     if (file && file.type === 'application/pdf') {
       setProfileData(prev => ({ ...prev, resume: file }));
-      await saveProfileData(); // Save profile data after resume change
+      await saveProfileData();
     } else {
       setPopupMessage('Please upload a valid PDF file.');
       setPopupType('error');
@@ -153,11 +157,26 @@ const Profile = () => {
 
   const renderStepContent = () => {
     const stepContent = [
-      <>
-        <h2><FaUser /> Personal Information</h2>
-        {['firstName', 'lastName', 'email', 'phone', 'location', 'gender'].map(name => (
+      <><h2><FaUser /> Personal Information</h2>
+        {['firstName', 'lastName', 'email', 'phone', 'location'].map(name => (
           <StyledTextField key={name} name={name} label={name.charAt(0).toUpperCase() + name.slice(1)} value={profileData[name]} onChange={handleChange} required />
         ))}
+        <StyledTextField
+          select
+          name="gender"
+          label="Gender"
+          value={profileData.gender}
+          onChange={handleChange}
+          SelectProps={{
+            native: true,
+          }}
+          required
+        >
+          <option value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </StyledTextField>
         <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
           <StyledTextField
             name="resume"
@@ -176,7 +195,22 @@ const Profile = () => {
         <h2><FaGraduationCap /> Education</h2>
         {profileData.education.map((edu, index) => (
           <div key={index}>
-            {['degree', 'institution', 'graduationYear'].map(field => (
+            <StyledTextField
+              select
+              name="degree"
+              label="Degree"
+              value={edu.degree}
+              onChange={e => handleArrayChange(index, 'degree', e.target.value, 'education')}
+              SelectProps={{ native: true }}
+              required
+            >
+              <option value="">Select Degree</option>
+              <option value="associate/diploma">Associate/Diploma</option>
+              <option value="bachelor">Bachelor</option>
+              <option value="masters">Masters</option>
+              <option value="phd">PhD</option>
+            </StyledTextField>
+            {['institution', 'graduationYear'].map(field => (
               <StyledTextField key={field} name={field} label={field.charAt(0).toUpperCase() + field.slice(1)} value={edu[field]} onChange={e => handleArrayChange(index, field, e.target.value, 'education')} required />
             ))}
           </div>
@@ -187,9 +221,12 @@ const Profile = () => {
         <h2><FaBriefcase /> Experience</h2>
         {profileData.experience.map((exp, index) => (
           <div key={index}>
-            {['jobTitle', 'company', 'startDate', 'endDate', 'description'].map(field => (
+            {['jobTitle', 'company'].map(field => (
               <StyledTextField key={field} name={field} label={field.charAt(0).toUpperCase() + field.slice(1)} value={exp[field]} onChange={e => handleArrayChange(index, field, e.target.value, 'experience')} required />
             ))}
+            <StyledTextField name="startDate" label="Start Date" type="date" value={exp.startDate ? exp.startDate.split('T')[0] : ''} onChange={e => handleArrayChange(index, 'startDate', e.target.value, 'experience')} required InputLabelProps={{ shrink: true }} />
+            <StyledTextField name="endDate" label="End Date" type="date" value={exp.endDate ? exp.endDate.split('T')[0] : ''} onChange={e => handleArrayChange(index, 'endDate', e.target.value, 'experience')} required InputLabelProps={{ shrink: true }} />
+            <StyledTextField name="description" label="Description" value={exp.description} onChange={e => handleArrayChange(index, 'description', e.target.value, 'experience')} required multiline rows={4} />
           </div>
         ))}
         <AddButton onClick={() => addArrayItem('experience')} startIcon={<FaPlus />}>Add Experience</AddButton>
@@ -206,29 +243,58 @@ const Profile = () => {
   return (
     <>
       <div style={{ maxWidth: '400px', width: '97%', margin: '0 auto', textAlign: 'center' }}>
-        <h1>Hi, {profileData.firstName || 'User'}!</h1>
-        <p>{profileData.firstName ? 'Finish filling your profile.' : 'Please complete your profile.'}</p>
-        <p>Our AI assistant will help rank you top to employers!</p>
-        <LinearProgress variant="determinate" value={profileScore} sx={{ marginBottom: 2 }} />
-        <p>{profileScore.toFixed(0)}%</p>
-        <SwitchContainer>
-          {[FaUser, FaGraduationCap, FaBriefcase, TipsAndUpdatesIcon].map((Icon, index) => (
-            <SwitchButton key={index} selected={step === index} onClick={() => setStep(index)}>
-              <Icon />
-            </SwitchButton>
-          ))}
-        </SwitchContainer>
+        {loading ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100vh',
+            }}
+          >
+            <CircularProgress sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#000' }} />
+          </Box>
+        ) : (
+          <>
+            <h1>Hi, {profileData.firstName}!</h1>
+            <p>{profileData.firstName ? 'Finish filling your profile.' : 'Please complete your profile.'}</p>
+            <p>Our AI assistant will help rank you top to employers!</p>
+            <LinearProgress variant="determinate" value={profileScore} sx={{ marginBottom: 2 }} />
+            <p>{profileScore.toFixed(0)}%</p>
+            <SwitchContainer>
+              {[FaUser, FaGraduationCap, FaBriefcase, TipsAndUpdatesIcon].map((Icon, index) => (
+                <SwitchButton key={index} selected={step === index} onClick={() => setStep(index)}>
+                  <Icon />
+                </SwitchButton>
+              ))}
+            </SwitchContainer>
+          </>
+        )}
       </div>
-      <Box sx={{ maxWidth: '400px', width: '97%', margin: '30px auto', padding: 5, borderRadius: 4, border: `1px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`, boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 10px rgba(0,0,0,0.1)' }}>
+      <Box
+        sx={{
+          maxWidth: '400px',
+          width: '97%',
+          margin: '30px auto',
+          padding: 5,
+          borderRadius: 4,
+          border: `1px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`,
+          boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 10px rgba(0,0,0,0.1)',
+        }}
+      >
         {renderStepContent()}
         <form onSubmit={handleSubmit}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-            {step > 0 && <NavButton type="button" onClick={() => setStep(step - 1)} startIcon={<FaArrowLeft />}>Previous</NavButton>}
+            {step > 0 && (
+              <NavButton type="button" onClick={() => setStep(step - 1)} startIcon={<FaArrowLeft />}>
+                Previous
+              </NavButton>
+            )}
             <NavButton type="button" onClick={nextStep} endIcon={step < 3 ? <FaArrowRight /> : null} disabled={loading}>
               {step < 3 ? 'Next' : 'Finish'}
             </NavButton>
           </Box>
-          {loading && <CircularProgress />}
+          {loading && <CircularProgress sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#000', marginTop: 2 }} />}
         </form>
         <MessagePopup message={popupMessage} messageType={popupType} open={openPopup} onClose={() => setOpenPopup(false)} />
       </Box>

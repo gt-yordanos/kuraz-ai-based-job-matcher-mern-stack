@@ -67,6 +67,11 @@ export const updateApplicant = async (req, res) => {
     try {
         const applicant = await Applicant.findByIdAndUpdate(id, updates, { new: true });
         if (!applicant) return res.status(404).json({ message: 'Applicant not found' });
+        
+        // Recalculate profile completion after updates
+        applicant.calculateProfileCompletion();
+        await applicant.save();
+
         res.status(200).json(applicant);
     } catch (error) {
         res.status(400).json({ message: error.message });
