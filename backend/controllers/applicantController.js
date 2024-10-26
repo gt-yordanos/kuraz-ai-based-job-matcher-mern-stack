@@ -59,6 +59,7 @@ export const updateApplicant = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
+    // Hash password if it is being updated
     if (updates.password) {
         const hashedPassword = await bcrypt.hash(updates.password, 10);
         updates.password = hashedPassword;

@@ -53,7 +53,7 @@ const SwitchButton = styled('div')(({ selected, theme }) => ({
 }));
 
 const SignUpLogin = () => {
-  const { login, signUp, user, resetPassword } = useAuth(); // Assuming resetPassword is a method in your AuthContext
+  const { login, signUp, user, resetPassword } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery('(max-width:430px)');
@@ -86,34 +86,27 @@ const SignUpLogin = () => {
   const handleToggle = (type) => {
     setIsLogin(type === 'login');
     navigate(type === 'login' ? '/login' : '/signup');
+    resetFormState();
+  };
+
+  const resetFormState = () => {
     setSuccessMessage('');
     setMessagePopupOpen(false);
     setErrors({});
-    setShowForgotPassword(false); // Reset forgot password state
+    setShowForgotPassword(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setSuccessMessage('');
-    setErrors({});
-    
+    resetFormState();
+
     if (showForgotPassword) {
-      try {
-        await resetPassword(forgotEmail);
-        setSuccessMessage('Password reset email sent!');
-        setPopupMessageType('success');
-        setMessagePopupOpen(true);
-        setForgotEmail('');
-      } catch (error) {
-        setSuccessMessage(error.message);
-        setPopupMessageType('error');
-        setMessagePopupOpen(true);
-      }
+      await handleForgotPassword();
       setLoading(false);
       return;
     }
-    
+
     const { email, password, firstName, lastName, confirmPassword } = Object.fromEntries(new FormData(e.currentTarget));
     const validationErrors = validateForm(email, password, confirmPassword, firstName, lastName, birthDate, gender);
 
@@ -123,20 +116,38 @@ const SignUpLogin = () => {
       setPopupMessageType('error');
       setMessagePopupOpen(true);
     } else {
-      try {
-        const action = isLogin ? login(email, password) : signUp(firstName, lastName, birthDate, gender, email, password);
-        await action;
-        setSuccessMessage(isLogin ? 'Logged in successfully!' : 'Sign-up successful! You can now log in.');
-        setPopupMessageType('success');
-        if (!isLogin) setIsLogin(true);
-        setMessagePopupOpen(true);
-      } catch ({ message }) {
-        setSuccessMessage(message.includes('E11000') ? 'This email is already registered.' : message);
-        setPopupMessageType('error');
-        setMessagePopupOpen(true);
-      }
+      await handleAuthAction(email, password, firstName, lastName, birthDate, gender);
     }
     setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      await resetPassword(forgotEmail);
+      setSuccessMessage('Password reset email sent!');
+      setPopupMessageType('success');
+      setMessagePopupOpen(true);
+      setForgotEmail('');
+    } catch (error) {
+      setSuccessMessage(error.message);
+      setPopupMessageType('error');
+      setMessagePopupOpen(true);
+    }
+  };
+
+  const handleAuthAction = async (email, password, firstName, lastName, birthDate, gender) => {
+    try {
+      const action = isLogin ? login(email, password) : signUp(firstName, lastName, birthDate, gender, email, password);
+      await action;
+      setSuccessMessage(isLogin ? 'Logged in successfully!' : 'Sign-up successful! You can now log in.');
+      setPopupMessageType('success');
+      if (!isLogin) setIsLogin(true);
+      setMessagePopupOpen(true);
+    } catch ({ message }) {
+      setSuccessMessage(message.includes('E11000') ? 'This email is already registered.' : message);
+      setPopupMessageType('error');
+      setMessagePopupOpen(true);
+    }
   };
 
   const validateForm = (email, password, confirmPassword, firstName, lastName, birthDate, gender) => {
@@ -163,16 +174,16 @@ const SignUpLogin = () => {
         <SwitchButton selected={isLogin} onClick={() => handleToggle('login')}>Login</SwitchButton>
         <SwitchButton selected={!isLogin} onClick={() => handleToggle('signup')}>Sign Up</SwitchButton>
       </SwitchContainer>
-      <Box 
-        sx={{ 
-          borderRadius: 4, 
-          border: `1px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`, 
-          maxWidth: 400, 
-          margin: '30px auto', 
-          fontFamily: 'Poppins, sans-serif', 
-          boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 10px rgba(0,0,0,0.1)', 
-          width: isSmallScreen ? '97%' : 'auto', 
-          padding: 5 
+      <Box
+        sx={{
+          borderRadius: 4,
+          border: `1px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`,
+          maxWidth: 400,
+          margin: '30px auto',
+          fontFamily: 'Poppins, sans-serif',
+          boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 10px rgba(0,0,0,0.1)',
+          width: isSmallScreen ? '97%' : 'auto',
+          padding: 5,
         }}
       >
         <h1 style={{ textAlign: 'center', marginBottom: 24 }}>{isLogin ? 'Login' : 'Sign Up'}</h1>
@@ -180,13 +191,13 @@ const SignUpLogin = () => {
           <MessagePopup message={successMessage} messageType={popupMessageType} open={messagePopupOpen} onClose={() => setMessagePopupOpen(false)} />
           {showForgotPassword ? (
             <>
-              <StyledTextField 
-                name="forgotEmail" 
-                label="Enter your email" 
-                variant="outlined" 
-                type="email" 
-                value={forgotEmail} 
-                onChange={(e) => setForgotEmail(e.target.value)} 
+              <StyledTextField
+                name="forgotEmail"
+                label="Enter your email"
+                variant="outlined"
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
               />
               <button type="submit" style={{ width: '100%', border: 'none', padding: 12, borderRadius: 8, backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', color: theme.palette.mode === 'dark' ? '#000' : '#fff', cursor: 'pointer', marginTop: 16, height: 48, fontSize: 16 }} disabled={loading}>
                 {loading ? <CircularProgress size={24} /> : 'Send Reset Link'}
@@ -199,29 +210,30 @@ const SignUpLogin = () => {
             <>
               {!isLogin && (
                 <>
-                  <StyledTextField 
-                    name="firstName" 
-                    label="First Name" 
-                    variant="outlined" 
-                    error={!!errors.firstName} 
-                    helperText={errors.firstName} 
+                  <StyledTextField
+                    name="firstName"
+                    label="First Name"
+                    variant="outlined"
+                    error={!!errors.firstName}
+                    helperText={errors.firstName}
+                    onChange={(e) => setGender(e.target.value)}
                   />
-                  <StyledTextField 
-                    name="lastName" 
-                    label="Last Name" 
-                    variant="outlined" 
-                    error={!!errors.lastName} 
-                    helperText={errors.lastName} 
+                  <StyledTextField
+                    name="lastName"
+                    label="Last Name"
+                    variant="outlined"
+                    error={!!errors.lastName}
+                    helperText={errors.lastName}
                   />
-                  <StyledTextField 
-                    name="birthDate" 
-                    label="Birth Date" 
-                    variant="outlined" 
-                    type="date" 
-                    error={!!errors.birthDate} 
-                    helperText={errors.birthDate} 
-                    InputLabelProps={{ shrink: true }} 
-                    onChange={(e) => setBirthDate(e.target.value)} 
+                  <StyledTextField
+                    name="birthDate"
+                    label="Birth Date"
+                    variant="outlined"
+                    type="date"
+                    error={!!errors.birthDate}
+                    helperText={errors.birthDate}
+                    InputLabelProps={{ shrink: true }}
+                    onChange={(e) => setBirthDate(e.target.value)}
                   />
                   <StyledTextField
                     select
@@ -234,25 +246,42 @@ const SignUpLogin = () => {
                     onChange={(e) => setGender(e.target.value)}
                   >
                     <MenuItem value=""><em>None</em></MenuItem>
-                    <MenuItem value="male">Male</MenuItem>
-                    <MenuItem value="female">Female</MenuItem>
-                    <MenuItem value="other">Other</MenuItem>
+                    <MenuItem value="Male">Male</MenuItem>
+                    <MenuItem value="Female">Female</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
                   </StyledTextField>
                 </>
               )}
               {['email', 'password'].map((field) => (
-                <StyledTextField 
-                  key={field} 
-                  name={field} 
-                  label={field.replace(/^\w/, (c) => c.toUpperCase())} 
-                  variant="outlined" 
-                  type={field === 'password' && !showPassword ? 'password' : 'text'} 
-                  error={!!errors[field]} 
-                  helperText={errors[field]} 
-                  InputProps={field === 'password' ? { endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> } : null} 
+                <StyledTextField
+                  key={field}
+                  name={field}
+                  label={field.replace(/^\w/, (c) => c.toUpperCase())}
+                  variant="outlined"
+                  type={field === 'password' && !showPassword ? 'password' : 'text'}
+                  error={!!errors[field]}
+                  helperText={errors[field]}
+                  InputProps={field === 'password' ? {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setShowPassword((prev) => !prev)}>
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  } : null}
                 />
               ))}
-              {!isLogin && <StyledTextField name="confirmPassword" label="Confirm Password" variant="outlined" type={showPassword ? 'text' : 'password'} error={!!errors.confirmPassword} helperText={errors.confirmPassword} />}
+              {!isLogin && (
+                <StyledTextField
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  variant="outlined"
+                  type={showPassword ? 'text' : 'password'}
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword}
+                />
+              )}
               <button type="submit" style={{ width: '100%', border: 'none', padding: 12, borderRadius: 8, backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', color: theme.palette.mode === 'dark' ? '#000' : '#fff', cursor: 'pointer', marginTop: 16, height: 48, fontSize: 16 }} disabled={loading}>
                 {loading ? <CircularProgress size={24} /> : isLogin ? 'Login' : 'Sign Up'}
               </button>
