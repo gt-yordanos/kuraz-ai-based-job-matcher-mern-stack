@@ -15,7 +15,7 @@ const ApplicantSchema = new mongoose.Schema({
             startDate: { type: Date },
             endDate: { type: Date },
             description: { type: String },
-            jobType: { type: String, enum: ['Full-Time', 'Part-Time', 'Intern', 'Other'], required: true },
+            jobType: { type: String, enum: ['Full-Time', 'Part-Time', 'Intern', 'Other', 'Research'], required: true },
         },
     ],
     education: [
