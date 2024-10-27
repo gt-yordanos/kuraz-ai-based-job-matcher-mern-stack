@@ -22,10 +22,11 @@ const ApplicantSchema = new mongoose.Schema({
         {
             degree: { 
                 type: String,
-                enum: ['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'], // Add specific degree types here
+                enum: ['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'],
             },
             institution: { type: String },
-            graduationYear: { type: Number },
+            major: { type: String } ,// Add major field here
+            graduationYear: { type: Number } 
         },
     ],
     location: { type: String },
@@ -67,7 +68,7 @@ ApplicantSchema.methods.calculateProfileCompletion = function () {
     
     // Education scoring
     const educationPoints = this.education.reduce((total, edu) => {
-        return total + (edu.degree ? 5 : 0) + (edu.institution ? 5 : 0); // 5 points for each degree and institution
+        return total + (edu.degree ? 5 : 0) + (edu.institution ? 5 : 0) + (edu.major ? 5 : 0); // 5 points for each degree, institution, and major
     }, 0);
     
     // Add experience and education points
@@ -75,7 +76,7 @@ ApplicantSchema.methods.calculateProfileCompletion = function () {
     score += educationPoints;
 
     // Total possible points
-    const totalPoints = 10 * 8 + (this.experience.length * 10) + (this.education.length * 10);
+    const totalPoints = 10 * 8 + (this.experience.length * 10) + (this.education.length * 15); // Updated to include major points
 
     // Calculate and return the profile completion percentage
     return Math.min((score / totalPoints) * 100, 100);
