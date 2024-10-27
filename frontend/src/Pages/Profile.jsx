@@ -4,14 +4,13 @@ import {
   Box, TextField, Button, CircularProgress, useTheme, LinearProgress,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { FaUser, FaGraduationCap, FaBriefcase, FaArrowRight, FaArrowLeft, FaPlus, FaUpload } from 'react-icons/fa';
+import { FaUser, FaGraduationCap, FaBriefcase, FaArrowRight, FaArrowLeft, FaPlus, FaUpload, FaTrash } from 'react-icons/fa';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import { useAuth } from '../Contexts/AuthContext';
 import Axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import MessagePopup from '../Components/MessagePopup';
 
-// Styled components
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: 16,
   width: '100%',
@@ -21,47 +20,32 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
   '& .MuiInputBase-input, & .MuiFormLabel-root': { color: theme.palette.mode === 'dark' ? '#fff' : '#000' },
   '& .MuiFormHelperText-root': { color: 'red' },
-  '& .MuiInputBase-input::placeholder': { color: theme.palette.mode === 'dark' ? '#aaa' : '#555' },
 }));
 
 const SwitchContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0',
-  borderRadius: 50,
-  padding: 4,
-  marginBottom: 16,
+  display: 'flex', justifyContent: 'center', backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0', borderRadius: 50, padding: 4, marginBottom: 16,
 }));
 
 const SwitchButton = styled('div')(({ selected, theme }) => ({
-  padding: '16px',
-  borderRadius: 20,
-  cursor: 'pointer',
-  margin: '0 2px',
-  flexGrow: 1,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
+  padding: '16px', borderRadius: 20, cursor: 'pointer', margin: '0 2px', flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center',
   backgroundColor: selected ? (theme.palette.mode === 'dark' ? '#fff' : '#000') : 'transparent',
-  color: selected ? (theme.palette.mode === 'dark' ? '#000' : '#fff') : 'inherit',
-  fontSize: 24,
+  color: selected ? (theme.palette.mode === 'dark' ? '#000' : '#fff') : 'inherit', fontSize: 24,
 }));
 
-const ButtonStyled = styled(Button)(({ theme, variant }) => ({
-  backgroundColor: variant === 'nav' 
-    ? (theme.palette.mode === 'dark' ? '#fff' : '#000')  // Background color for nav buttons
-    : (theme.palette.mode === 'dark' ? '#fff' : '#000'),  // Background color for other buttons
-  color: variant === 'nav' 
-    ? (theme.palette.mode === 'dark' ? '#000' : '#fff')    // Text color for nav buttons
-    : theme.palette.mode === 'dark' ? '#000' : '#fff',      // Text color for other buttons
-  '&:hover': { 
-    backgroundColor: variant === 'nav' 
-      ? (theme.palette.mode === 'dark' ? '#666' : '#ccc') // Hover color for nav buttons
-      : (theme.palette.mode === 'dark' ? '#e0e0e0' : '#333') 
-  },
-  ...(variant === 'nav' && { width: '120px' }),
+const ButtonStyled = styled(Button)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000', color: theme.palette.mode === 'dark' ? '#000' : '#fff',
+  '&:hover': { backgroundColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333' },
 }));
 
+const AddButton = styled(Button)(({ theme }) => ({
+  backgroundColor: 'emerald', color: '#fff',
+  '&:hover': { backgroundColor: '#007f5f' },
+}));
+
+const RemoveButton = styled(Button)(({ theme }) => ({
+  backgroundColor: 'red', color: '#fff',
+  '&:hover': { backgroundColor: '#d9534f' },
+}));
 
 const Profile = () => {
   const { user } = useAuth();
@@ -69,10 +53,9 @@ const Profile = () => {
   const theme = useTheme();
 
   const [profileData, setProfileData] = useState({
-    firstName: '', lastName: '', email: '', phone: '', birthday: '',
-    gender: '', skills: [], experience: [{}], education: [{}], location: '', resume: null,
+    firstName: '', lastName: '', email: '', phone: '', birthday: '', gender: '',
+    skills: [], experience: [{}], education: [{}], location: '', resume: null,
   });
-
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0);
   const [popup, setPopup] = useState({ open: false, message: '', type: 'success' });
@@ -105,12 +88,12 @@ const Profile = () => {
   };
 
   const handleChange = ({ target: { name, value } }) => {
-    setProfileData(prev => ({ ...prev, [name]: value || '' })); // Ensure value is always defined
+    setProfileData(prev => ({ ...prev, [name]: value || '' }));
   };
 
   const handleArrayChange = (index, name, value, array) => {
     const newArray = [...profileData[array]];
-    newArray[index] = { ...newArray[index], [name]: value || '' }; // Ensure value is always defined
+    newArray[index] = { ...newArray[index], [name]: value || '' };
     setProfileData(prev => ({ ...prev, [array]: newArray }));
   };
 
@@ -118,121 +101,107 @@ const Profile = () => {
     setProfileData(prev => ({ ...prev, [array]: [...prev[array], {}] }));
   };
 
-  const handleResumeChange = async (e) => {
+  const removeArrayItem = (index, array) => {
+    const newArray = profileData[array].filter((_, i) => i !== index);
+    setProfileData(prev => ({ ...prev, [array]: newArray }));
+  };
+
+  const handleResumeChange = (e) => {
     const file = e.target.files[0];
     if (file?.type === 'application/pdf') {
       setProfileData(prev => ({ ...prev, resume: file }));
-      await saveProfileData();
     } else {
       setPopup({ open: true, message: 'Please upload a valid PDF file.', type: 'error' });
     }
   };
 
   const saveProfileData = async () => {
-    setLoading(true);
     const token = localStorage.getItem('token');
     const { id: userId } = jwtDecode(token);
     
+    // Parse resume to text before sending to the database
     const formData = new FormData();
-    Object.entries(profileData).forEach(([key, value]) => {
-      formData.append(key, Array.isArray(value) ? JSON.stringify(value) : value);
+    profileData.resume && formData.append('resume', profileData.resume);
+    Object.keys(profileData).forEach(key => {
+      if (key !== 'resume') {
+        formData.append(key, profileData[key]);
+      }
     });
-    
+
     try {
-      const response = await Axios.put(`http://localhost:5000/api/applicants/${userId}`, formData);
-      setProfileScore(response.data.profileCompletion);
-      setPopup({ open: true, message: 'Profile saved successfully!', type: 'success' });
+      await Axios.put(`http://localhost:5000/api/applicants/${userId}`, formData, {
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+      });
+      setPopup({ open: true, message: 'Profile data saved successfully!', type: 'success' });
     } catch (error) {
-      setPopup({ open: true, message: 'Error saving profile. Please try again.', type: 'error' });
-    } finally {
-      setLoading(false);
+      console.error('Error saving profile data:', error);
+      setPopup({ open: true, message: 'Error saving profile data.', type: 'error' });
     }
   };
 
-  const validateCurrentStep = () => {
-    switch (step) {
-      case 0:
-        return profileData.firstName && profileData.lastName && profileData.email && profileData.phone && profileData.gender && profileData.birthday;
-      case 1:
-        return profileData.education.every(edu => edu.degree && edu.institution && edu.graduationYear);
-      case 2:
-        return profileData.experience.every(exp => exp.jobTitle && exp.company && exp.jobType && exp.startDate);
-      case 3:
-        return profileData.skills.length > 0;
-      default:
-        return true;
-    }
-  };
-
-  const nextStep = async () => {
-    if (validateCurrentStep()) {
-      await saveProfileData();
-      setStep(prevStep => (prevStep < 3 ? prevStep + 1 : prevStep));
-    } else {
-      setPopup({ open: true, message: 'Please fill out all required fields before proceeding.', type: 'error' });
-    }
+  const handleNext = async () => {
+    await saveProfileData(); // Save data before moving to the next step
+    setStep(prev => (prev < 3 ? prev + 1 : prev)); // Increment step
   };
 
   const renderStepContent = () => {
     const stepContent = [
-      <>
+      <div>
         <h2><FaUser /> Personal Information</h2>
         {['firstName', 'lastName', 'email', 'phone', 'location'].map(name => (
           <StyledTextField key={name} name={name} label={name.charAt(0).toUpperCase() + name.slice(1)} value={profileData[name]} onChange={handleChange} required />
         ))}
-        <StyledTextField select name="gender" label="Gender" value={profileData.gender || ''} onChange={handleChange} SelectProps={{ native: true }} required>
+        <StyledTextField select name="gender" label="Gender" value={profileData.gender || ''} onChange={handleChange} required>
           <option value="">Select Gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
+          {['Male', 'Female', 'Other'].map(gender => <option key={gender} value={gender}>{gender}</option>)}
         </StyledTextField>
         <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
           <StyledTextField name="resume" label="Resume (PDF)" value={profileData.resume ? profileData.resume.name : ''} InputProps={{ readOnly: true }} fullWidth />
-          <ButtonStyled variant="upload" component="label" sx={{ position: 'absolute', right: 0 }}>
+          <ButtonStyled component="label" sx={{ position: 'absolute', right: 0 }}>
             <FaUpload />
             <input type="file" hidden accept="application/pdf" onChange={handleResumeChange} />
           </ButtonStyled>
         </Box>
         <StyledTextField name="birthday" label="Birthday" type="date" value={profileData.birthday.split('T')[0]} onChange={handleChange} required InputLabelProps={{ shrink: true }} />
-      </>,
-      <>
+      </div>,
+      <div>
         <h2><FaGraduationCap /> Education</h2>
         {profileData.education.map((edu, index) => (
           <div key={index}>
-            <StyledTextField select name="degree" label="Degree" value={edu.degree || ''} onChange={e => handleArrayChange(index, 'degree', e.target.value, 'education')} SelectProps={{ native: true }} required>
-              <option value="">Select Degree</option>
-              {['associate/diploma', 'bachelor', 'masters', 'phd'].map(deg => <option key={deg} value={deg}>{deg.charAt(0).toUpperCase() + deg.slice(1)}</option>)}
+            <StyledTextField name="degree" label="Degree" value={edu.degree || ''} onChange={e => handleArrayChange(index, 'degree', e.target.value, 'education')} required />
+            <StyledTextField name="major" label="Major" value={edu.major || ''} onChange={e => handleArrayChange(index, 'major', e.target.value, 'education')} />
+            <StyledTextField name="institution" label="Institution" value={edu.institution || ''} onChange={e => handleArrayChange(index, 'institution', e.target.value, 'education')} required />
+            <StyledTextField select name="graduationYear" label="Graduation Year" value={edu.graduationYear || ''} onChange={e => handleArrayChange(index, 'graduationYear', e.target.value, 'education')} required>
+              <option value="">Select Year</option>
+              {Array.from({ length: 30 }, (_, i) => 2000 + i).map(year => <option key={year} value={year}>{year}</option>)}
             </StyledTextField>
-            {['institution', 'graduationYear'].map(field => (
-              <StyledTextField key={field} name={field} label={field.charAt(0).toUpperCase() + field.slice(1)} value={edu[field] || ''} onChange={e => handleArrayChange(index, field, e.target.value, 'education')} required />
-            ))}
+            <RemoveButton onClick={() => removeArrayItem(index, 'education')} startIcon={<FaTrash />}>Remove</RemoveButton>
           </div>
         ))}
-        <ButtonStyled variant="upload" onClick={() => addArrayItem('education')} startIcon={<FaPlus />}>Add Education</ButtonStyled>
-      </>,
-      <>
+        <AddButton onClick={() => addArrayItem('education')} startIcon={<FaPlus />}>Add Education</AddButton>
+      </div>,
+      <div>
         <h2><FaBriefcase /> Experience</h2>
         {profileData.experience.map((exp, index) => (
           <div key={index}>
-            {['jobTitle', 'company'].map(field => (
-              <StyledTextField key={field} name={field} label={field.charAt(0).toUpperCase() + field.slice(1)} value={exp[field] || ''} onChange={e => handleArrayChange(index, field, e.target.value, 'experience')} required />
-            ))}
-            <StyledTextField select name="jobType" label="Job Type" value={exp.jobType || ''} onChange={e => handleArrayChange(index, 'jobType', e.target.value, 'experience')} SelectProps={{ native: true }} required>
+            <StyledTextField name="jobTitle" label="Job Title" value={exp.jobTitle || ''} onChange={e => handleArrayChange(index, 'jobTitle', e.target.value, 'experience')} required />
+            <StyledTextField name="company" label="Company" value={exp.company || ''} onChange={e => handleArrayChange(index, 'company', e.target.value, 'experience')} required />
+            <StyledTextField select name="jobType" label="Job Type" value={exp.jobType || ''} onChange={e => handleArrayChange(index, 'jobType', e.target.value, 'experience')} required>
               <option value="">Select Job Type</option>
-              {['Full-time', 'Part-time', 'Contract', 'Internship'].map(type => <option key={type} value={type}>{type}</option>)}
+              {['Full-time', 'Part-time', 'Internship', 'Contract'].map(type => <option key={type} value={type}>{type}</option>)}
             </StyledTextField>
-            {['startDate', 'endDate'].map(field => (
-              <StyledTextField key={field} name={field} label={field.charAt(0).toUpperCase() + field.slice(1)} type="date" value={exp[field]?.split('T')[0] || ''} onChange={e => handleArrayChange(index, field, e.target.value, 'experience')} required InputLabelProps={{ shrink: true }} />
-            ))}
-            <StyledTextField name="description" label="Description" value={exp.description || ''} onChange={e => handleArrayChange(index, 'description', e.target.value, 'experience')} required multiline rows={4} />
+            <StyledTextField name="startDate" label="Start Date" type="date" value={exp.startDate || ''} onChange={e => handleArrayChange(index, 'startDate', e.target.value, 'experience')} required InputLabelProps={{ shrink: true }} />
+            <StyledTextField name="endDate" label="End Date" type="date" value={exp.endDate || ''} onChange={e => handleArrayChange(index, 'endDate', e.target.value, 'experience')} InputLabelProps={{ shrink: true }} />
+            <StyledTextField name="description" label="Description" value={exp.description || ''} onChange={e => handleArrayChange(index, 'description', e.target.value, 'experience')} />
+            <RemoveButton onClick={() => removeArrayItem(index, 'experience')} startIcon={<FaTrash />}>Remove</RemoveButton>
           </div>
         ))}
-        <ButtonStyled variant="upload" onClick={() => addArrayItem('experience')} startIcon={<FaPlus />}>Add Experience</ButtonStyled>
-      </>,
-      <>
+        <AddButton onClick={() => addArrayItem('experience')} startIcon={<FaPlus />}>Add Experience</AddButton>
+      </div>,
+      <div>
         <h2><TipsAndUpdatesIcon /> Skills</h2>
         <StyledTextField name="skills" label="Skills (comma separated)" value={profileData.skills.join(', ')} onChange={e => handleChange({ target: { name: 'skills', value: e.target.value.split(', ') } })} />
-      </>,
+      </div>,
     ];
     return stepContent[step];
   };
@@ -267,19 +236,17 @@ const Profile = () => {
         boxShadow: theme.palette.mode === 'dark' ? 'none' : '0 0 10px rgba(0,0,0,0.1)',
       }}>
         {renderStepContent()}
-        <form onSubmit={e => { e.preventDefault(); saveProfileData(); }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-            {step > 0 && (
-              <ButtonStyled variant="nav" type="button" onClick={() => setStep(step - 1)} startIcon={<FaArrowLeft />}>
-                Previous
-              </ButtonStyled>
-            )}
-            <ButtonStyled variant="nav" type="button" onClick={nextStep} endIcon={step < 3 ? <FaArrowRight /> : null} disabled={loading}>
-              {step < 3 ? 'Next' : 'Finish'}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+          {step > 0 && (
+            <ButtonStyled type="button" onClick={() => setStep(step - 1)} startIcon={<FaArrowLeft />}>
+              Previous
             </ButtonStyled>
-          </Box>
-          {loading && <CircularProgress sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#000', marginTop: 2 }} />}
-        </form>
+          )}
+          <ButtonStyled type="button" onClick={handleNext} endIcon={step < 3 ? <FaArrowRight /> : null} disabled={loading}>
+            {step < 3 ? 'Next' : 'Finish'}
+          </ButtonStyled>
+        </Box>
+        {loading && <CircularProgress sx={{ color: theme.palette.mode === 'dark' ? '#fff' : '#000', marginTop: 2 }} />}
         <MessagePopup message={popup.message} messageType={popup.type} open={popup.open} onClose={() => setPopup({ ...popup, open: false })} />
       </Box>
     </>

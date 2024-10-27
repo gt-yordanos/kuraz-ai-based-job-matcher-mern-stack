@@ -20,14 +20,17 @@ const ApplicantSchema = new mongoose.Schema({
     ],
     education: [
         {
-            degree: { type: String },
+            degree: { 
+                type: String,
+                enum: ['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'], // Add specific degree types here
+            },
             institution: { type: String },
             graduationYear: { type: Number },
         },
     ],
     location: { type: String },
     birthday: { type: Date },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+    gender: { type: String, enum: ['Male', 'Female', 'Other'] },
     createdAt: { type: Date, default: Date.now },
     password: { type: String, required: true },
     profileCompletion: { type: Number, default: 0 },
@@ -45,13 +48,6 @@ ApplicantSchema.pre('save', async function (next) {
 // Method to calculate the applicant's profile completeness score
 ApplicantSchema.methods.calculateProfileCompletion = function () {
     let score = 0;
-    const baseFields = 12; // Number of base fields with fixed scores
-    const experienceFields = this.experience.reduce((total, exp) => {
-        return total + (exp.jobTitle ? 5 : 0) + (exp.company ? 5 : 0); // 5 points for each job title and company
-    }, 0);
-    const educationFields = this.education.reduce((total, edu) => {
-        return total + (edu.degree ? 5 : 0) + (edu.institution ? 5 : 0); // 5 points for each degree and institution
-    }, 0);
 
     // Scoring for base fields
     score += this.firstName ? 10 : 0;
@@ -59,18 +55,30 @@ ApplicantSchema.methods.calculateProfileCompletion = function () {
     score += this.email ? 10 : 0;
     score += this.phone ? 10 : 0;
     score += this.resume ? 10 : 0;
-    score += (this.skills && this.skills.length > 0) ? 10 : 0; // 10 points if skills exist
-    score += experienceFields; // Add experience points
-    score += educationFields; // Add education points
+    score += this.skills && this.skills.length > 0 ? 10 : 0; // 10 points if skills exist
     score += this.location ? 10 : 0;
     score += this.birthday ? 10 : 0;
     score += this.gender ? 10 : 0;
 
+    // Experience scoring
+    const experiencePoints = this.experience.reduce((total, exp) => {
+        return total + (exp.jobTitle ? 5 : 0) + (exp.company ? 5 : 0); // 5 points for each job title and company
+    }, 0);
+    
+    // Education scoring
+    const educationPoints = this.education.reduce((total, edu) => {
+        return total + (edu.degree ? 5 : 0) + (edu.institution ? 5 : 0); // 5 points for each degree and institution
+    }, 0);
+    
+    // Add experience and education points
+    score += experiencePoints;
+    score += educationPoints;
+
     // Total possible points
-    const totalFields = baseFields + (this.experience.length * 10) + (this.education.length * 10);
+    const totalPoints = 10 * 8 + (this.experience.length * 10) + (this.education.length * 10);
 
     // Calculate and return the profile completion percentage
-    return Math.min((score / totalFields) * 100, 100);
+    return Math.min((score / totalPoints) * 100, 100);
 };
 
 // Optional: Separate method for explicit updates
