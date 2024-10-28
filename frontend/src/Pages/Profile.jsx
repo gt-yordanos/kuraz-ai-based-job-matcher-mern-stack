@@ -68,6 +68,10 @@ const Profile = () => {
     firstName: '', lastName: '', email: '', phone: '', birthday: '', gender: '',
     skills: [], experience: [{}], education: [{}], location: '', resume: null,
   });
+  const [savedData, setSavedData] = useState({
+    firstName: '', lastName: '', email: '', phone: '', birthday: '', gender: '',
+    skills: [], experience: [{}], education: [{}], location: '', resume: null,
+  });
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0);
   const [popup, setPopup] = useState({ open: false, message: '', type: 'success' });
@@ -81,6 +85,45 @@ const Profile = () => {
     }
   }, [user, navigate]);
 
+
+  const calculateProfileCompletion = (profileData) => {
+    let completion = 0;
+  
+    // Check if personal information fields are filled
+    const personalInfoFilled = profileData.firstName && profileData.lastName && profileData.email && 
+                               profileData.phone && profileData.birthday && profileData.gender && 
+                               profileData.location;
+    if (personalInfoFilled) {
+      completion += 30; // Personal information is worth 30%
+    }
+  
+    // Check if at least one education entry is filled
+    const hasEducation = profileData.education.length > 0;
+    const educationFilled = hasEducation && profileData.education.every(edu => edu.degree && edu.institution && 
+                                                       edu.major && edu.graduationYear);
+    if (educationFilled) {
+      completion += 25; // Education is worth 25%
+    }
+  
+    // Check if at least one experience entry is filled
+    const hasExperience = profileData.experience.length > 0;
+    const experienceFilled = hasExperience && profileData.experience.every(exp => exp.jobTitle && exp.company && 
+                                                          exp.startDate && exp.jobType && 
+                                                          exp.description && exp.endDate);
+    if (experienceFilled) {
+      completion += 25; // Experience is worth 25%
+    }
+  
+    // Check if skills array is not empty
+    if (profileData.skills && profileData.skills.length > 1) {
+      completion += 20; // Skills are worth 20%
+    }
+  
+    return completion; // Return the total completion score
+  };
+  
+
+  
   const fetchProfileData = async () => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -88,7 +131,7 @@ const Profile = () => {
         const { id: userId } = jwtDecode(token);
         const { data } = await Axios.get(`http://localhost:5000/api/applicants/${userId}`);
         setProfileData(data);
-        setProfileScore(data.profileCompletion || 0);
+        setSavedData(data);
       } catch (error) {
         console.error('Error fetching profile:', error);
       } finally {
@@ -98,6 +141,14 @@ const Profile = () => {
       setLoading(false);
     }
   };
+
+   // Update profile score whenever the profile data changes
+   useEffect(() => {
+    const newProfileScore = calculateProfileCompletion(savedData);
+    setProfileScore(newProfileScore);
+  }, [savedData]);
+
+
 
   const handleChange = ({ target: { name, value } }) => {
     setProfileData(prev => ({ ...prev, [name]: value || '' }));
@@ -131,24 +182,32 @@ const Profile = () => {
       location: profileData.location,
       resume: profileData.resume,
     } : section === 'education' ? { education: profileData.education } : section === 'experience' ? { experience: profileData.experience } : { skills: profileData.skills };
-
+  
     try {
       await Axios.put(`http://localhost:5000/api/applicants/${userId}`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPopup({ open: true, message: `${section.charAt(0).toUpperCase() + section.slice(1)} info saved successfully!`, type: 'success' });
+  
+      // Update the savedData state to trigger the profile score calculation
+      setSavedData(prevSavedData => ({
+        ...prevSavedData,
+        ...payload,
+      }));
+  
       return true; // Indicate success
     } catch (error) {
       setPopup({ open: true, message: 'Error saving data. Please try again.', type: 'error' });
       return false; // Indicate failure
     }
   };
+  
 
   const handleNextStep = async () => {
     let isValid = true;
     
     if (step === 0) {
-      isValid = profileData.firstName && profileData.lastName && profileData.email && profileData.phone && profileData.birthday && profileData.gender;
+      isValid = profileData.firstName && profileData.lastName && profileData.email && profileData.phone && profileData.birthday && profileData.gender && profileData.location;
     } else if (step === 1) {
       isValid = profileData.education.every(edu => edu.degree && edu.institution && edu.major && edu.graduationYear);
     } else if (step === 2) {
@@ -234,16 +293,22 @@ const Profile = () => {
   };
 
   const getStatusMessage = () => {
-    if (profileScore < 50) return "You have a lot to fill in.";
-    if (profileScore < 75) return "You're almost there!";
-    return "Great job! Your profile is complete.";
+    if (profileScore < 30) {
+      return "You have a lot to fill in. Adding your personal details, education, and work experience will help Kuraz AI match you to suitable job opportunities.";
+    } 
+    if (profileScore < 50) {
+      return "Your profile is getting started, but there's still some work to do. Completing your education and experience sections will significantly boost your chances of being ranked higher in job searches by Kuraz AI.";
+    }
+    if (profileScore < 75) {
+      return "You're almost there! Fill in any missing details, especially in your work experience and skills. A complete profile will make you stand out and increase the likelihood of Kuraz AI recommending you for your dream job.";
+    }
+    if (profileScore < 100) {
+      return "Great job! Your profile is nearly complete. Double-check to ensure all details are accurate and add any recent skills or experiences. A perfect profile helps Kuraz AI present you as a top candidate to employers.";
+    }
+    return "Excellent work! Your profile is fully complete. Kuraz AI will rank you among the top candidates for relevant job matches, increasing your chances of landing your ideal job.";
   };
+  
 
-  const matchingMessage = () => {
-    return profileScore === 100
-      ? "Your profile is complete! We'll start matching you with your ideal job."
-      : "Please complete your profile for better job matching.";
-  };
 
   return (
     <>
@@ -255,10 +320,9 @@ const Profile = () => {
         ) : (
           <>
             <h1>Hi, {profileData.firstName}!</h1>
-            <p>{matchingMessage()}</p>
+            <p>{getStatusMessage()}</p>
             <LinearProgress variant="determinate" value={profileScore} sx={{ marginBottom: 2 }} />
             <p>{profileScore.toFixed(0)}%</p>
-            <p>{getStatusMessage()}</p>
             <SwitchContainer>
               {[FaUser, FaGraduationCap, FaBriefcase, TipsAndUpdatesIcon].map((Icon, index) => (
                 <SwitchButton key={index} selected={step === index} onClick={() => setStep(index)}>
