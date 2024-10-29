@@ -6,7 +6,7 @@ const ApplicantSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String },
-    resume: { type: String }, 
+    resume: { type: String },
     skills: [{ type: String }],
     experience: [
         {
@@ -25,8 +25,9 @@ const ApplicantSchema = new mongoose.Schema({
                 enum: ['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'],
             },
             institution: { type: String },
-            major: { type: String } ,// Add major field here
-            graduationYear: { type: Number } 
+            major: { type: String },
+            graduationYear: { type: Number },
+            cgpa: { type: Number } // Add CGPA field here
         },
     ],
     location: { type: String },
@@ -68,7 +69,7 @@ ApplicantSchema.methods.calculateProfileCompletion = function () {
     
     // Education scoring
     const educationPoints = this.education.reduce((total, edu) => {
-        return total + (edu.degree ? 5 : 0) + (edu.institution ? 5 : 0) + (edu.major ? 5 : 0); // 5 points for each degree, institution, and major
+        return total + (edu.degree ? 5 : 0) + (edu.institution ? 5 : 0) + (edu.major ? 5 : 0) + (edu.cgpa ? 5 : 0); // Add CGPA points
     }, 0);
     
     // Add experience and education points
@@ -76,7 +77,7 @@ ApplicantSchema.methods.calculateProfileCompletion = function () {
     score += educationPoints;
 
     // Total possible points
-    const totalPoints = 10 * 8 + (this.experience.length * 10) + (this.education.length * 15); // Updated to include major points
+    const totalPoints = 10 * 8 + (this.experience.length * 10) + (this.education.length * 20); // Updated to include CGPA points
 
     // Calculate and return the profile completion percentage
     return Math.min((score / totalPoints) * 100, 100);

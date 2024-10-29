@@ -49,12 +49,12 @@ const ButtonStyled = styled(Button)(({ theme }) => ({
 const AddButton = styled(Button)(({ theme }) => ({
   backgroundColor: 'smoothgreen',
   color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-  '&:hover': { backgroundColor: '#007f5f', filter: 'brightness(1.1)' },
+  '&:hover': { backgroundColor: '#03E198', filter: 'brightness(1)' },
 }));
 
 const RemoveButton = styled(Button)(({ theme }) => ({
   backgroundColor: 'smoothred',
-  marginBottom: '4px',
+  marginBottom: '8px',
   color: theme.palette.mode === 'dark' ? '#fff' : '#000',
   '&:hover': { backgroundColor: '#ff6b6b', filter: 'brightness(1.1)' },
 }));
@@ -100,11 +100,11 @@ const Profile = () => {
     // Check if at least one education entry is filled
     const hasEducation = profileData.education.length > 0;
     const educationFilled = hasEducation && profileData.education.every(edu => edu.degree && edu.institution && 
-                                                       edu.major && edu.graduationYear);
+                                                       edu.major && edu.graduationYear && edu.cgpa);
     if (educationFilled) {
       completion += 25; // Education is worth 25%
     }
-  
+
     // Check if at least one experience entry is filled
     const hasExperience = profileData.experience.length > 0;
     const experienceFilled = hasExperience && profileData.experience.every(exp => exp.jobTitle && exp.company && 
@@ -209,7 +209,7 @@ const Profile = () => {
     if (step === 0) {
       isValid = profileData.firstName && profileData.lastName && profileData.email && profileData.phone && profileData.birthday && profileData.gender && profileData.location;
     } else if (step === 1) {
-      isValid = profileData.education.every(edu => edu.degree && edu.institution && edu.major && edu.graduationYear);
+      isValid = profileData.education.every(edu => edu.degree && edu.institution && edu.major && edu.graduationYear & edu.cgpa);
     } else if (step === 2) {
       isValid = profileData.experience.every(exp => exp.jobTitle && exp.company && exp.startDate && exp.jobType && exp.description && exp.endDate);
     } else if (step === 3) {
@@ -243,25 +243,26 @@ const Profile = () => {
         </FormControl>
         <StyledTextField name="birthday" label="Birthday" type="date" value={profileData.birthday.split('T')[0]} onChange={handleChange} required InputLabelProps={{ shrink: true }} />
       </div>,
-      <div>
-        <h2><FaGraduationCap /> Education</h2>
-        {profileData.education.map((edu, index) => (
-          <div key={index}>
-            <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
-              <InputLabel>Degree</InputLabel>
-              <Select name="degree" value={edu.degree || ''} onChange={e => handleArrayChange(index, 'degree', e.target.value, 'education')} label="Degree">
-                <MenuItem value="">Select Degree</MenuItem>
-                {['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'].map(degree => <MenuItem key={degree} value={degree}>{degree}</MenuItem>)}
-              </Select>
-            </FormControl>
-            <StyledTextField name="institution" label="Institution" value={edu.institution || ''} onChange={e => handleArrayChange(index, 'institution', e.target.value, 'education')} required />
-            <StyledTextField name="major" label="Major" value={edu.major || ''} onChange={e => handleArrayChange(index, 'major', e.target.value, 'education')} required />
-            <StyledTextField name="graduationYear" label="Graduation Year" type="number" value={edu.graduationYear || ''} onChange={e => handleArrayChange(index, 'graduationYear', e.target.value, 'education')} required InputLabelProps={{ shrink: true }} />
-            <RemoveButton onClick={() => removeArrayItem(index, 'education')} startIcon={<FaTrash />}>Remove</RemoveButton>
-          </div>
-        ))}
-        <AddButton onClick={() => addArrayItem('education')} startIcon={<FaPlus />}>Add Education</AddButton>
-      </div>,
+     <div>
+     <h2><FaGraduationCap /> Education</h2>
+     {profileData.education.map((edu, index) => (
+       <div key={index}>
+         <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
+           <InputLabel>Degree</InputLabel>
+           <Select name="degree" value={edu.degree || ''} onChange={e => handleArrayChange(index, 'degree', e.target.value, 'education')} label="Degree">
+             <MenuItem value="">Select Degree</MenuItem>
+             {['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'].map(degree => <MenuItem key={degree} value={degree}>{degree}</MenuItem>)}
+           </Select>
+         </FormControl>
+         <StyledTextField name="institution" label="Institution" value={edu.institution || ''} onChange={e => handleArrayChange(index, 'institution', e.target.value, 'education')} required />
+         <StyledTextField name="major" label="Major" value={edu.major || ''} onChange={e => handleArrayChange(index, 'major', e.target.value, 'education')} required />
+         <StyledTextField name="graduationYear" label="Graduation Year" type="number" value={edu.graduationYear || ''} onChange={e => handleArrayChange(index, 'graduationYear', e.target.value, 'education')} required />
+         <StyledTextField name="cgpa" label="CGPA" type="number" step="0.01" value={edu.cgpa || ''} onChange={e => handleArrayChange(index, 'cgpa', e.target.value, 'education')} required />
+         <RemoveButton onClick={() => removeArrayItem(index, 'education')} startIcon={<FaTrash />}>Remove</RemoveButton>
+       </div>
+     ))}
+     <AddButton onClick={() => addArrayItem('education')} startIcon={<FaPlus />}>Add Education</AddButton>
+   </div>,   
       <div>
         <h2><FaBriefcase /> Experience</h2>
         {profileData.experience.map((exp, index) => (
