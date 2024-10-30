@@ -19,6 +19,7 @@ import { useAuth } from '../Contexts/AuthContext';
 import Axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import MessagePopup from '../Components/MessagePopup';
+import ProfileSwitch from '../Components/profileSwitch';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   marginBottom: 16,
@@ -29,16 +30,6 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
   '& .MuiInputBase-input, & .MuiFormLabel-root': { color: theme.palette.mode === 'dark' ? '#fff' : '#000' },
   '& .MuiFormHelperText-root': { color: 'red' },
-}));
-
-const SwitchContainer = styled(Box)(({ theme }) => ({
-  display: 'flex', justifyContent: 'center', backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0', borderRadius: 50, padding: 4, marginBottom: 16,
-}));
-
-const SwitchButton = styled('div')(({ selected, theme }) => ({
-  padding: '16px', borderRadius: 20, cursor: 'pointer', margin: '0 2px', flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center',
-  backgroundColor: selected ? (theme.palette.mode === 'dark' ? '#fff' : '#000') : 'transparent',
-  color: selected ? (theme.palette.mode === 'dark' ? '#000' : '#fff') : 'inherit', fontSize: 24,
 }));
 
 const ButtonStyled = styled(Button)(({ theme }) => ({
@@ -324,13 +315,11 @@ const Profile = () => {
             <p>{getStatusMessage()}</p>
             <LinearProgress variant="determinate" value={profileScore} sx={{ marginBottom: 2 }} />
             <p>{profileScore.toFixed(0)}%</p>
-            <SwitchContainer>
-              {[FaUser, FaGraduationCap, FaBriefcase, TipsAndUpdatesIcon].map((Icon, index) => (
-                <SwitchButton key={index} selected={step === index} onClick={() => setStep(index)}>
-                  <Icon />
-                </SwitchButton>
-              ))}
-            </SwitchContainer>
+            <ProfileSwitch
+              steps={[FaUser, FaGraduationCap, FaBriefcase, TipsAndUpdatesIcon]}
+              currentStep={step}
+              onChange={setStep}
+            />
           </>
         )}
       </div>
