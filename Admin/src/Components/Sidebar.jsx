@@ -4,11 +4,14 @@ import { Dashboard, People, Work, PostAdd, Logout, ChevronLeft, ChevronRight, As
 import { Link, useLocation } from 'react-router-dom';
 import ThemeToggler from './ThemeToggler';
 import Images from '../assets/Images.js';
+import { useHrAuth } from '../Contexts/HrAuthContext';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const theme = useTheme(); // Get the current theme
+  const theme = useTheme();
+  const { logout } = useHrAuth();
+
   const toggleCollapse = () => setCollapsed(prev => !prev);
 
   const menuItems = [
@@ -19,9 +22,12 @@ const Sidebar = () => {
     { text: 'Post Job', icon: <PostAdd />, path: '/post-job' },
   ];
 
-  // Define colors based on the theme with increased contrast for light mode
-  const selectedBgColor = theme.palette.mode === 'light' ? '#d9d9d9' : '#424242'; // Darker light gray for selected
-  const hoverBgColor = theme.palette.mode === 'light' ? '#c0c0c0' : '#616161'; // Darker gray for hover in light mode
+  const selectedBgColor = theme.palette.mode === 'light' ? '#d9d9d9' : '#424242';
+  const hoverBgColor = theme.palette.mode === 'light' ? '#c0c0c0' : '#616161';
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <Box
@@ -62,6 +68,12 @@ const Sidebar = () => {
               pl: collapsed ? 1 : 2,
               height: '40px',
               justifyContent: 'flex-start',
+              // Prevent red text color on click
+              color: location.pathname === path ? 'text.primary' : 'inherit',
+              '&.Mui-selected': {
+                backgroundColor: selectedBgColor,
+                color: 'text.primary',
+              },
             }}
             selected={location.pathname === path}
           >
@@ -76,10 +88,12 @@ const Sidebar = () => {
       <List>
         <ListItem
           button
+          onClick={handleLogout}
           sx={{
             borderRadius: 1,
             '&:hover': { backgroundColor: hoverBgColor },
             justifyContent: collapsed ? 'center' : 'flex-start',
+            color: 'inherit', // Ensure the logout text does not change color
           }}
         >
           <ListItemIcon sx={{ color: 'text.primary', minWidth: 40, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

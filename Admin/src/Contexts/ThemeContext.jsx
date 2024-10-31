@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useMemo } from 'react';
+import React, { createContext, useState, useContext, useMemo, useEffect } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -8,7 +8,14 @@ const ThemeContext = createContext();
 export const useThemeContext = () => useContext(ThemeContext);
 
 export const ThemeContextProvider = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
+  // Check local storage for saved theme preference
+  const savedTheme = localStorage.getItem('darkMode');
+  const [darkMode, setDarkMode] = useState(savedTheme === 'true'); // Parse the saved value as a boolean
+
+  // Effect to save theme preference to local storage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
   const toggleTheme = () => {
     setDarkMode((prevMode) => !prevMode);

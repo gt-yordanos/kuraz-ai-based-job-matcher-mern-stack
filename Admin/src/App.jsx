@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline, Box, CircularProgress } from '@mui/material';
 import Sidebar from './Components/Sidebar';
 import JobStatistics from './Pages/JobStatistics';
 import Applicants from './Pages/Applicants';
@@ -8,10 +8,10 @@ import Leaderboard from './Pages/Leaderboard';
 import PostJob from './Pages/PostJob';
 import AllJobs from './Pages/AllJobs';
 import Dashboard from './Pages/Dashboard';
-import HrLogin from './Pages/HrLogin'; // Import HrLogin
+import HrLogin from './Pages/HrLogin'; 
 import { ThemeContextProvider } from './Contexts/ThemeContext';
-import HrAuthProvider, { useHrAuth } from './Contexts/HrAuthContext'; // Import useHrAuth
-import ProtectedRoute from './Components/ProtectedRoute'; // Import ProtectedRoute
+import HrAuthProvider, { useHrAuth } from './Contexts/HrAuthContext'; 
+import ProtectedRoute from './Components/ProtectedRoute'; 
 
 const App = () => {
   return (
@@ -26,22 +26,47 @@ const App = () => {
   );
 };
 
-// Create a separate component to handle sidebar visibility
 const MainContent = () => {
-  const { isAuthenticated } = useHrAuth(); // Access authentication status
+  const { isAuthenticated } = useHrAuth(); 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      // Simulate a delay (fetching resources from local storage or API)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setLoading(false);
+    };
+
+    fetchResources();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box 
+        display="flex" 
+        justifyContent="center" 
+        alignItems="center" 
+        sx={{ height: '100vh', width: '100vw', backgroundColor: 'background.default' }}
+      >
+        <CircularProgress 
+          color="inherit" 
+          sx={{ 
+            color: (theme) => (theme.palette.mode === 'dark' ? 'white' : 'black') 
+          }} 
+        />
+      </Box>
+    );
+  }
 
   return (
-    <Box 
-      display="flex" 
-      sx={{ height: '100vh', width: '100vw' }}
-    >
-      {isAuthenticated && <Sidebar />} {/* Conditionally render Sidebar */}
+    <Box display="flex" sx={{ height: '100vh', width: '100vw' }}>
+      {isAuthenticated && <Sidebar />}
       <Box 
         component="main" 
         sx={{ flexGrow: 1, padding: 3, overflowY: 'auto' }}
       >
         <Routes>
-          <Route path="/login" element={<HrLogin />} /> {/* Login Route */}
+          <Route path="/login" element={<HrLogin />} />
           <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} /> 
           <Route path="/statistics" element={<ProtectedRoute element={<JobStatistics />} />} />
           <Route path="/applicants" element={<ProtectedRoute element={<Applicants />} />} />
