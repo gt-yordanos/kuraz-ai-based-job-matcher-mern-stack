@@ -7,7 +7,6 @@ export const createApplicant = async (req, res) => {
     const applicantData = req.body;
     try {
         const applicant = new Applicant(applicantData);
-        applicant.calculateProfileCompletion(); // Calculate profile completion
         await applicant.save();
         res.status(201).json(applicant);
     } catch (error) {
@@ -61,18 +60,14 @@ export const updateApplicant = async (req, res) => {
 
     // Hash password if it is being updated
     if (updates.password) {
-        const hashedPassword = await bcrypt.hash(updates.password, 10);
-        updates.password = hashedPassword;
+        updates.password = await bcrypt.hash(updates.password, 10);
     }
 
     try {
         const applicant = await Applicant.findByIdAndUpdate(id, updates, { new: true });
         if (!applicant) return res.status(404).json({ message: 'Applicant not found' });
-        
-        // Recalculate profile completion after updates
-        applicant.calculateProfileCompletion();
-        await applicant.save();
 
+        await applicant.save();
         res.status(200).json(applicant);
     } catch (error) {
         res.status(400).json({ message: error.message });

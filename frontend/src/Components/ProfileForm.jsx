@@ -12,9 +12,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FaUser, FaGraduationCap, FaBriefcase, FaPlus, FaTrash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import { useThemeContext } from '../Contexts/ThemeContext';
 import { createTheme } from '@mui/material/styles';
+import SkillSection from './SkillSection';
 
 // Styled components
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -67,7 +67,9 @@ const ProfileForm = ({
   removeArrayItem,
   handleNextStep,
   handlePrevStep,
-  
+  hardSkillsOptions,
+  softSkillsOptions,
+  setProfileData
 }) => {
   const { darkMode } = useThemeContext();
   const theme = createTheme({
@@ -81,6 +83,11 @@ const ProfileForm = ({
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 11 }, (_, i) => currentYear - i); // Last 10 years
 
+  const handleSkillSelect = (skillType, selectedOptions) => {
+    const selectedSkills = selectedOptions ? selectedOptions.map(option => option.value) : [];
+    handleArrayChange(0, skillType, selectedSkills, 'skills'); // Assuming single array for skills
+  };
+  
   // Validation functions
   const validateProfile = () => {
     const errors = {};
@@ -136,13 +143,6 @@ const ProfileForm = ({
           errors[`expDate${index}`] = "Start date must be before end date.";
         }
       });
-    }
-
-    // Skills Validation
-    if (step === 3) {
-      if (!profileData.skills || profileData.skills.length < 3) {
-        errors.skills = "Please enter at least three skills.";
-      }
     }
 
     setErrorMessages(errors);
@@ -352,37 +352,12 @@ const ProfileForm = ({
         );
       case 3:
         return (
-          <div>
-  <h2><TipsAndUpdatesIcon /> Skills</h2>
-  
-  <StyledTextField
-    name="skills"
-    label="Skills (comma separated)"
-    value={profileData.skills ? profileData.skills.join(', ') : ''}
-    onChange={handleSkillsChange}
-    onBlur={() => {
-      if (profileData.skills.length < 3) {
-        setErrorMessages(prev => ({ ...prev, skills: 'At least three skills are required.' }));
-      } else {
-        setErrorMessages(prev => ({ ...prev, skills: '' }));
-      }
-    }}
-    error={Boolean(errorMessages.skills)}
-  />
-  {errorMessages.skills && (
-    <div style={{ color: 'red', fontSize: '0.75rem', marginTop: '-12px', marginLeft:'5px' }}>
-      {errorMessages.skills}
-    </div>
-  )}
-  
-  <div style={{marginTop: '10px'}}>
-    {profileData.skills.map((skill, index) => (
-      <SkillTag key={index}>{skill}</SkillTag>
-    ))}
-  </div>
-</div>
-
-        
+        <SkillSection 
+        profileData={profileData}
+        setProfileData={setProfileData}
+        hardSkillsOptions = {hardSkillsOptions}
+        softSkillsOptions={softSkillsOptions}
+        />
         );
       default:
         return null;
