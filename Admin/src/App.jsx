@@ -10,7 +10,8 @@ import AllJobs from './Pages/AllJobs';
 import Dashboard from './Pages/Dashboard';
 import HrLogin from './Pages/HrLogin'; // Import HrLogin
 import { ThemeContextProvider } from './Contexts/ThemeContext';
-import HrAuthProvider from './Contexts/HrAuthContext';
+import HrAuthProvider, { useHrAuth } from './Contexts/HrAuthContext'; // Import useHrAuth
+import ProtectedRoute from './Components/ProtectedRoute'; // Import ProtectedRoute
 
 const App = () => {
   return (
@@ -18,30 +19,39 @@ const App = () => {
       <HrAuthProvider>
         <Router>
           <CssBaseline />
-          <Box 
-            display="flex" 
-            sx={{ height: '100vh', width: '100vw' }}
-          >
-            <Sidebar />
-            <Box 
-              component="main" 
-              sx={{ flexGrow: 1, padding: 3, overflowY: 'auto' }}
-            >
-              <Routes>
-                <Route path="/" element={<Dashboard />} /> 
-                <Route path="/login" element={<HrLogin />} /> {/* Login Route */}
-                <Route path="/statistics" element={<JobStatistics />} />
-                <Route path="/applicants" element={<Applicants />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/post-job" element={<PostJob />} />
-                <Route path="/jobs" element={<AllJobs />} />
-                <Route path="*" element={<h2>Page Not Found</h2>} />
-              </Routes>
-            </Box>
-          </Box>
+          <MainContent />
         </Router>
       </HrAuthProvider>
     </ThemeContextProvider>
+  );
+};
+
+// Create a separate component to handle sidebar visibility
+const MainContent = () => {
+  const { isAuthenticated } = useHrAuth(); // Access authentication status
+
+  return (
+    <Box 
+      display="flex" 
+      sx={{ height: '100vh', width: '100vw' }}
+    >
+      {isAuthenticated && <Sidebar />} {/* Conditionally render Sidebar */}
+      <Box 
+        component="main" 
+        sx={{ flexGrow: 1, padding: 3, overflowY: 'auto' }}
+      >
+        <Routes>
+          <Route path="/login" element={<HrLogin />} /> {/* Login Route */}
+          <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} /> 
+          <Route path="/statistics" element={<ProtectedRoute element={<JobStatistics />} />} />
+          <Route path="/applicants" element={<ProtectedRoute element={<Applicants />} />} />
+          <Route path="/leaderboard" element={<ProtectedRoute element={<Leaderboard />} />} />
+          <Route path="/post-job" element={<ProtectedRoute element={<PostJob />} />} />
+          <Route path="/jobs" element={<ProtectedRoute element={<AllJobs />} />} />
+          <Route path="*" element={<h2>Page Not Found</h2>} />
+        </Routes>
+      </Box>
+    </Box>
   );
 };
 
