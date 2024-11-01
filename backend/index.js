@@ -1,13 +1,13 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import applicantRoutes from './routes/applicantRoutes.js';
-import jobRoutes from './routes/jobRoutes.js';
-import applicationRoutes from './routes/applicationRoutes.js';
-import hrStaffRoutes from './routes/hrStaffRoutes.js';
-import leaderboardRoutes from './routes/leaderboardRoutes.js';
-import analyticsRoutes from './routes/analyticsRoutes.js';
+import express from 'express'; 
+import mongoose from 'mongoose'; 
+import dotenv from 'dotenv'; 
+import cors from 'cors'; 
+import applicantRoutes from './routes/applicantRoutes.js'; 
+import jobRoutes from './routes/jobRoutes.js'; 
+import applicationRoutes from './routes/applicationRoutes.js'; 
+import hrStaffRoutes from './routes/hrStaffRoutes.js'; 
+import leaderboardRoutes from './routes/leaderboardRoutes.js'; 
+import analyticsRoutes from './routes/analyticsRoutes.js'; 
 import recommendedJobRoutes from './routes/recommendedJobRoutes.js';
 
 dotenv.config();

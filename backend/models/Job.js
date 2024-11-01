@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 const JobSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
-    responsibilities: [{ type: String, required: true }], // Array of responsibilities
-    location: { type: String, required: true }, // Job location
+    responsibilities: [{ type: String, required: true }],
+    location: { type: String, required: true },
     employmentType: { 
         type: String, 
         enum: ['Full-time', 'Part-time', 'Contract', 'Internship'], 
@@ -16,8 +16,8 @@ const JobSchema = new mongoose.Schema({
         required: true 
     },
     postedDate: { type: Date, default: Date.now },
-    deadline: { type: Date, required: true }, // Deadline for applications
-    hrStaffId: { type: mongoose.Schema.Types.ObjectId, ref: 'HrStaff', required: true }, // Reference to HR Staff
+    deadline: { type: Date, required: true },
+    hrStaffId: { type: mongoose.Schema.Types.ObjectId, ref: 'HrStaff', required: true },
     createdAt: { type: Date, default: Date.now },
 
     // Enhanced job requirements
@@ -35,7 +35,7 @@ const JobSchema = new mongoose.Schema({
         enum: ['Remote', 'On-site', 'Hybrid'], 
         default: 'On-site' 
     },
-    
+
     // Education requirements
     educationRequirement: {
         degree: { 
@@ -44,55 +44,45 @@ const JobSchema = new mongoose.Schema({
             default: 'None'
         },
         requiredMajors: {
-            type: [String], // Array of required majors
+            type: [String],
             validate: {
-                validator: function(v) {
-                    return v.length <= 10; // Limit to 10 majors
-                },
+                validator: v => v.length <= 10,
                 message: 'A maximum of 10 majors can be specified.'
-            }
+            },
+            default: []
         },
-        minGPA: { type: Number, min: 0.0, max: 4.0 }
+        minGPA: { type: Number, min: 0.0, max: 4.0 },
+        degreeWeight: { 
+            type: Number, 
+            min: 0.5,   // Minimum weight for degree
+            max: 3,     // Maximum weight for degree
+            default: 1 
+        }
     },
 
     // Skills requirements
     skillsRequired: {
-        hardSkills: [{ 
-            type: String,
-            // No enum here, assuming you'll handle this in the frontend
-        }],
-        softSkills: [{ 
-            type: String,
-            // No enum here, assuming you'll handle this in the frontend
-        }]
+        hardSkills: [{ type: String, default: [] }],
+        softSkills: [{ type: String, default: [] }],
+        skillWeight: { 
+            type: Number, 
+            min: 0.5,   // Minimum weight for skills
+            max: 3,     // Maximum weight for skills
+            default: 1 
+        }
     },
     
     // Experience requirements
     experienceRequirement: { 
-        years: { type: Number, min: 0 } 
+        years: { type: Number, min: 0 }, 
+        type: { type: String, enum: ['Required', 'Preferred'], default: 'Required' },
+        experienceWeight: { 
+            type: Number, 
+            min: 0.5,   // Minimum weight for experience
+            max: 3,     // Maximum weight for experience
+            default: 1 
+        }
     },
-
-    // Weights for different criteria
-    weights: {
-        age: { type: Number, default: 10 }, 
-        gender: { type: Number, default: 10 },
-        experience: { type: Number, default: 20 },
-        education: { type: Number, default: 20 },
-        gpa: { type: Number, default: 20 },
-        skills: { type: Number, default: 20 },
-        majorWeights: [{
-            major: { type: String },
-            weight: { type: Number, default: 1 }, // Weight for each major type
-        }],
-        degreeWeights: [{
-            degree: { 
-                type: String,
-                enum: ['None', 'High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'],
-            },
-            weight: { type: Number, default: 1 }, // Weight for each degree type
-        }]
-    }
 });
 
-// Export the model
 export default mongoose.models.Job || mongoose.model('Job', JobSchema);

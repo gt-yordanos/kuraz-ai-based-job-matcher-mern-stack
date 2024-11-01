@@ -1,10 +1,12 @@
-// backend/controllers/jobController.js
 import Job from '../models/Job.js';
 
 // Create a new job posting
 export const createJob = async (req, res) => {
     const jobData = req.body;
     try {
+        // Validate weight values before saving
+        validateWeights(jobData);
+
         const job = new Job(jobData);
         await job.save();
         res.status(201).json(job);
@@ -40,6 +42,9 @@ export const updateJob = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     try {
+        // Validate weight values before updating
+        validateWeights(updates);
+
         const job = await Job.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
         if (!job) return res.status(404).json({ message: 'Job not found' });
         res.status(200).json(job);
@@ -71,21 +76,17 @@ export const searchJobsByTitle = async (req, res) => {
     }
 };
 
-// Additional endpoint to update job weights
-export const updateJobWeights = async (req, res) => {
-    const { id } = req.params;
-    const { majorWeights, degreeWeights } = req.body; // Expecting weights in the request body
-    try {
-        const job = await Job.findById(id);
-        if (!job) return res.status(404).json({ message: 'Job not found' });
+// Helper function to validate weight values
+const validateWeights = (data) => {
+    const { degreeWeight, skillWeight, experienceWeight } = data;
 
-        // Update weights
-        if (majorWeights) job.weights.majorWeights = majorWeights;
-        if (degreeWeights) job.weights.degreeWeights = degreeWeights;
-
-        await job.save();
-        res.status(200).json(job);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+    if (degreeWeight !== undefined && (degreeWeight < 0.5 || degreeWeight > 3)) {
+        throw new Error('Degree weight must be between 0.5 and 3.');
+    }
+    if (skillWeight !== undefined && (skillWeight < 0.5 || skillWeight > 3)) {
+        throw new Error('Skill weight must be between 0.5 and 3.');
+    }
+    if (experienceWeight !== undefined && (experienceWeight < 0.5 || experienceWeight > 3)) {
+        throw new Error('Experience weight must be between 0.5 and 3.');
     }
 };
