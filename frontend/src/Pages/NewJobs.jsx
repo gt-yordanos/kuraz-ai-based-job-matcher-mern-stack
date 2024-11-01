@@ -34,7 +34,10 @@ const NewJobs = () => {
       try {
         const response = await axios.get('http://localhost:5000/api/jobs'); // Adjust the URL as necessary
         console.log('API Response:', response.data);
-        setJobs(response.data); // Adjust based on your API response structure
+        
+        // Sort jobs by postedDate in descending order (recent first)
+        const sortedJobs = response.data.sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate));
+        setJobs(sortedJobs); // Set sorted jobs
       } catch (err) {
         console.error(err);
         setError('Failed to fetch jobs');

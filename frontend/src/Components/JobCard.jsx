@@ -14,7 +14,6 @@ import EventIcon from '@mui/icons-material/Event';
 import { useAuth } from '../Contexts/AuthContext'; // Adjust the path as necessary
 import MessagePopup from './MessagePopup'; // Adjust the path as necessary
 
-
 const JobCard = ({ job }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
@@ -79,7 +78,7 @@ const JobCard = ({ job }) => {
           </p>
           <p style={textSize.skills}>
             <CodeIcon sx={{ fontSize: '14px' }} /> 
-            {` ${job.requirements.join(', ')}`} 
+            {` Skills: ${job.skillsRequired.hardSkills.join(', ')}`} 
           </p>
           <p style={textSize.timePosted}>
             <AccessTimeIcon sx={{ fontSize: '14px' }} /> {formatDate(job.postedDate)}
