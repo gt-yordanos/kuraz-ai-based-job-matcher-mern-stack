@@ -1,5 +1,5 @@
 import KurazJobLogo from '../assets/kurazJobLogo.png';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -155,9 +155,19 @@ export default function Navbar() {
     </Menu>
   );
 
+  const largeSearchInputRef = useRef();
+
   const handleSearchClick = () => {
     navigate('/search');
+  
+    // Delay focusing to ensure input is ready
+    setTimeout(() => {
+      if (largeSearchInputRef.current) {
+        largeSearchInputRef.current.focus(); // Focus on the large search input
+      }
+    }, 0);
   };
+  
 
   return (
     <Box sx={{ flexGrow: 1, width: '100%' }}>
@@ -286,34 +296,34 @@ export default function Navbar() {
         onClose={handleProfileMenuClose}
       />
 
-{/* Search Bar on Search Page */}
-{location.pathname === '/search' && (
-  <AppBar position="fixed" sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
-    <Toolbar>
-      <IconButton onClick={() => navigate(-1)} aria-label="back" sx={{ mr: 2 }}>
-        <ArrowBackIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} />
-      </IconButton>
-      <Search sx={{ flexGrow: 1 }}>
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInputBase
-          placeholder="Search…"
-          inputProps={{ 'aria-label': 'search' }}
-          sx={{ width: '100%', height: 40 }} // Adjust height as needed
-          value={query} // Bind the input value from context
-          onChange={(event) => {
-            const value = event.target.value;
-            setQuery(value); // Update context with the new search query
-            // Optional: If you want to perform an immediate search, you can call fetchResults here.
-          }}
-        />
-      </Search>
-      <IconButton aria-label="filter" sx={{ ml: 2 }}>
-        <FilterListIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} />
-      </IconButton>
-    </Toolbar>
-  </AppBar>
+ {/* Larger Search Bar on Search Page */}
+ {location.pathname === '/search' && (
+        <AppBar position="fixed" sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
+          <Toolbar>
+            <IconButton onClick={() => navigate(-1)} aria-label="back" sx={{ mr: 2 }}>
+              <ArrowBackIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} />
+            </IconButton>
+            <Search sx={{ flexGrow: 1 }}>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ 'aria-label': 'search' }}
+                sx={{ width: '100%', height: 40 }} // Adjust height as needed
+                inputRef={largeSearchInputRef} // Attach the ref here
+                value={query} // Bind the input value from context
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setQuery(value); // Update context with the new search query
+                }}
+              />
+            </Search>
+            <IconButton aria-label="filter" sx={{ ml: 2 }}>
+              <FilterListIcon sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }} />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
       )}
     </Box>
   );
