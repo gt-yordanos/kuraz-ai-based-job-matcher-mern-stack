@@ -40,7 +40,7 @@ export const updateJob = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
     try {
-        const job = await Job.findByIdAndUpdate(id, updates, { new: true });
+        const job = await Job.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
         if (!job) return res.status(404).json({ message: 'Job not found' });
         res.status(200).json(job);
     } catch (error) {
@@ -68,5 +68,24 @@ export const searchJobsByTitle = async (req, res) => {
         res.status(200).json(jobs);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+// Additional endpoint to update job weights
+export const updateJobWeights = async (req, res) => {
+    const { id } = req.params;
+    const { majorWeights, degreeWeights } = req.body; // Expecting weights in the request body
+    try {
+        const job = await Job.findById(id);
+        if (!job) return res.status(404).json({ message: 'Job not found' });
+
+        // Update weights
+        if (majorWeights) job.weights.majorWeights = majorWeights;
+        if (degreeWeights) job.weights.degreeWeights = degreeWeights;
+
+        await job.save();
+        res.status(200).json(job);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };

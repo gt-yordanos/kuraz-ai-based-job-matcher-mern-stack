@@ -41,7 +41,7 @@ connectToDatabase();
 
 // Define API routes
 app.use('/api/applicants', applicantRoutes);
-app.use('/api/jobs', jobRoutes);
+app.use('/api/jobs', jobRoutes); // Include job routes
 app.use('/api/applications', applicationRoutes);
 app.use('/api/hr', hrStaffRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
