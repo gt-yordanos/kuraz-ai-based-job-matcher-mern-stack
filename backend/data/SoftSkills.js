@@ -1,0 +1,32 @@
+// softSkills.js
+const SoftSkills = [
+  'Communication',
+  'Teamwork',
+  'Problem Solving',
+  'Adaptability',
+  'Critical Thinking',
+  'Time Management',
+  'Creativity',
+  'Leadership',
+  'Conflict Resolution',
+  'Emotional Intelligence',
+  'Work Ethic',
+  'Interpersonal Skills',
+  'Decision Making',
+  'Resilience',
+  'Collaboration',
+  'Flexibility',
+  'Initiative',
+  'Persuasion',
+  'Active Listening',
+  'Networking',
+  'Innovation',
+  'Self-Motivation',
+  'Attention to Detail',
+  'Positive Attitude',
+  'Stress Management',
+  'Strategic Planning',
+  'Time Adaptability',
+];
+
+export default SoftSkills;

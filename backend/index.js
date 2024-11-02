@@ -9,7 +9,7 @@ import hrStaffRoutes from './routes/hrStaffRoutes.js';
 import leaderboardRoutes from './routes/leaderboardRoutes.js'; 
 import analyticsRoutes from './routes/analyticsRoutes.js'; 
 import recommendedJobRoutes from './routes/recommendedJobRoutes.js';
-
+import skillsAndMajorsRoutes from './routes/skillsAndMajors.js';
 dotenv.config();
 
 const app = express();
@@ -47,6 +47,7 @@ app.use('/api/hr', hrStaffRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recommended-jobs', recommendedJobRoutes);
+app.use('/api/skills-and-majors', skillsAndMajorsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

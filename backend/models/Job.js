@@ -1,4 +1,7 @@
 import mongoose from 'mongoose';
+import SoftSkills from '../data/SoftSkills.js';
+import hardSkills from '../data/Hardskills.js';
+import Majors from '../data/Majors.js';
 
 // Define the Job Schema
 const JobSchema = new mongoose.Schema({
@@ -44,7 +47,7 @@ const JobSchema = new mongoose.Schema({
             default: 'None'
         },
         requiredMajors: {
-            type: [String],
+        type: String, enum : Majors,
             validate: {
                 validator: v => v.length <= 10,
                 message: 'A maximum of 10 majors can be specified.'
@@ -62,8 +65,18 @@ const JobSchema = new mongoose.Schema({
 
     // Skills requirements
     skillsRequired: {
-        hardSkills: [{ type: String, default: [] }],
-        softSkills: [{ type: String, default: [] }],
+        skills: {
+            hardSkills: [{ 
+                type: String, 
+                enum: HardSkills,
+            }],
+            softSkills: [
+                { 
+                    type: String, 
+                    enum: SoftSkills,
+                }
+            ],
+        },
         skillWeight: { 
             type: Number, 
             min: 0.5,   // Minimum weight for skills
@@ -78,9 +91,9 @@ const JobSchema = new mongoose.Schema({
         type: { type: String, enum: ['Required', 'Preferred'], default: 'Required' },
         experienceWeight: { 
             type: Number, 
-            min: 0.5,   // Minimum weight for experience
+            min: 0.0,   // Minimum weight for experience
             max: 3,     // Maximum weight for experience
-            default: 1 
+            default: 1
         }
     },
 });
