@@ -1,31 +1,9 @@
 import Application from '../models/Application.js';
-import Applicant from '../models/Applicant.js';
-import Job from '../models/Job.js'; // Import the Job model
 
 // Create a new application
 export const createApplication = async (req, res) => {
     try {
-        const { applicantId, jobId, coverLetter } = req.body;
-
-        // Get the existing applicant's data
-        const applicant = await Applicant.findById(applicantId);
-        if (!applicant) {
-            return res.status(404).json({ message: 'Applicant not found' });
-        }
-
-        // Check if the job exists
-        const job = await Job.findById(jobId);
-        if (!job) {
-            return res.status(404).json({ message: 'Job not found' });
-        }
-
-        // Create a new application
-        const application = new Application({
-            applicantId,
-            jobId,
-            coverLetter,
-        });
-
+        const application = new Application(req.body);
         await application.save();
         res.status(201).json(application);
     } catch (error) {
@@ -36,22 +14,20 @@ export const createApplication = async (req, res) => {
 // Get all applications
 export const getAllApplications = async (req, res) => {
     try {
-        const applications = await Application.find()
-            .populate('applicantId')
-            .populate('jobId');
+        const applications = await Application.find().populate('applicantId jobId');
         res.status(200).json(applications);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// Get an application by ID
+// Get a specific application by ID
 export const getApplicationById = async (req, res) => {
     try {
-        const application = await Application.findById(req.params.id)
-            .populate('applicantId')
-            .populate('jobId');
-        if (!application) return res.status(404).json({ message: 'Application not found' });
+        const application = await Application.findById(req.params.id).populate('applicantId jobId');
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
         res.status(200).json(application);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -62,10 +38,9 @@ export const getApplicationById = async (req, res) => {
 export const updateApplication = async (req, res) => {
     try {
         const application = await Application.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!application) return res.status(404).json({ message: 'Application not found' });
-        
-        // Optionally, populate relevant fields after update
-        await application.populate('applicantId').populate('jobId');
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
         res.status(200).json(application);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -76,26 +51,86 @@ export const updateApplication = async (req, res) => {
 export const deleteApplication = async (req, res) => {
     try {
         const application = await Application.findByIdAndDelete(req.params.id);
-        if (!application) return res.status(404).json({ message: 'Application not found' });
-        res.status(204).send(); // No content
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+        res.status(204).send();
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// Populate defaults from applicant's profile
-export const populateDefaults = async (req, res) => {
+// Update the status of the application (for interview, rejection, acceptance)
+export const updateApplicationStatus = async (req, res) => {
+    const { status, feedback } = req.body;
     try {
-        const { applicationId, applicantId } = req.body;
-
-        const applicantProfile = await Applicant.findById(applicantId);
-        if (!applicantProfile) {
-            return res.status(404).json({ message: 'Applicant profile not found' });
+        const application = await Application.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
         }
 
-        await Application.populateDefaultsFromProfile(applicationId, applicantProfile);
-        res.status(200).json({ message: 'Defaults populated successfully' });
+        application.status = status;
+        application.feedback = feedback || application.feedback; // Update feedback if provided
+        application.statusHistory.push({
+            status: status,
+            date: new Date(),
+        });
+
+        await application.save();
+        res.status(200).json(application);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Schedule an interview
+export const scheduleInterview = async (req, res) => {
+    const { interviewDate, interviewers } = req.body;
+    try {
+        const application = await Application.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        application.interviewDate = interviewDate;
+        application.interviewers = interviewers;
+        application.interviewStatus = 'Scheduled';
+
+        await application.save();
+        res.status(200).json(application);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Complete an interview
+export const completeInterview = async (req, res) => {
+    try {
+        const application = await Application.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        application.interviewStatus = 'Completed';
+        await application.save();
+        res.status(200).json(application);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Cancel an interview
+export const cancelInterview = async (req, res) => {
+    try {
+        const application = await Application.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        application.interviewStatus = 'Canceled';
+        await application.save();
+        res.status(200).json(application);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };

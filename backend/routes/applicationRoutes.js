@@ -5,20 +5,28 @@ import {
     getApplicationById,
     updateApplication,
     deleteApplication,
-    populateDefaults
+    updateApplicationStatus,
+    scheduleInterview,
+    completeInterview,
+    cancelInterview
 } from '../controllers/applicationController.js';
-import { validateApplication } from '../middleware/validationMiddleware.js'; // Import the validation middleware
 
 const router = express.Router();
 
-// Define routes with validation middleware for createApplication
-router.post('/', validateApplication, createApplication); // Create a new application
+// Routes for application
+router.post('/', createApplication); // Create a new application
 router.get('/', getAllApplications); // Get all applications
-router.get('/:id', getApplicationById); // Get a specific application by ID
-router.put('/:id', validateApplication, updateApplication); // Update an application
+router.get('/:id', getApplicationById); // Get an application by ID
+router.put('/:id', updateApplication); // Update an application
 router.delete('/:id', deleteApplication); // Delete an application
 
-// Route for populating defaults from applicant's profile
-router.post('/populateDefaults', populateDefaults); // Populate defaults from applicant profile
+// Update application status (Accepted, Rejected, etc.)
+router.patch('/:id/status', updateApplicationStatus); // Update application status
+// Schedule an interview
+router.patch('/:id/interview/schedule', scheduleInterview); // Schedule an interview
+// Complete an interview
+router.patch('/:id/interview/complete', completeInterview); // Mark interview as completed
+// Cancel an interview
+router.patch('/:id/interview/cancel', cancelInterview); // Cancel an interview
 
 export default router;

@@ -86,7 +86,7 @@ const validateWeights = (data) => {
     if (skillWeight !== undefined && (skillWeight < 0.5 || skillWeight > 3)) {
         throw new Error('Skill weight must be between 0.5 and 3.');
     }
-    if (experienceWeight !== undefined && (experienceWeight < 0.5 || experienceWeight > 3)) {
-        throw new Error('Experience weight must be between 0.5 and 3.');
+    if (experienceWeight !== undefined && (experienceWeight < 0.0 || experienceWeight > 3)) {
+        throw new Error('Experience weight must be between 0 and 3.');
     }
 };
