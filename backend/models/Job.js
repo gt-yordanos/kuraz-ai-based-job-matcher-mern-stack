@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import SoftSkills from '../data/SoftSkills.js';
-import hardSkills from '../data/Hardskills.js';
+import HardSkills from '../data/Hardskills.js';
 import Majors from '../data/Majors.js';
 
 // Define the Job Schema

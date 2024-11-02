@@ -90,3 +90,17 @@ const validateWeights = (data) => {
         throw new Error('Experience weight must be between 0 and 3.');
     }
 };
+
+// Get jobs by HR staff ID
+export const getJobsByHrStaffId = async (req, res) => {
+    const { hrStaffId } = req.params; // Get hrStaffId from route parameters
+    try {
+        const jobs = await Job.find({ hrStaffId }); // Find jobs with the given hrStaffId
+        if (!jobs || jobs.length === 0) {
+            return res.status(404).json({ message: 'No jobs found for this HR staff ID' });
+        }
+        res.status(200).json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

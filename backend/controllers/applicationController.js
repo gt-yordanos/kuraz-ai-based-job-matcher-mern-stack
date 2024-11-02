@@ -2,6 +2,19 @@ import Application from '../models/Application.js';
 
 // Create a new application
 export const createApplication = async (req, res) => {
+    // Validate required fields
+    const { applicantId, jobId, qualifications } = req.body;
+    
+    // Check if the necessary data is provided
+    if (!applicantId || !jobId || 
+        !qualifications || 
+        !qualifications.education || 
+        qualifications.education.length === 0 || 
+        !qualifications.experience || 
+        qualifications.experience.length === 0) {
+        return res.status(400).json({ message: 'Qualifications (education and experience) are required.' });
+    }
+
     try {
         const application = new Application(req.body);
         await application.save();
@@ -15,6 +28,17 @@ export const createApplication = async (req, res) => {
 export const getAllApplications = async (req, res) => {
     try {
         const applications = await Application.find().populate('applicantId jobId');
+        res.status(200).json(applications);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Get applications by HR staff ID
+export const getApplicationsByHrStaffId = async (req, res) => {
+    const { hrStaffId } = req.params; // Assume HR staff ID is passed in the URL
+    try {
+        const applications = await Application.find({ hrStaffId }).populate('applicantId jobId');
         res.status(200).json(applications);
     } catch (error) {
         res.status(500).json({ message: error.message });
