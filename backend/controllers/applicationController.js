@@ -2,6 +2,7 @@ import Application from '../models/Application.js';
 import Job from '../models/Job.js';
 
 // Create a new application
+// Create a new application
 export const createApplication = async (req, res) => {
     // Validate required fields
     const { applicantId, jobId, qualifications } = req.body;
@@ -39,6 +40,12 @@ export const createApplication = async (req, res) => {
     }
 
     try {
+        // Check if the applicant has already applied for this job
+        const existingApplication = await Application.findOne({ applicantId, jobId });
+        if (existingApplication) {
+            return res.status(400).json({ message: 'Applicant has already applied for this job.' });
+        }
+
         // Fetch the job to get the job deadline
         const job = await Job.findById(jobId);
         if (!job) {
