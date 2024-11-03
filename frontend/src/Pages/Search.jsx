@@ -66,9 +66,9 @@ const Search = () => {
         {[...Array(5)].map((_, index) => (
           <Card key={index} sx={{ width: '90%', marginBottom: 2, bgcolor: darkMode ? '#333' : '#e0e0e0', boxShadow: 'none' }}>
             <CardContent>
-              <Skeleton variant="text" width="80%" height={30} sx={{ bgcolor: darkMode ? '#555' : '#999' }} />
-              <Skeleton variant="text" width="60%" animation="wave" height={30} sx={{ bgcolor: darkMode ? '#555' : '#999' }} />
-              <Skeleton variant="rectangular" height={60} />
+              <Skeleton variant="text" width="80%" height={30} sx={{ bgcolor: darkMode ? '#888' : '#555' }} />
+              <Skeleton variant="text" width="60%" animation="wave" height={30} sx={{ bgcolor: darkMode ? '#888' : '#555' }} />
+              <Skeleton variant="rectangular" height={60} sx={{ bgcolor: darkMode ? '#888' : '#555' }}/>
             </CardContent>
           </Card>
         ))}

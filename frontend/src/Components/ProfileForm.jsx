@@ -50,13 +50,6 @@ const RemoveButton = styled(Button)(({ theme }) => ({
   '&:hover': { backgroundColor: '#ff6b6b', filter: 'brightness(1.1)' },
 }));
 
-const SkillTag = styled('span')(({ theme }) => ({
-  padding: '7px 12px',
-  borderRadius: '20px',
-  margin: '4px',
-  backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0',
-  color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-}));
 
 const ProfileForm = ({
   step,

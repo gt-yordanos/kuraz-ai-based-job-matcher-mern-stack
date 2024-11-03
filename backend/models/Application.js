@@ -43,11 +43,6 @@ const ApplicationSchema = new mongoose.Schema({
             description: { type: String },
             jobType: { type: String, enum: ['Full-Time', 'Part-Time', 'Intern', 'Other', 'Research'] },
         }],
-        majors: [{
-            type: String,
-            enum: Majors,
-            required: true,
-        }],
         hardSkills: [{
             type: String,
             enum: HardSkills,
