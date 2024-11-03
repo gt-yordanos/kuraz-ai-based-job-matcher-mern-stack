@@ -43,14 +43,14 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const ApplyButton = ({ isApplicationProcessing, onClick }) => (
+const ApplyButton = ({ isApplicationProcessing, onClick, theme}) => (
   <StyledButton onClick={onClick} disabled={isApplicationProcessing}>
     {isApplicationProcessing ? (
-      <CircularProgress size={24} color="inherit" sx={{ position: 'absolute' }} />
+      <CircularProgress size={24} color={theme.palette.mode === 'dark' ? '#000' : '#fff'} sx={{ position: 'absolute' }} />
     ) : (
       <>
         Submit Application
-        <ArrowForwardIcon sx={{ marginLeft: 1 }} className="arrow-icon" />
+        <ArrowForwardIcon sx={{ marginLeft: 1 }}/>
       </>
     )}
   </StyledButton>
@@ -82,11 +82,6 @@ const Apply = () => {
   const [errorMessages, setErrorMessages] = useState({});
   const currentYear = new Date().getFullYear();
   const [years] = useState(Array.from({ length: 56 }, (_, i) => currentYear - 50 + i));
-  const [useProfileData, setUseProfileData] = useState({
-    education: false,
-    experience: false,
-    skills: false,
-  });
   const [popupMessage, setPopupMessage] = useState('');
   const [popupType, setPopupType] = useState('success');
   const [popupOpen, setPopupOpen] = useState(false);
@@ -104,7 +99,7 @@ const Apply = () => {
         setLoading(false);
       }
     };
-
+  
     const fetchApplicantData = async () => {
       if (user?.id) {
         try {
@@ -116,104 +111,88 @@ const Apply = () => {
         }
       }
     };
-
-    fetchJobDetails();
-    fetchApplicantData();
+  
+    // Fetch both job details and applicant data
+    const fetchData = async () => {
+      await Promise.all([fetchJobDetails(), fetchApplicantData()]);
+    };
+  
+    fetchData();
   }, [id, user]);
+  
 
   const handleApply = async () => {
-    setIsApplicationProcessing(true);
-    let errors = {};
-  
-    // Check the cover letter word count
-    if (coverLetter.split(' ').length < 200 || coverLetter.split(' ').length > 400) {
-      setPopupMessage('Cover letter must be between 200 and 400 words.');
-      setPopupType('error');
-      setPopupOpen(true);
-      setIsApplicationProcessing(false);
-      return;
-    }
-  
-    // Validate user input for experience
-    userInput.experience.forEach((exp, index) => {
-      if (!exp.jobTitle) errors[`expJobTitle${index}`] = 'Job Title is required.';
-      if (!exp.company) errors[`expCompany${index}`] = 'Company is required.';
-      if (!exp.jobType) errors[`expJobType${index}`] = 'Job Type is required.';
-      if (!exp.startDate) errors[`expStartDate${index}`] = 'Start Date is required.';
-      if (!exp.endDate) errors[`expEndDate${index}`] = 'End Date is required.';
-      if (!exp.description) errors[`expDescription${index}`] = 'Description is required.';
-    });
-  
-    // Validate user input for education
-    userInput.education.forEach((edu, index) => {
-      if (!edu.degree) errors[`eduDegree${index}`] = 'Degree is required.';
-      if (!edu.institution) errors[`eduInstitution${index}`] = 'Institution is required.';
-      if (!edu.major) errors[`eduMajor${index}`] = 'Major is required.';
-      if (!edu.graduationYear) errors[`eduYear${index}`] = 'Graduation Year is required.';
-      if (!edu.cgpa) errors[`eduCgpa${index}`] = 'CGPA is required.';
-    });
-  
-    // Check for validation errors
-    if (Object.keys(errors).length) {
-      setErrorMessages(errors);
-      setIsApplicationProcessing(false);
-      return;
-    }
-  
-    // Set useProfileData based on userInput
-    setUseProfileData({
-      education: userInput.education.length === 0,
-      experience: userInput.experience.length === 0,
-      skills: userInput.hardSkills.length === 0 && userInput.softSkills.length === 0,
-    });
-  
-    try {
-      const applicationData = {
-        applicantId: user?.id,
-        jobId: id,
-        coverLetter,
-        qualifications: {
-          education: useProfileData.education ? 
-            (profileData.education.length ? profileData.education : userInput.education) : 
-            userInput.education,
-          experience: useProfileData.experience ? 
-            (profileData.experience.length ? profileData.experience : userInput.experience) : 
-            userInput.experience,
-          hardSkills: useProfileData.skills ? 
-            (profileData.skills.hardSkills.length ? profileData.skills.hardSkills : userInput.hardSkills) : 
-            userInput.hardSkills,
-          softSkills: useProfileData.skills ? 
-            (profileData.skills.softSkills.length ? profileData.skills.softSkills : userInput.softSkills) : 
-            userInput.softSkills,
-        },
-      };
-      console.log('Application Data:', applicationData);
+  setIsApplicationProcessing(true);
+  let errors = {};
 
+  // Check the cover letter word count
+  if (coverLetter.split(' ').length < 200 || coverLetter.split(' ').length > 400) {
+    setPopupMessage('Cover letter must be between 200 and 400 words.');
+    setPopupType('error');
+    setPopupOpen(true);
+    setIsApplicationProcessing(false);
+    return;
+  }
+
+  // Validate user input for experience
+  userInput.experience.forEach((exp, index) => {
+    if (!exp.jobTitle) errors[`expJobTitle${index}`] = 'Job Title is required.';
+    if (!exp.company) errors[`expCompany${index}`] = 'Company is required.';
+    if (!exp.jobType) errors[`expJobType${index}`] = 'Job Type is required.';
+    if (!exp.startDate) errors[`expStartDate${index}`] = 'Start Date is required.';
+    if (!exp.endDate) errors[`expEndDate${index}`] = 'End Date is required.';
+    if (!exp.description) errors[`expDescription${index}`] = 'Description is required.';
+  });
+
+  // Validate user input for education
+  userInput.education.forEach((edu, index) => {
+    if (!edu.degree) errors[`eduDegree${index}`] = 'Degree is required.';
+    if (!edu.institution) errors[`eduInstitution${index}`] = 'Institution is required.';
+    if (!edu.major) errors[`eduMajor${index}`] = 'Major is required.';
+    if (!edu.graduationYear) errors[`eduYear${index}`] = 'Graduation Year is required.';
+    if (!edu.cgpa) errors[`eduCgpa${index}`] = 'CGPA is required.';
+  });
+
+  // Check for validation errors
+  if (Object.keys(errors).length) {
+    setPopupMessage('Fill out fields you have added or remove the fields for education and experience.');
+    setPopupType('error');
+    setPopupOpen(true);
+    setErrorMessages(errors);
+    setIsApplicationProcessing(false);
+    return;
+  }
   
-      await axios.post('http://localhost:5000/api/applications', applicationData);
-      setPopupMessage('Application submitted successfully!');
-      setPopupType('success');
-      setPopupOpen(true);
-    } catch (error) {
-      console.error('Error submitting application:', error);
-      
-      // Check if the error has a response and log the server's message
-      if (error.response) {
-        setPopupMessage(`Failed to submit application: ${error.response.data.message || error.response.statusText}`);
-      } else if (error.request) {
-        setPopupMessage('Failed to submit application: No response received from the server.');
-      } else {
-        setPopupMessage(`Error: ${error.message}`);
-      }
-      
-      setPopupType('error');
-      setPopupOpen(true);
-    } finally {
-      setIsApplicationProcessing(false);
-    }
-  };
-  
-  
+  try {
+    const applicationData = {
+      applicantId: user?.id,
+      jobId: id,
+      coverLetter,
+      qualifications: {
+        education: userInput.education,
+        experience: userInput.experience,
+        hardSkills: userInput.hardSkills,
+        softSkills: userInput.softSkills,
+      },
+    };
+    console.log('User Input:', userInput);
+  console.log('Profile Data:', profileData);
+  console.log('Application Data:', applicationData);
+
+    await axios.post('http://localhost:5000/api/applications', applicationData);
+    setPopupMessage('Application submitted successfully!');
+    setPopupType('success');
+    setPopupOpen(true);
+  } catch (error) {
+    console.error('Error submitting application:', error);
+    setPopupMessage(`Failed to submit application: ${error.response?.data.message || error.message}`);
+    setPopupType('error');
+    setPopupOpen(true);
+  } finally {
+    setIsApplicationProcessing(false);
+  }
+};
+
 
   const addArrayItem = (type) => {
     const defaultExperience = { jobTitle: '', company: '', startDate: '', endDate: '', description: '', jobType: '' };
@@ -331,7 +310,7 @@ const Apply = () => {
             majorOptions={majorOptions}
           />
           <Divider sx={{ margin: '20px 0' }} />
-          <ApplyButton isApplicationProcessing={isApplicationProcessing} onClick={handleApply} />
+          <ApplyButton isApplicationProcessing={isApplicationProcessing} onClick={handleApply} theme ={theme} />
         </CardContent>
       </Card>
     </>

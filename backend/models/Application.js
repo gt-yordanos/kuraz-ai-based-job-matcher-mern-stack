@@ -20,7 +20,7 @@ const ApplicationSchema = new mongoose.Schema({
     interviewStatus: {
         type: String,
         enum: ['Scheduled', 'Completed', 'Canceled'],
-        default: 'null',
+        default: null,
     },
     processedForRanking: { type: Boolean, default: false },
     qualifications: {
@@ -54,7 +54,6 @@ const ApplicationSchema = new mongoose.Schema({
             required: true,
         }],
     },
-    jobDeadline: { type: Date, required: true },
     statusHistory: [
         {
             status: {
