@@ -12,10 +12,12 @@ import HrLogin from './Pages/HrLogin';
 import { ThemeContextProvider } from './Contexts/ThemeContext';
 import HrAuthProvider, { useHrAuth } from './Contexts/HrAuthContext'; 
 import ProtectedRoute from './Components/ProtectedRoute'; 
+import { SkillsAndMajorsProvider } from './Contexts/SkillsAndMajorsContext';
 
 const App = () => {
   return (
-    <ThemeContextProvider>
+    <SkillsAndMajorsProvider>
+       <ThemeContextProvider>
       <HrAuthProvider>
         <Router>
           <CssBaseline />
@@ -23,6 +25,7 @@ const App = () => {
         </Router>
       </HrAuthProvider>
     </ThemeContextProvider>
+    </SkillsAndMajorsProvider>
   );
 };
 
