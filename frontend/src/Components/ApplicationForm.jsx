@@ -60,7 +60,7 @@ const ApplicationForm = ({
 
       <h2><FaBriefcase /> Experience</h2>
       <p style={{ fontSize: '12px', textAlign: 'left' }}>
-        Professional advice: Highlight your most relevant experiences and tailor them to showcase your suitability for this role. Adding specific skills related to this job can increase your chances of being hired or ranking higher in our algorithm. If you don’t provide new experiences, your existing profile experiences will be considered for ranking.
+        Highlight your most relevant experiences and tailor them to showcase your suitability for this role. Adding specific skills related to this job can increase your chances of being hired or ranking higher in our algorithm. If you don’t provide new experiences, your existing profile experiences will be considered for ranking.
       </p>
       {userInput.experience.map((exp, index) => (
         <div key={index}>
@@ -124,7 +124,7 @@ const ApplicationForm = ({
       <Divider sx={{ margin: '20px 0' }} />
       <h2><FaGraduationCap /> Education</h2>
       <p style={{ fontSize: '12px', textAlign: 'left' }}>
-        Professional advice: Include your highest qualifications and any specialized training relevant to the position. If you do not add new education entries, your existing profile education will be used for ranking. Adding specific majors related to this job can also enhance your profile.
+        Include your highest qualifications and any specialized training relevant to the position. If you do not add new education entries, your existing profile education will be used for ranking. Adding specific majors related to this job can also enhance your profile.
       </p>
       {userInput.education.map((edu, index) => (
         <div key={index}>
@@ -169,20 +169,20 @@ const ApplicationForm = ({
             />
           </FormControl>
           <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
-          <Autocomplete
-            options={years.map(year => year.toString()) || []} // Convert numbers to strings
-            onChange={(event, newValue) => handleArrayChange(index, 'graduationYear', newValue, 'education')}
-            renderInput={(params) => (
-              <StyledTextField
-                {...params}
-                label="Graduation Year"
-                placeholder="Search year..."
-                error={Boolean(errorMessages[`eduYear${index}`])}
-                helperText={errorMessages[`eduYear${index}`]}
-              />
-            )}
-          />
-        </FormControl>
+            <Autocomplete
+              options={years.map(year => year.toString()) || []}
+              onChange={(event, newValue) => handleArrayChange(index, 'graduationYear', newValue, 'education')}
+              renderInput={(params) => (
+                <StyledTextField
+                  {...params}
+                  label="Graduation Year"
+                  placeholder="Search year..."
+                  error={Boolean(errorMessages[`eduYear${index}`])}
+                  helperText={errorMessages[`eduYear${index}`]}
+                />
+              )}
+            />
+          </FormControl>
 
           <StyledTextField
             name="cgpa"
@@ -211,7 +211,7 @@ const ApplicationForm = ({
       <Divider sx={{ margin: '20px 0' }} />
       <h2>Skills</h2>
       <p style={{ fontSize: '12px', textAlign: 'left' }}>
-        Professional advice: Choose skills that directly relate to the job to make your application stand out. If you do not add new skills, your existing profile skills will be considered for ranking.
+        Choose skills that directly relate to the job to make your application stand out. If you do not add new skills, your existing profile skills will be considered for ranking.
       </p>
       <FormControl fullWidth sx={{ mb: 2 }}>
         <Autocomplete
@@ -230,8 +230,7 @@ const ApplicationForm = ({
             hardSkills: newValue
           }))}
         />
-    </FormControl>
-
+      </FormControl>
 
       <FormControl fullWidth sx={{ mb: 2 }}>
         <Autocomplete
@@ -250,16 +249,19 @@ const ApplicationForm = ({
             softSkills: newValue
           }))}
         />
-    </FormControl>
+      </FormControl>
 
       <Divider sx={{ margin: '20px 0' }} />
       <div style={{ marginBottom: '16px', fontSize: '1.25rem' }}>Cover Letter</div>
       <StyledTextField
         label="Cover Letter"
         multiline
-        maxRows={Infinity}
+        minRows={4} // Set a minimum height
+        maxRows={Infinity} // Allow it to grow indefinitely
         value={coverLetter}
         onChange={e => setCoverLetter(e.target.value)}
+        variant="outlined" // Specify variant as needed
+        fullWidth // Make it responsive
       />
     </div>
   );

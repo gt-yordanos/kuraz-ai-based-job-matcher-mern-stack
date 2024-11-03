@@ -4,7 +4,7 @@ import Applicant from '../models/Applicant.js'; // Import the Applicant model
 
 // Create a new application
 export const createApplication = async (req, res) => {
-    const { applicantId, jobId, qualifications } = req.body;
+    const { applicantId, jobId, coverLetter, qualifications } = req.body;
 
     try {
         // Check for missing fields
@@ -25,6 +25,12 @@ export const createApplication = async (req, res) => {
         const job = await Job.findById(jobId);
         if (!job) {
             return res.status(404).json({ message: 'Invalid job.' });
+        }
+
+        // Check if the job deadline has passed
+        const currentDate = new Date();
+        if (new Date(job.deadline) < currentDate) {
+            return res.status(400).json({ message: 'The deadline for this job has passed.' });
         }
 
         // Fetch applicant data to fill in missing qualifications
@@ -65,6 +71,7 @@ export const createApplication = async (req, res) => {
         const applicationData = {
             applicantId,
             jobId,
+            coverLetter,
             qualifications: finalQualifications,
             jobDeadline: job.deadline,
         };
@@ -75,7 +82,7 @@ export const createApplication = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-};
+}
 
 
 // Get all applications
