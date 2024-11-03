@@ -82,9 +82,9 @@ const KurazAIApp = ({ onClose }) => {
     Contact: info@kuraztechnologies.com, +251 123 456 789, Addis Ababa, Ethiopia.
     `;
 
-    let prompt = `You are the Kuraz AI Assistant, helping users understand Kuraz Technologies, explore job opportunities, 
-    and provide career guidance. Your responses should be friendly, precise, and concise. The user asked: "${inputValue}". 
-    Use the following information to assist: ${kurazInfo}. Context so far: ${messages.map(msg => `${msg.role}: ${msg.content}`).join(' ')}.`;
+    let prompt = `You are the Kuraz AI Assistant, helping users understand Kuraz Technologies, explore job opportunities, and provide career guidance. Your responses should be 
+    friendly, wise, knowledgeable, and empathetic, while remaining direct and short. 
+    The user asked: "${inputValue}". Use the following information to assist: ${kurazInfo}. Context so far: ${messages.map(msg => `${msg.role}: ${msg.content}`).join(' ')}.`;
 
     setInputValue('');
     setLoading(true);
