@@ -212,3 +212,14 @@ export const cancelInterview = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+// Delete all applications
+export const deleteAllApplications = async (req, res) => {
+    try {
+        // Attempt to delete all applications
+        const result = await Application.deleteMany(); // Deletes all applications
+        res.status(204).send(); // No content to send back
+    } catch (error) {
+        // Handle any errors that occur during the deletion process
+        res.status(500).json({ message: error.message });
+    }
+};

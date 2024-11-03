@@ -8,6 +8,7 @@ import {
   Select,
   MenuItem,
   Fade,
+  Autocomplete,
   CircularProgress,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -15,6 +16,7 @@ import { FaUser, FaGraduationCap, FaBriefcase, FaPlus, FaTrash, FaArrowLeft, FaA
 import { useThemeContext } from '../Contexts/ThemeContext';
 import { createTheme } from '@mui/material/styles';
 import SkillSection from './SkillSection';
+import { useSkillsAndMajors } from '../Contexts/SkillsAndMajorsContext';
 
 // Styled components
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -60,8 +62,6 @@ const ProfileForm = ({
   removeArrayItem,
   handleNextStep,
   handlePrevStep,
-  hardSkillsOptions,
-  softSkillsOptions,
   setProfileData
 }) => {
   const { darkMode } = useThemeContext();
@@ -70,7 +70,7 @@ const ProfileForm = ({
       mode: darkMode ? 'dark' : 'light',
     },
   });
-
+  const { hardSkillsOptions, softSkillsOptions, majorOptions, loading: skillsLoading, error: skillsError } = useSkillsAndMajors();
   const [errorMessages, setErrorMessages] = useState({});
   const [loading, setLoading] = useState(false);
   const currentYear = new Date().getFullYear();
@@ -142,10 +142,6 @@ const ProfileForm = ({
     return Object.keys(errors).length === 0;
   };
 
-  const handleSkillsChange = (event) => {
-    const value = event.target.value.split(',').map(skill => skill.trim());
-    handleChange({ target: { name: 'skills', value } });
-  };
 
   const renderStepContent = () => {
     switch (step) {
@@ -239,18 +235,38 @@ const ProfileForm = ({
                   </Select>
                   {errorMessages[`eduDegree${index}`] && <span style={{ color: 'red', fontSize: '0.75rem' }}>{errorMessages[`eduDegree${index}`]}</span>}
                 </FormControl>
-                {['institution', 'major'].map(field => (
-                  <StyledTextField
-                    key={field}
-                    name={field}
-                    label={field.charAt(0).toUpperCase() + field.slice(1)}
-                    value={edu[field] || ''}
-                    onChange={e => handleArrayChange(index, field, e.target.value, 'education')}
-                    required
-                    error={Boolean(errorMessages[`edu${field.charAt(0).toUpperCase() + field.slice(1)}${index}`])}
-                    helperText={errorMessages[`edu${field.charAt(0).toUpperCase() + field.slice(1)}${index}`]}
-                  />
+                {['institution'].map(field => (
+                <StyledTextField
+                  key={field}
+                  name={field}
+                  label={field.charAt(0).toUpperCase() + field.slice(1)}
+                  value={edu[field] || ''}
+                  onChange={e => handleArrayChange(index, field, e.target.value, 'education')}
+                  required
+                  error={Boolean(errorMessages[`edu${field.charAt(0).toUpperCase() + field.slice(1)}${index}`])}
+                  helperText={errorMessages[`edu${field.charAt(0).toUpperCase() + field.slice(1)}${index}`]}
+                />
                 ))}
+              
+                <FormControl fullWidth sx={{ mb: 5 }}>
+                  <Autocomplete
+                  options={majorOptions}
+                  value={edu.major || null}
+                  onChange={(event, value) => handleArrayChange(index, 'major', value, 'education')}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Major"
+                      placeholder="Select or search major..."
+                      required
+                      error={Boolean(errorMessages[`eduMajor${index}`])}
+                      helperText={errorMessages[`eduMajor${index}`]}
+                    />
+                  )}
+                  isOptionEqualToValue={(option, value) => option === value} // Ensure proper comparison
+                />
+              </FormControl>
                 <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
                   <InputLabel>Graduation Year</InputLabel>
                   <Select

@@ -8,7 +8,8 @@ import {
     updateApplicationStatus,
     scheduleInterview,
     completeInterview,
-    cancelInterview
+    cancelInterview,
+    deleteAllApplications
 } from '../controllers/applicationController.js';
 
 const router = express.Router();
@@ -19,7 +20,7 @@ router.get('/', getAllApplications); // Get all applications
 router.get('/:id', getApplicationById); // Get an application by ID
 router.put('/:id', updateApplication); // Update an application
 router.delete('/:id', deleteApplication); // Delete an application
-
+router.delete('/', deleteAllApplications); //
 // Update application status (Accepted, Rejected, etc.)
 router.patch('/:id/status', updateApplicationStatus); // Update application status
 // Schedule an interview
@@ -28,5 +29,5 @@ router.patch('/:id/interview/schedule', scheduleInterview); // Schedule an inter
 router.patch('/:id/interview/complete', completeInterview); // Mark interview as completed
 // Cancel an interview
 router.patch('/:id/interview/cancel', cancelInterview); // Cancel an interview
-
+ 
 export default router;

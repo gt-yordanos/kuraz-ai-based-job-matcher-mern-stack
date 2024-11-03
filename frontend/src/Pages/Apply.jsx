@@ -17,11 +17,7 @@ import StorageIcon from '@mui/icons-material/Storage';
 import MessagePopup from '../Components/MessagePopup';
 import JobDetails from '../Components/JobDetails';
 import ApplicationForm from '../Components/ApplicationForm';
-
-const hardSkillsOptions = ['JavaScript', 'Python', 'Java', 'C++'];
-const softSkillsOptions = ['Communication', 'Teamwork', 'Problem-Solving'];
-const majorOptions = ['Computer Science', 'Engineering', 'Business', 'Biology'];
-
+import { useSkillsAndMajors } from '../Contexts/SkillsAndMajorsContext';
 const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'light' ? 'black' : 'white',
   color: theme.palette.mode === 'light' ? 'white' : 'black',
@@ -86,39 +82,41 @@ const Apply = () => {
   const [popupType, setPopupType] = useState('success');
   const [popupOpen, setPopupOpen] = useState(false);
   const [isApplicationProcessing, setIsApplicationProcessing] = useState(false);
-
-  useEffect(() => {
-    const fetchJobDetails = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/jobs/${id}`);
-        setJob(response.data);
-      } catch (err) {
-        console.error(err);
-        setError('Failed to fetch job details');
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    const fetchApplicantData = async () => {
-      if (user?.id) {
-        try {
-          const response = await axios.get(`http://localhost:5000/api/applicants/${user.id}`);
-          setProfileData(response.data);
-        } catch (err) {
-          console.error(err);
-          setError('Failed to fetch applicant data');
-        }
-      }
-    };
-  
-    // Fetch both job details and applicant data
-    const fetchData = async () => {
-      await Promise.all([fetchJobDetails(), fetchApplicantData()]);
-    };
-  
-    fetchData();
-  }, [id, user]);
+  const { hardSkillsOptions, softSkillsOptions, majorOptions, loading: skillsLoading, error: skillsError } = useSkillsAndMajors();
+ 
+   useEffect(() => {
+     const fetchJobDetails = async () => {
+       try {
+         const response = await axios.get(`http://localhost:5000/api/jobs/${id}`);
+         setJob(response.data);
+       } catch (err) {
+         console.error(err);
+         setError('Failed to fetch job details');
+       } finally {
+         setLoading(false);
+       }
+     };
+ 
+     const fetchApplicantData = async () => {
+       if (user?.id) {
+         try {
+           const response = await axios.get(`http://localhost:5000/api/applicants/${user.id}`);
+           setProfileData(response.data);
+         } catch (err) {
+           console.error(err);
+           setError('Failed to fetch applicant data');
+         }
+       }
+     };
+ 
+    
+     // Fetch all data
+     const fetchData = async () => {
+       await Promise.all([fetchJobDetails(), fetchApplicantData(), ]);
+     };
+ 
+     fetchData();
+   }, [id, user]);
   
 
   const handleApply = async () => {

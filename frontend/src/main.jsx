@@ -7,9 +7,10 @@ import { AuthProvider } from './Contexts/AuthContext'; // Import AuthProvider
 import { SearchProvider } from './Contexts/SearchContext'; // Import SearchProvider
 import App from './App';
 import './index.css';
-
+import { SkillsAndMajorsProvider } from './Contexts/SkillsAndMajorsContext';
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <ThemeContextProvider>
+<SkillsAndMajorsProvider>
+<ThemeContextProvider>
     <AuthProvider>
       <SearchProvider>
         <BrowserRouter>
@@ -18,4 +19,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </SearchProvider>
     </AuthProvider>
   </ThemeContextProvider>
+</SkillsAndMajorsProvider>
 );
