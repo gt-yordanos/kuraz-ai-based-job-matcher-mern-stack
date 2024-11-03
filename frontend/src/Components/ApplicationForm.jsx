@@ -37,13 +37,12 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
 const ApplicationForm = ({
   userInput,
+  setUserInput,
   handleArrayChange,
   errorMessages,
   removeArrayItem,
   addArrayItem,
   years,
-  profileData,
-  setProfileData,
   coverLetter,
   setCoverLetter,
   hardSkillsOptions,
@@ -170,20 +169,21 @@ const ApplicationForm = ({
             />
           </FormControl>
           <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
-            <Autocomplete
-              options={years || []}
-              onChange={(event, newValue) => handleArrayChange(index, 'graduationYear', newValue, 'education')}
-              renderInput={(params) => (
-                <StyledTextField
-                  {...params}
-                  label="Graduation Year"
-                  placeholder="Search year..."
-                  error={Boolean(errorMessages[`eduYear${index}`])}
-                  helperText={errorMessages[`eduYear${index}`]}
-                />
-              )}
-            />
-          </FormControl>
+          <Autocomplete
+            options={years.map(year => year.toString()) || []} // Convert numbers to strings
+            onChange={(event, newValue) => handleArrayChange(index, 'graduationYear', newValue, 'education')}
+            renderInput={(params) => (
+              <StyledTextField
+                {...params}
+                label="Graduation Year"
+                placeholder="Search year..."
+                error={Boolean(errorMessages[`eduYear${index}`])}
+                helperText={errorMessages[`eduYear${index}`]}
+              />
+            )}
+          />
+        </FormControl>
+
           <StyledTextField
             name="cgpa"
             label="CGPA"
@@ -225,12 +225,13 @@ const ApplicationForm = ({
               placeholder="Search hard skills..."
             />
           )}
-          onChange={(event, newValue) => setProfileData(prev => ({
+          onChange={(event, newValue) => setUserInput(prev => ({
             ...prev,
-            skills: { ...prev.skills, hardSkills: newValue }
+            hardSkills: newValue
           }))}
         />
-      </FormControl>
+    </FormControl>
+
 
       <FormControl fullWidth sx={{ mb: 2 }}>
         <Autocomplete
@@ -244,12 +245,12 @@ const ApplicationForm = ({
               placeholder="Search soft skills..."
             />
           )}
-          onChange={(event, newValue) => setProfileData(prev => ({
+          onChange={(event, newValue) => setUserInput(prev => ({
             ...prev,
-            skills: { ...prev.skills, softSkills: newValue }
+            softSkills: newValue
           }))}
         />
-      </FormControl>
+    </FormControl>
 
       <Divider sx={{ margin: '20px 0' }} />
       <div style={{ marginBottom: '16px', fontSize: '1.25rem' }}>Cover Letter</div>

@@ -20,7 +20,7 @@ const ApplicationSchema = new mongoose.Schema({
     interviewStatus: {
         type: String,
         enum: ['Scheduled', 'Completed', 'Canceled'],
-        default: 'Scheduled',
+        default: 'null',
     },
     processedForRanking: { type: Boolean, default: false },
     qualifications: {

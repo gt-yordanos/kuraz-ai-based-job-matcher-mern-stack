@@ -1,28 +1,66 @@
 import Application from '../models/Application.js';
+import Job from '../models/Job.js';
 
 // Create a new application
 export const createApplication = async (req, res) => {
     // Validate required fields
     const { applicantId, jobId, qualifications } = req.body;
-    
-    // Check if the necessary data is provided
-    if (!applicantId || !jobId || 
-        !qualifications || 
-        !qualifications.education || 
-        qualifications.education.length === 0 || 
-        !qualifications.experience || 
-        qualifications.experience.length === 0) {
-        return res.status(400).json({ message: 'Qualifications (education and experience) are required.' });
+
+    // Initialize an array to hold error messages
+    let errors = [];
+
+    // Check for missing fields
+    if (!applicantId) {
+        errors.push('Applicant ID is required.');
+    }
+    if (!jobId) {
+        errors.push('Job ID is required.');
+    }
+    if (!qualifications) {
+        errors.push('Qualifications are required.');
+    } else {
+        if (!qualifications.education || qualifications.education.length === 0) {
+            errors.push('Education is required.');
+        }
+        if (!qualifications.experience || qualifications.experience.length === 0) {
+            errors.push('Experience is required.');
+        }
+        if (!qualifications.hardSkills || qualifications.hardSkills.length === 0) {
+            errors.push('At least one hard skill is required.');
+        }
+        if (!qualifications.softSkills || qualifications.softSkills.length === 0) {
+            errors.push('At least one soft skill is required.');
+        }
+    }
+
+    // If there are errors, return them
+    if (errors.length > 0) {
+        return res.status(400).json({ message: 'Validation errors occurred.', errors });
     }
 
     try {
-        const application = new Application(req.body);
+        // Fetch the job to get the job deadline
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ message: 'Job not found.' });
+        }
+
+        // Create a new application with the job deadline
+        const applicationData = {
+            applicantId,
+            jobId,
+            qualifications,
+            jobDeadline: job.deadline, // Set job deadline from job details
+        };
+
+        const application = new Application(applicationData);
         await application.save();
         res.status(201).json(application);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
+
 
 // Get all applications
 export const getAllApplications = async (req, res) => {

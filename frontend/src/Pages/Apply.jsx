@@ -18,12 +18,9 @@ import MessagePopup from '../Components/MessagePopup';
 import JobDetails from '../Components/JobDetails';
 import ApplicationForm from '../Components/ApplicationForm';
 
-
-
-const hardSkillsOptions = ['JavaScript', 'Python', 'Java', 'C++',]; // Example hard skills options
-const softSkillsOptions = ['Communication', 'Teamwork', 'Problem-Solving']; // Example soft skills options
-const majorOptions = ['Computer Science', 'Engineering', 'Business', 'Biology']; // Example major options
-
+const hardSkillsOptions = ['JavaScript', 'Python', 'Java', 'C++'];
+const softSkillsOptions = ['Communication', 'Teamwork', 'Problem-Solving'];
+const majorOptions = ['Computer Science', 'Engineering', 'Business', 'Biology'];
 
 const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'light' ? 'black' : 'white',
@@ -79,10 +76,12 @@ const Apply = () => {
   const [userInput, setUserInput] = useState({
     education: [],
     experience: [],
+    hardSkills: [],
+    softSkills: [],
   });
   const [errorMessages, setErrorMessages] = useState({});
   const currentYear = new Date().getFullYear();
-  const [years] = useState(Array.from({ length: 56 }, (_, i) => currentYear - 50 + i));  
+  const [years] = useState(Array.from({ length: 56 }, (_, i) => currentYear - 50 + i));
   const [useProfileData, setUseProfileData] = useState({
     education: false,
     experience: false,
@@ -105,9 +104,9 @@ const Apply = () => {
         setLoading(false);
       }
     };
-  
+
     const fetchApplicantData = async () => {
-      if (user?.id) { // Check if user ID is available
+      if (user?.id) {
         try {
           const response = await axios.get(`http://localhost:5000/api/applicants/${user.id}`);
           setProfileData(response.data);
@@ -117,23 +116,25 @@ const Apply = () => {
         }
       }
     };
-  
+
     fetchJobDetails();
     fetchApplicantData();
   }, [id, user]);
 
   const handleApply = async () => {
-    setIsApplicationProcessing(true); // Start loading state
+    setIsApplicationProcessing(true);
     let errors = {};
-    
+  
+    // Check the cover letter word count
     if (coverLetter.split(' ').length < 200 || coverLetter.split(' ').length > 400) {
       setPopupMessage('Cover letter must be between 200 and 400 words.');
       setPopupType('error');
       setPopupOpen(true);
-      setIsApplicationProcessing(false); // Reset loading state
+      setIsApplicationProcessing(false);
       return;
     }
   
+    // Validate user input for experience
     userInput.experience.forEach((exp, index) => {
       if (!exp.jobTitle) errors[`expJobTitle${index}`] = 'Job Title is required.';
       if (!exp.company) errors[`expCompany${index}`] = 'Company is required.';
@@ -143,6 +144,7 @@ const Apply = () => {
       if (!exp.description) errors[`expDescription${index}`] = 'Description is required.';
     });
   
+    // Validate user input for education
     userInput.education.forEach((edu, index) => {
       if (!edu.degree) errors[`eduDegree${index}`] = 'Degree is required.';
       if (!edu.institution) errors[`eduInstitution${index}`] = 'Institution is required.';
@@ -151,11 +153,19 @@ const Apply = () => {
       if (!edu.cgpa) errors[`eduCgpa${index}`] = 'CGPA is required.';
     });
   
+    // Check for validation errors
     if (Object.keys(errors).length) {
       setErrorMessages(errors);
-      setIsApplicationProcessing(false); // Reset loading state
+      setIsApplicationProcessing(false);
       return;
     }
+  
+    // Set useProfileData based on userInput
+    setUseProfileData({
+      education: userInput.education.length === 0,
+      experience: userInput.experience.length === 0,
+      skills: userInput.hardSkills.length === 0 && userInput.softSkills.length === 0,
+    });
   
     try {
       const applicationData = {
@@ -163,32 +173,63 @@ const Apply = () => {
         jobId: id,
         coverLetter,
         qualifications: {
-          education: useProfileData.education ? profileData.education : userInput.education,
-          experience: useProfileData.experience ? profileData.experience : userInput.experience,
-          hardSkills: useProfileData.skills ? profileData.skills.hardSkills : [],
-          softSkills: useProfileData.skills ? profileData.skills.softSkills : [],
+          education: useProfileData.education ? 
+            (profileData.education.length ? profileData.education : userInput.education) : 
+            userInput.education,
+          experience: useProfileData.experience ? 
+            (profileData.experience.length ? profileData.experience : userInput.experience) : 
+            userInput.experience,
+          hardSkills: useProfileData.skills ? 
+            (profileData.skills.hardSkills.length ? profileData.skills.hardSkills : userInput.hardSkills) : 
+            userInput.hardSkills,
+          softSkills: useProfileData.skills ? 
+            (profileData.skills.softSkills.length ? profileData.skills.softSkills : userInput.softSkills) : 
+            userInput.softSkills,
         },
       };
-      
+      console.log('Application Data:', applicationData);
+
+  
       await axios.post('http://localhost:5000/api/applications', applicationData);
       setPopupMessage('Application submitted successfully!');
       setPopupType('success');
       setPopupOpen(true);
     } catch (error) {
-      console.error(error);
-      setPopupMessage('Failed to submit application');
+      console.error('Error submitting application:', error);
+      
+      // Check if the error has a response and log the server's message
+      if (error.response) {
+        setPopupMessage(`Failed to submit application: ${error.response.data.message || error.response.statusText}`);
+      } else if (error.request) {
+        setPopupMessage('Failed to submit application: No response received from the server.');
+      } else {
+        setPopupMessage(`Error: ${error.message}`);
+      }
+      
       setPopupType('error');
       setPopupOpen(true);
     } finally {
-      setIsApplicationProcessing(false); // Reset loading state
+      setIsApplicationProcessing(false);
     }
   };
+  
+  
 
   const addArrayItem = (type) => {
+    const defaultExperience = { jobTitle: '', company: '', startDate: '', endDate: '', description: '', jobType: '' };
+    const defaultEducation = { degree: '', institution: '', major: '', graduationYear: '', cgpa: '' };
+    
     setUserInput(prev => ({
       ...prev,
-      [type]: [...prev[type], { jobTitle: '', company: '', startDate: '', endDate: '', description: '', jobType: '' }]
+      [type]: [...prev[type], type === 'education' ? defaultEducation : defaultExperience]
     }));
+  };
+  
+  const handleArrayChange = (index, field, value, type) => {
+    setUserInput(prev => {
+      const updatedArray = prev[type].map((item, i) => (i === index ? { ...item, [field]: value } : item));
+      return { ...prev, [type]: updatedArray };
+    });
   };
 
   const removeArrayItem = (index, type) => {
@@ -198,16 +239,11 @@ const Apply = () => {
     }));
   };
 
-  const handleArrayChange = (index, field, value, type) => {
-    setUserInput(prev => {
-      const updatedArray = prev[type].map((item, i) => (i === index ? { ...item, [field]: value } : item));
-      return { ...prev, [type]: updatedArray };
-    });
-  };
 
   const handlePopupClose = () => {
     setPopupOpen(false);
   };
+
 
   if (loading) {
     return (
@@ -224,7 +260,7 @@ const Apply = () => {
       </Box>
     );
   }
-  
+
   if (error) {
     return (
       <Box
@@ -241,7 +277,7 @@ const Apply = () => {
       </Box>
     );
   }
-  
+
   if (!job) {
     return (
       <Box
@@ -261,46 +297,44 @@ const Apply = () => {
 
   return (
     <>
-       <MessagePopup 
+      <MessagePopup 
         message={popupMessage} 
         messageType={popupType} 
         open={popupOpen} 
         onClose={handlePopupClose} 
       />
 
-<Card
-      sx={{
-        width: { xs: '95%', sm: '80%', md: '60%' },
-        backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f5f5f5',
-        margin: '20px auto',
-        borderRadius: '16px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-      }}
-    >
-      <CardContent>
-        <JobDetails job={job} />
-        <Divider sx={{ margin: '20px 0' }} />
-        <ApplicationForm
-        userInput={userInput}
-        handleArrayChange={handleArrayChange}
-        errorMessages={errorMessages}
-        removeArrayItem={removeArrayItem}
-        addArrayItem={addArrayItem}
-        years={years}
-        profileData={profileData}
-        setProfileData={setProfileData}
-        coverLetter={coverLetter}
-        setCoverLetter={setCoverLetter}
-        hardSkillsOptions={hardSkillsOptions}
-        softSkillsOptions={softSkillsOptions}
-        majorOptions={majorOptions}
-      />
-        <Divider sx={{ margin: '20px 0' }} />
-        <ApplyButton isApplicationProcessing={isApplicationProcessing} onClick={handleApply} />
-      </CardContent>
-    </Card>
+      <Card
+        sx={{
+          width: { xs: '95%', sm: '80%', md: '60%' },
+          backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f5f5f5',
+          margin: '20px auto',
+          borderRadius: '16px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+        }}
+      >
+        <CardContent>
+          <JobDetails job={job} />
+          <Divider sx={{ margin: '20px 0' }} />
+          <ApplicationForm
+            userInput={userInput}
+            setUserInput={setUserInput}
+            handleArrayChange={handleArrayChange}
+            errorMessages={errorMessages}
+            removeArrayItem={removeArrayItem}
+            addArrayItem={addArrayItem}
+            years={years}
+            coverLetter={coverLetter}
+            setCoverLetter={setCoverLetter}
+            hardSkillsOptions={hardSkillsOptions}
+            softSkillsOptions={softSkillsOptions}
+            majorOptions={majorOptions}
+          />
+          <Divider sx={{ margin: '20px 0' }} />
+          <ApplyButton isApplicationProcessing={isApplicationProcessing} onClick={handleApply} />
+        </CardContent>
+      </Card>
     </>
-   
   );
 };
 
