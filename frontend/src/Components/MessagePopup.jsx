@@ -21,8 +21,8 @@ function MessagePopup({ message, messageType, open, onClose }) {
     >
       <Snackbar
         open={open}
-        autoHideDuration={6000}
-        onClose={onClose}
+        autoHideDuration={5000} // Keep this to close after 5 seconds
+        onClose={onClose} // Triggered when clicking 'X' or after duration
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Centered at the top
       >
         <Alert
@@ -31,9 +31,14 @@ function MessagePopup({ message, messageType, open, onClose }) {
           sx={{
             backgroundColor: messageType === 'error' ? '#f44336' : '#4caf50',
             color: 'white',
-            width: '400px', // Set a fixed width
+            width: '500px',
             maxWidth: '90%', // Allow it to be responsive
-            textAlign: 'center', // Center the text
+            textAlign: 'center',
+            padding: '8px 22px', // Decrease padding
+            fontSize: {
+              xs: '0.75rem', // Smaller font size for mobile
+              sm: '0.875rem', // Slightly larger for small screens
+            },
           }}
         >
           {message}

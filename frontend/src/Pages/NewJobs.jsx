@@ -3,7 +3,7 @@ import { Box, Grid, useTheme, useMediaQuery, CircularProgress } from '@mui/mater
 import JobCard from '../Components/JobCard'; // Import the JobCard component
 import Apply from './Apply'; // Import the Apply component
 import axios from 'axios';
-
+import StorageIcon from '@mui/icons-material/Storage';
 const NewJobs = () => {
   const theme = useTheme();
   const isExtraSmallScreen = useMediaQuery('(max-width:375px)');
@@ -61,8 +61,9 @@ const NewJobs = () => {
 
   if (error) {
     return (
-      <Box sx={containerStyle}>
-        <h2>{error}</h2>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: '100px' }}>
+        <StorageIcon sx={{ fontSize: 100, color: '#ED2939' }} />
+        <h2>No jobs found or Connection Problem</h2>
       </Box>
     );
   }
