@@ -1,4 +1,4 @@
-import express from 'express'; 
+import express from 'express';  
 import mongoose from 'mongoose'; 
 import dotenv from 'dotenv'; 
 import cors from 'cors'; 
@@ -48,7 +48,7 @@ app.use('/api/applicants', applicantRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/hr', hrStaffRoutes);
-app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/leaderboard', leaderboardRoutes); // Leaderboard routes integrated here
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recommended-jobs', recommendedJobRoutes);
 app.use('/api/skills-and-majors', skillsAndMajorsRoutes);

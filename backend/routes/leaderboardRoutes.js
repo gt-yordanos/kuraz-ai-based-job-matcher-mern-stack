@@ -1,19 +1,12 @@
 import express from 'express';
-import {
-    createLeaderboardEntry,
-    getAllLeaderboardEntries,
-    getLeaderboardEntryById,
-    updateLeaderboardEntry,
-    deleteLeaderboardEntry,
-} from '../controllers/leaderboardController.js';
+import { updateLeaderboard, getLeaderboard } from '../controllers/leaderboardController.js';
 
 const router = express.Router();
 
-// Define routes
-router.post('/', createLeaderboardEntry); // Create a new leaderboard entry
-router.get('/', getAllLeaderboardEntries); // Get all leaderboard entries
-router.get('/:id', getLeaderboardEntryById); // Get a specific leaderboard entry by ID
-router.put('/:id', updateLeaderboardEntry); // Update a leaderboard entry
-router.delete('/:id', deleteLeaderboardEntry); // Delete a leaderboard entry
+// Route to update the leaderboard for a specific job
+router.post('/update/:jobId', updateLeaderboard);
+
+// Route to get the leaderboard for a specific job
+router.get('/:jobId', getLeaderboard);
 
 export default router;
