@@ -33,6 +33,7 @@ const JobCard = ({ job }) => {
     flexDirection: 'column',
     justifyContent: 'space-between',
     height: '100%',
+    minWidth: '250px',
     transition: 'transform 0.2s',
     '&:hover': {
       transform: 'scale(1.05)',
@@ -78,7 +79,7 @@ const JobCard = ({ job }) => {
           </p>
           <p style={textSize.skills}>
             <CodeIcon sx={{ fontSize: '14px' }} /> 
-            {` Skills: ${job.skillsRequired.hardSkills.join(', ')}`} 
+            {` Skills: ${job.skillsRequired.skills.hardSkills.join(', ')}`} 
           </p>
           <p style={textSize.timePosted}>
             <AccessTimeIcon sx={{ fontSize: '14px' }} /> {formatDate(job.postedDate)}

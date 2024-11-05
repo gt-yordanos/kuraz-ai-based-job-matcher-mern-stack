@@ -104,3 +104,13 @@ export const getJobsByHrStaffId = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// Delete all job postings
+export const deleteAllJobs = async (req, res) => {
+    try {
+        await Job.deleteMany(); // Deletes all job documents
+        res.status(204).send(); // No content
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

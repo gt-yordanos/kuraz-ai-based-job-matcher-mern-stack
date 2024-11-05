@@ -14,7 +14,7 @@ const NewJobs = () => {
 
   const containerStyle = {
     padding: isExtraSmallScreen ? '4px' : '15px',
-    minHeight: '100vh',
+    minHeight: '70vh',
     color: theme.palette.mode === 'dark' ? '#fff' : '#000',
     display: 'flex',
     flexDirection: 'column',

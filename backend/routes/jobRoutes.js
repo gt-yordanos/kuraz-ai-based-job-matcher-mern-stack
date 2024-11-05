@@ -5,8 +5,9 @@ import {
     getJobById,
     updateJob,
     deleteJob,
+    deleteAllJobs, // Import the new controller method
     searchJobsByTitle,
-    getJobsByHrStaffId, // Import the new controller method
+    getJobsByHrStaffId,
 } from '../controllers/jobController.js';
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.get('/search', searchJobsByTitle); // Search jobs by title
 router.get('/:id', getJobById); // Get a specific job by ID
 router.put('/:id', updateJob); // Update a job
 router.delete('/:id', deleteJob); // Delete a job
+router.delete('/', deleteAllJobs); // Delete all jobs
 router.get('/hrStaff/:hrStaffId', getJobsByHrStaffId); // Get jobs by HR staff ID
 
 export default router;

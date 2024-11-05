@@ -57,8 +57,10 @@ const JobPost = () => {
       degreeWeight: 1,
     },
     skillsRequired: {
-      hardSkills: [],
-      softSkills: [],
+      skills:{
+        hardSkills: [],
+        softSkills: [],
+      },
       skillWeight: 1,
     },
     experienceRequirement: {
@@ -101,7 +103,10 @@ const JobPost = () => {
   const handleSkillsChange = (type) => (event, newValue) => {
     setProfileData((prev) => ({
       ...prev,
-      skillsRequired: { ...prev.skillsRequired, [type]: newValue },
+      skillsRequired: { 
+        ...prev.skillsRequired, 
+        [type]: newValue 
+      },
     }));
   };
 
@@ -124,8 +129,8 @@ const JobPost = () => {
       return 'GPA must be between 0 and 4.';
     }
     if (!profileData.educationRequirement.requiredMajors[0]) return 'Major is required';
-    if (!profileData.skillsRequired.hardSkills[0]) return 'Hard Skills are required';
-    if (!profileData.skillsRequired.softSkills[0]) return 'Soft Skills are required';
+    if (!profileData.skillsRequired.skills.hardSkills[0]) return 'Hard Skills are required';
+    if (!profileData.skillsRequired.skills.softSkills[0]) return 'Soft Skills are required';
     if (!profileData.experienceRequirement.years) return 'Years of Experience are required.';
     return null;
   };
@@ -137,9 +142,18 @@ const JobPost = () => {
       setMessagePopup({ message: validationError, messageType: 'error', open: true });
       return;
     }
-
+  
     try {
-      const response = await axios.post('http://localhost:5000/api/jobs', profileData);
+      const response = await axios.post('http://localhost:5000/api/jobs', {
+        ...profileData,
+        skillsRequired: {
+          skills:{
+            hardSkills: profileData.skillsRequired.skills.hardSkills,
+            softSkills: profileData.skillsRequired.skills.softSkills
+          },
+          skillWeight: profileData.skillsRequired.skillWeight, // Ensure skillWeight is included
+        },
+      });
       console.log(response.data);
       setMessagePopup({ message: 'Job posted successfully!', messageType: 'success', open: true });
     } catch (error) {
@@ -147,6 +161,7 @@ const JobPost = () => {
       setMessagePopup({ message: 'Failed to post job. Please try again.', messageType: 'error', open: true });
     }
   };
+   
 
   return (
     <StyledBox>
@@ -381,15 +396,21 @@ const JobPost = () => {
             <TipsAndUpdates sx={{ mr: 1 }} /> Skills
           </h3>
           <FormControl fullWidth sx={{ mb: 2 }}>
-            <Autocomplete
-              multiple
-              options={hardSkillsOptions}
-              value={profileData.skillsRequired.hardSkills}
-              onChange={(event, newValue) => {
-                setProfileData((prev) => ({
-                  ...prev,
-                  skillsRequired: { ...prev.skillsRequired, hardSkills: newValue },
-                }));
+          <Autocomplete
+            multiple
+            options={hardSkillsOptions}
+            value={profileData.skillsRequired.skills.hardSkills}
+            onChange={(event, newValue) => {
+              setProfileData((prev) => ({
+                ...prev,
+                skillsRequired: {
+                  ...prev.skillsRequired,
+                  skills: {
+                    ...prev.skillsRequired.skills,
+                    hardSkills: newValue,
+                  },
+                },
+            }));
               }}
               renderInput={(params) => (
                 <TextField {...params} variant="outlined" label="Hard Skills" placeholder="Enter hard skills..." />
@@ -402,26 +423,33 @@ const JobPost = () => {
             />
           </FormControl>
           <FormControl fullWidth sx={{ mb: 2 }}>
-            <Autocomplete
-              multiple
-              options={softSkillsOptions}
-              value={profileData.skillsRequired.softSkills}
-              onChange={(event, newValue) => {
-                setProfileData((prev) => ({
-                  ...prev,
-                  skillsRequired: { ...prev.skillsRequired, softSkills: newValue },
-                }));
-              }}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Soft Skills" placeholder="Enter soft skills..." />
-              )}
-              renderTags={(value, getTagProps) =>
-                value.map((option, index) => (
-                  <Chip key={option} label={option} {...getTagProps({ index })} />
-                ))
-              }
-            />
-          </FormControl>
+          <Autocomplete
+            multiple
+            options={softSkillsOptions}
+            value={profileData.skillsRequired.skills.softSkills}
+            onChange={(event, newValue) => {
+              setProfileData((prev) => ({
+                ...prev,
+                skillsRequired: {
+                  ...prev.skillsRequired,
+                  skills: {
+                    ...prev.skillsRequired.skills, 
+                    softSkills: newValue,
+                  },
+                },
+              }));
+            }}
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" label="Soft Skills" placeholder="Enter soft skills..." />
+            )}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip key={option} label={option} {...getTagProps({ index })} />
+              ))
+            }
+          />
+        </FormControl>
+
 
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <div style={{ width: '30%', fontWeight: 'bold' }}>Skill Weight:</div>

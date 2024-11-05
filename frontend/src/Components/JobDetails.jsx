@@ -36,14 +36,14 @@ const JobDetails = ({ job }) => {
       <h4>Skills Required:</h4>
       <p>
         <PsychologyIcon fontSize="small" /> <strong>Soft Skills:</strong> 
-        {job.skillsRequired.softSkills.length > 0 
-          ? job.skillsRequired.softSkills.join(', ') 
+        {job.skillsRequired.skills.softSkills.length > 0 
+          ? job.skillsRequired.skills.softSkills.join(', ') 
           : ' None'}
       </p>
       <p>
         <TipsAndUpdatesIcon fontSize="small" /> <strong>Hard Skills:</strong> 
-        {job.skillsRequired.hardSkills.length > 0 
-          ? job.skillsRequired.hardSkills.join(', ') 
+        {job.skillsRequired.skills.hardSkills.length > 0 
+          ? job.skillsRequired.skills.hardSkills.join(', ') 
           : ' None'}
       </p>
 

@@ -47,7 +47,8 @@ const JobSchema = new mongoose.Schema({
             default: 'None'
         },
         requiredMajors: {
-        type: String, enum : Majors,
+            type: [String], // Change this line to accept an array of strings
+            enum: Majors,
             validate: {
                 validator: v => v.length <= 10,
                 message: 'A maximum of 10 majors can be specified.'
