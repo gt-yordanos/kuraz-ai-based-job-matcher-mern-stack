@@ -138,7 +138,7 @@ const ApplicationForm = ({
               error={Boolean(errorMessages[`eduDegree${index}`])}
             >
               <MenuItem value="">Select Degree</MenuItem>
-              {['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'].map(degree => (
+              {['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate', 'Diploma'].map(degree => (
                 <MenuItem key={degree} value={degree}>{degree}</MenuItem>
               ))}
             </Select>

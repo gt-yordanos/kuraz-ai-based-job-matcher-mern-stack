@@ -37,7 +37,8 @@ const ApplicantSchema = new mongoose.Schema({
         {
             degree: { 
                 type: String,
-                enum: ['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'],
+                enum: ['None', 'High School','Bachelor', 'Master', 'Doctorate', 'Diploma', 'Associate'],
+                default: 'None',
             },
             institution: { type: String },
             major: { type: String, enum : Majors },

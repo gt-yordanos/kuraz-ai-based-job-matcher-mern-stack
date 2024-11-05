@@ -103,7 +103,7 @@ const AllJobs = () => {
       </Toolbar>
 
       <Box sx={{ marginTop: 5, flexGrow: 1, width: '100%' }}>
-        {loading || !query ? ( // Show skeletons if loading or query is empty
+        {loading || !query ? ( 
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
             {[...Array(5)].map((_, index) => (
               <Card key={index} sx={{ 
@@ -153,7 +153,7 @@ const AllJobs = () => {
                     </p>
                     <p style={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', margin: '0.25rem 0' }}>
                       <CodeIcon sx={{ marginRight: 1, fontSize: 'medium' }} />
-                      {`${job.skillsRequired.hardSkills.join(', ')}, ${job.skillsRequired.softSkills.join(', ')}`}
+                      {`${job.skillsRequired.skills.hardSkills.join(', ')}, ${job.skillsRequired.skills.softSkills.join(', ')}`}
                     </p>
                   </CardContent>
                 </Card>

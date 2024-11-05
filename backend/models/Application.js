@@ -27,7 +27,7 @@ const ApplicationSchema = new mongoose.Schema({
         education: [{
             degree: { 
                 type: String,
-                enum: ['Bachelor', 'Master', 'Doctorate', 'Diploma', 'Certification'],
+                enum: ['None', 'High School','Bachelor', 'Master', 'Doctorate', 'Diploma', 'Associate'],
                 required: true,
             },
             institution: { type: String, required: true },

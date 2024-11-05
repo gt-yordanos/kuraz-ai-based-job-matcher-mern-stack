@@ -114,7 +114,7 @@ const Search = () => {
             </p>
             <p style={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', margin: '0.25rem 0' }}>
               <CodeIcon sx={{ marginRight: 1, fontSize: 'medium' }} />
-              {job.skillsRequired.hardSkills.join(', ')}
+              {job.skillsRequired.skills.hardSkills.join(', ')}
             </p>
           </CardContent>
         </Card>
