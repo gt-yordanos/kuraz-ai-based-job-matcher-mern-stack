@@ -55,7 +55,6 @@ const calculateExperienceScore = (applicantExperience, experienceRequirement) =>
     return Math.max(0, score);
 };
 
-// Helper function to calculate skills score
 const calculateSkillsScore = (applicantQualifications, skillsRequired) => {
     const { hardSkills, softSkills } = skillsRequired.skills;
     const { skillWeight } = skillsRequired;
@@ -63,13 +62,19 @@ const calculateSkillsScore = (applicantQualifications, skillsRequired) => {
     const hardSkillsMatch = hardSkills.filter(skill => applicantQualifications.hardSkills.includes(skill)).length;
     const softSkillsMatch = softSkills.filter(skill => applicantQualifications.softSkills.includes(skill)).length;
 
+    // Calculate percentage of skills matched
+    const hardSkillMatchPercentage = (hardSkillsMatch / hardSkills.length) * 100;
+    const softSkillMatchPercentage = (softSkillsMatch / softSkills.length) * 100;
+
+    // Final skill match percentage
+    const skillMatchPercentage = (hardSkillMatchPercentage + softSkillMatchPercentage) / 2;
+
     let score = (hardSkillsMatch / hardSkills.length) * 10 + (softSkillsMatch / softSkills.length) * 10;
     score *= skillWeight;
 
-    return { score, matchedHardSkills: hardSkillsMatch, matchedSoftSkills: softSkillsMatch };
+    return { score, skillMatchPercentage, matchedHardSkills: hardSkillsMatch, matchedSoftSkills: softSkillsMatch };
 };
 
-// Function to calculate the total score for an applicant
 const calculateScore = (applicantQualifications, jobRequirements) => {
     let totalScore = 0;
 
@@ -77,13 +82,13 @@ const calculateScore = (applicantQualifications, jobRequirements) => {
     totalScore += calculateEducationScore(applicantQualifications.education, jobRequirements.educationRequirement);
 
     // Skills score
-    const { score: skillsScore } = calculateSkillsScore(applicantQualifications, jobRequirements.skillsRequired);
+    const { score: skillsScore, skillMatchPercentage } = calculateSkillsScore(applicantQualifications, jobRequirements.skillsRequired);
     totalScore += skillsScore;
 
     // Experience score
     totalScore += calculateExperienceScore(applicantQualifications.experience, jobRequirements.experienceRequirement);
 
-    return { totalScore };
+    return { totalScore, skillMatchPercentage };
 };
 
 // Function to update leaderboard
@@ -104,26 +109,37 @@ export const updateLeaderboard = async (req, res) => {
 
         const leaderboardEntries = applications.map(app => {
             const score = calculateScore(app.qualifications, job);
-
             const totalScore = score.totalScore;
-
-            // Calculate matched skills
+            const skillMatchPercentage = score.skillMatchPercentage;
+        
             const matchedHardSkills = app.qualifications.hardSkills.filter(skill => job.skillsRequired.skills.hardSkills.includes(skill));
             const matchedSoftSkills = app.qualifications.softSkills.filter(skill => job.skillsRequired.skills.softSkills.includes(skill));
-
-            // Check major and degree match
+        
             const majorMatch = app.qualifications.education.some(degree => job.educationRequirement.requiredMajors.includes(degree.major));
             const degreeMatch = app.qualifications.education.some(degree => degree.degree === job.educationRequirement.degree);
-
+        
+            const experienceYears = app.qualifications.experience.length;
+            const hasMinimumExperience = experienceYears >= job.experienceRequirement.years;
+        
+            const gpa = app.qualifications.education[0]?.cgpa || 0;
+            const meetsGpa = gpa >= job.educationRequirement.minGPA;
+        
             return {
                 jobId: job._id,
+                applicationId: app._id,  // Include applicationId here
                 applicantId: app.applicantId,
                 score: totalScore,
                 matchedHardSkills,
                 matchedSoftSkills,
                 majorMatch,
                 degreeMatch,
-                gpa: app.qualifications.education[0]?.cgpa || 0,
+                gpa,
+                meetsGpa,
+                experienceYears,
+                hasMinimumExperience,
+                skillMatchPercentage,
+                hardSkillMatchPercentage: (matchedHardSkills.length / job.skillsRequired.skills.hardSkills.length) * 100,
+                softSkillMatchPercentage: (matchedSoftSkills.length / job.skillsRequired.skills.softSkills.length) * 100,
             };
         }).filter(entry => entry !== null);
 
@@ -137,7 +153,7 @@ export const updateLeaderboard = async (req, res) => {
     }
 };
 
-// Function to get leaderboard
+// Function to get leaderboard (remains the same)
 export const getLeaderboard = async (req, res) => {
     const { jobId } = req.params;
     const { sortBy } = req.query;

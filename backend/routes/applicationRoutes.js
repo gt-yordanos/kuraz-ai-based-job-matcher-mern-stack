@@ -5,29 +5,33 @@ import {
     getApplicationById,
     updateApplication,
     deleteApplication,
+    deleteAllApplications,
     updateApplicationStatus,
     scheduleInterview,
+    getApplicationsByHrStaffId, // Added this import for HR-specific route
     completeInterview,
-    cancelInterview,
-    deleteAllApplications
+    cancelInterview
 } from '../controllers/applicationController.js';
 
 const router = express.Router();
 
-// Routes for application
+// Application Routes
 router.post('/', createApplication); // Create a new application
 router.get('/', getAllApplications); // Get all applications
-router.get('/:id', getApplicationById); // Get an application by ID
+router.get('/:id', getApplicationById); // Get a specific application by ID
 router.put('/:id', updateApplication); // Update an application
 router.delete('/:id', deleteApplication); // Delete an application
-router.delete('/', deleteAllApplications); //
-// Update application status (Accepted, Rejected, etc.)
+router.delete('/', deleteAllApplications); // Delete all applications
+
+// Application Status Update
 router.patch('/:id/status', updateApplicationStatus); // Update application status
-// Schedule an interview
+
+// Interview Scheduling and Status
 router.patch('/:id/interview/schedule', scheduleInterview); // Schedule an interview
-// Complete an interview
 router.patch('/:id/interview/complete', completeInterview); // Mark interview as completed
-// Cancel an interview
 router.patch('/:id/interview/cancel', cancelInterview); // Cancel an interview
- 
+
+// HR-Specific Route
+router.get('/hr/:hrStaffId/scheduled-interviews', getApplicationsByHrStaffId); // Get scheduled interviews for a specific HR staff
+
 export default router;

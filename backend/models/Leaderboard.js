@@ -6,6 +6,11 @@ const LeaderboardSchema = new mongoose.Schema({
         ref: 'Job', 
         required: true 
     },
+    applicationId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Application', 
+        required: true 
+    },
     applicantId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Applicant', 
@@ -16,24 +21,47 @@ const LeaderboardSchema = new mongoose.Schema({
         required: true 
     },
     matchedHardSkills: { 
-        type: [String],  // Array of hard skills that match
+        type: [String],
         default: [] 
     },
     matchedSoftSkills: { 
-        type: [String],  // Array of soft skills that match
+        type: [String],
         default: [] 
     },
     majorMatch: { 
-        type: Boolean, 
+        type: Boolean,
         default: false 
     },
     degreeMatch: { 
-        type: Boolean, 
+        type: Boolean,
         default: false 
     },
     gpa: { 
+        type: Number
+    },
+    meetsGpa: { 
+        type: Boolean, 
+        required: true 
+    },
+    experienceYears: { 
         type: Number, 
-        required: false 
+        required: true 
+    },
+    hasMinimumExperience: { 
+        type: Boolean, 
+        required: true 
+    },
+    skillMatchPercentage: { 
+        type: Number, 
+        required: true 
+    },
+    hardSkillMatchPercentage: { 
+        type: Number, 
+        required: true 
+    },
+    softSkillMatchPercentage: { 
+        type: Number, 
+        required: true 
     },
     createdAt: { 
         type: Date, 

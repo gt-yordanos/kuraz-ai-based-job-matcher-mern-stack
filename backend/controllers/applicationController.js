@@ -95,17 +95,6 @@ export const getAllApplications = async (req, res) => {
     }
 };
 
-// Get applications by HR staff ID
-export const getApplicationsByHrStaffId = async (req, res) => {
-    const { hrStaffId } = req.params; 
-    try {
-        const applications = await Application.find({ hrStaffId }).populate('applicantId jobId');
-        res.status(200).json(applications);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
 // Get a specific application by ID
 export const getApplicationById = async (req, res) => {
     try {
@@ -169,8 +158,9 @@ export const updateApplicationStatus = async (req, res) => {
 };
 
 // Schedule an interview
+// Schedule an interview
 export const scheduleInterview = async (req, res) => {
-    const { interviewDate, interviewers } = req.body;
+    const { interviewDate, interviewers, hrStaffId } = req.body; // Include hrStaffId in request body
     try {
         const application = await Application.findById(req.params.id);
         if (!application) {
@@ -179,6 +169,7 @@ export const scheduleInterview = async (req, res) => {
 
         application.interviewDate = interviewDate;
         application.interviewers = interviewers;
+        application.hrStaffId = hrStaffId; // Save hrStaffId for tracking purposes
         application.interviewStatus = 'Scheduled';
 
         await application.save();
@@ -187,6 +178,18 @@ export const scheduleInterview = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+// Get applications scheduled for interview by HR staff ID
+export const getApplicationsByHrStaffId = async (req, res) => {
+    const { hrStaffId } = req.params;
+    try {
+        const applications = await Application.find({ hrStaffId, interviewStatus: 'Scheduled' }).populate('applicantId jobId');
+        res.status(200).json(applications);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 // Complete an interview
 export const completeInterview = async (req, res) => {
