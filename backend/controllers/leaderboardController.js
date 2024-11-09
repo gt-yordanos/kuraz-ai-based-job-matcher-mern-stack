@@ -1,6 +1,7 @@
 import Job from '../models/Job.js';
 import Application from '../models/Application.js';
 import Leaderboard from '../models/Leaderboard.js';
+import { Types } from 'mongoose';
 
 // Define scores based on required degree
 const degreeScores = {
@@ -153,22 +154,31 @@ export const updateLeaderboard = async (req, res) => {
     }
 };
 
-// Function to get leaderboard (remains the same)
 export const getLeaderboard = async (req, res) => {
     const { jobId } = req.params;
     const { sortBy } = req.query;
 
-    let leaderboard = await Leaderboard.find({ jobId })
-        .populate('applicantId')
-        .sort({ score: -1 });
-
-    if (sortBy) {
-        if (sortBy === 'gender') {
-            leaderboard.sort((a, b) => a.gender.localeCompare(b.gender));
-        } else if (sortBy === 'age') {
-            leaderboard.sort((a, b) => a.age - b.age);
-        }
+    // Check if jobId is a valid ObjectId
+    if (!Types.ObjectId.isValid(jobId)) {
+        return res.status(400).json({ message: 'Invalid jobId format' });
     }
 
-    res.json(leaderboard);
+    try {
+        let leaderboard = await Leaderboard.find({ jobId })
+            .populate('applicantId')
+            .sort({ score: -1 });
+
+        if (sortBy) {
+            if (sortBy === 'gender') {
+                leaderboard.sort((a, b) => a.gender.localeCompare(b.gender));
+            } else if (sortBy === 'age') {
+                leaderboard.sort((a, b) => a.age - b.age);
+            }
+        }
+
+        res.json(leaderboard);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
 };

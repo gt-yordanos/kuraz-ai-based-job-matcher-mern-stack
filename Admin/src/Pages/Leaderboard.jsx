@@ -22,7 +22,7 @@ import axios from 'axios';
 import MessagePopup from '../Components/MessagePopup';
 import UpdateIcon from '@mui/icons-material/Update'; // Import UpdateIcon
 import FilterListIcon from '@mui/icons-material/FilterList'; // Import FilterIcon
-
+import ApplicantDetailsPopup from '../Components/ApplicantDetailsPopup';
 const Leaderboard = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [jobOptions, setJobOptions] = useState([]);
@@ -35,7 +35,7 @@ const Leaderboard = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [filterOption, setFilterOption] = useState(null);
   const [error, setError] = useState(null);
-
+  const [selectedRow, setSelectedRow] = useState(null);
   const token = localStorage.getItem('hrToken');
   const hrStaff = token ? JSON.parse(atob(token.split('.')[1])) : null;
 
@@ -159,6 +159,10 @@ const Leaderboard = () => {
     // Implement filter logic here
   };
 
+  const handleRowClick = (row) => {
+    setSelectedRow(row); // Ensure this is setting the state correctly
+};
+
   return (
     <Box sx={{ padding: 0, bgcolor: 'background.default' }}>
       <MessagePopup
@@ -250,7 +254,7 @@ const Leaderboard = () => {
           </TableHead>
           <TableBody>
             {leaderboardData.map((row) => (
-              <TableRow key={row.applicantId?._id}>
+                <TableRow key={row.applicantId?._id} onClick={() => handleRowClick(row)} style={{ cursor: 'pointer' }}>
                 <TableCell>{row.rank}</TableCell>
                 <TableCell>{parseFloat(row.hardSkillMatchPercentage).toFixed(2)}%</TableCell>
                 <TableCell>{parseFloat(row.softSkillMatchPercentage).toFixed(2)}%</TableCell>
@@ -263,6 +267,10 @@ const Leaderboard = () => {
         </Table>
       </TableContainer>
 
+      <ApplicantDetailsPopup
+        selectedRow={selectedRow}
+        setSelectedRow={setSelectedRow}
+      />
     </Box>
   );
 };
