@@ -18,7 +18,7 @@ router.get('/', getAllJobs); // Get all jobs
 router.get('/search', searchJobsByTitle); // Search jobs by title
 router.get('/:id', getJobById); // Get a specific job by ID
 router.put('/:id', updateJob); // Update a job
-router.delete('/:id', deleteJob); // Delete a job
+router.delete('/:id', deleteJob);
 router.delete('/', deleteAllJobs); // Delete all jobs
 router.get('/hrStaff/:hrStaffId', getJobsByHrStaffId); // Get jobs by HR staff ID
 

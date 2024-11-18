@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, List, ListItem, ListItemIcon, ListItemText, Divider, IconButton, useTheme } from '@mui/material';
-import { Dashboard, People, Work, PostAdd, Logout, ChevronLeft, ChevronRight, Assessment } from '@mui/icons-material';
+import { Dashboard, People, Work, PostAdd, Logout, ChevronLeft, ChevronRight, Assessment, Search } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import ThemeToggler from './ThemeToggler';
 import Images from '../assets/Images.js';
@@ -16,7 +16,8 @@ const Sidebar = () => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/' },
-    { text: 'All Jobs', icon: <Work />, path: '/jobs' },
+    { text: 'My Jobs', icon: <Work />, path: '/my-jobs' },
+     { text: 'Search', icon: <Search />, path: '/search' },
     { text: 'Applicants', icon: <People />, path: '/applicants' },
     { text: 'Leaderboard', icon: <Assessment />, path: '/leaderboard' },
     { text: 'Post Job', icon: <PostAdd />, path: '/post-job' },

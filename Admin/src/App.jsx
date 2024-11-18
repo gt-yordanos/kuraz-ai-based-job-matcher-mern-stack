@@ -6,13 +6,14 @@ import JobStatistics from './Pages/JobStatistics';
 import Applicants from './Pages/Applicants';
 import Leaderboard from './Pages/Leaderboard';
 import PostJob from './Pages/PostJob';
-import AllJobs from './Pages/AllJobs';
+import SearchJobs from './Pages/SearchJobs';
 import Dashboard from './Pages/Dashboard';
 import HrLogin from './Pages/HrLogin'; 
 import { ThemeContextProvider } from './Contexts/ThemeContext';
 import HrAuthProvider, { useHrAuth } from './Contexts/HrAuthContext'; 
 import ProtectedRoute from './Components/ProtectedRoute'; 
 import { SkillsAndMajorsProvider } from './Contexts/SkillsAndMajorsContext';
+import MyJobs from './Pages/MyJobs';
 
 const App = () => {
   return (
@@ -75,7 +76,8 @@ const MainContent = () => {
           <Route path="/applicants" element={<ProtectedRoute element={<Applicants />} />} />
           <Route path="/leaderboard" element={<ProtectedRoute element={<Leaderboard />} />} />
           <Route path="/post-job" element={<ProtectedRoute element={<PostJob />} />} />
-          <Route path="/jobs" element={<ProtectedRoute element={<AllJobs />} />} />
+          <Route path="/search" element={<ProtectedRoute element={<SearchJobs />} />} />
+          <Route path="/my-jobs" element={<ProtectedRoute element={<MyJobs />} />} />
           <Route path="*" element={<h2>Page Not Found</h2>} />
         </Routes>
       </Box>

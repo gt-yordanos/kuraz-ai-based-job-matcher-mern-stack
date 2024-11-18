@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-    Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Divider, useTheme,
-    IconButton, Card, CardContent, CardHeader
-} from '@mui/material';
+import { Button, TextField, Divider, useTheme, IconButton, CardContent, Card } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import WorkIcon from '@mui/icons-material/Work';
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import LeaderboardIcon from '@mui/icons-material/Leaderboard';
-import CloseIcon from '@mui/icons-material/Close';
-import InterviewIcon from '@mui/icons-material/HowToReg';
 import SchoolIcon from '@mui/icons-material/School';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import InterviewIcon from '@mui/icons-material/HowToReg';
+import CloseIcon from '@mui/icons-material/Close';
+import MessagePopup from './MessagePopup';
+
 const ApplicantDetailsPopup = ({ selectedRow, setSelectedRow }) => {
-    const [isOpen, setIsOpen] = useState(false);
+   const [isOpen, setIsOpen] = useState(false);
     const [applicantData, setApplicantData] = useState(null);
     const [applicationData, setApplicationData] = useState(null);
-    const [leaderboardData, setLeaderboardData] = useState(null);
     const [interviewDate, setInterviewDate] = useState('');
     const [interviewers, setInterviewers] = useState('');
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('success'); // success or error
+    const [openMessage, setOpenMessage] = useState(false);
     const theme = useTheme();
 
     const fetchApplicantData = async (applicantId) => {
@@ -60,13 +60,47 @@ const ApplicantDetailsPopup = ({ selectedRow, setSelectedRow }) => {
         }
     }, [selectedRow]);
 
-    const handleInterviewSubmit = (e) => {
+    const handleInterviewSubmit = async (e) => {
         e.preventDefault();
+        
+        // Check if any field is empty
         if (!interviewDate || !interviewers) {
-            alert("Please fill in all fields to schedule an interview.");
+            setMessage("Please fill in all fields to schedule an interview.");
+            setMessageType("error");
+            setOpenMessage(true);  // Open the message popup when fields are empty
             return;
         }
-        console.log("Interview scheduled on:", interviewDate, "with interviewers:", interviewers);
+    
+        // Construct the payload for the API
+        const interviewData = {
+            interviewDate,
+            interviewers,
+            hrStaffId: "HR_Staff_ID",  // Replace with actual HR staff ID
+        };
+    
+        try {
+            // API Call to schedule interview
+            const response = await axios.patch(
+                `http://localhost:5000/api/applications/${selectedRow.applicationId}/interview/schedule`,
+                interviewData
+            );
+            
+            if (response.status === 200) {
+                setMessage('Interview successfully scheduled!');
+                setMessageType('success');
+            }
+        } catch (error) {
+            setMessage(error.response?.data?.message || 'Error scheduling interview.');
+            setMessageType('error');
+        }
+    
+        // Open the message popup
+        setOpenMessage(true);
+    };
+    
+
+    const handleCloseMessage = () => {
+        setOpenMessage(false);  // Close message popup after timeout
     };
 
     const handleClose = () => {
@@ -85,28 +119,66 @@ const ApplicantDetailsPopup = ({ selectedRow, setSelectedRow }) => {
         return age;
     };
 
+    const getCardStyles = () => ({
+        backgroundColor: theme.palette.mode === 'dark' ? '#212121' : '#f2f2f2',
+        border: `2px solid ${theme.palette.mode === 'dark' ? '#fff' : '#000'}`,
+        borderRadius: '8px',
+        padding: '20px',
+        marginBottom: '20px',
+    });
+
+    const buttonStyles = {
+        height: '50px',
+        backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#000',
+        color: theme.palette.mode === 'dark' ? '#000' : '#fff',
+        '&:hover': {
+            backgroundColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333',
+        },
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+    };
+
     return (
-        <Dialog open={isOpen} onClose={handleClose} maxWidth="md" fullWidth>
-            <DialogTitle sx={{ fontWeight: 600, position: 'relative', backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0' }}>
-                Applicant Details
-                <IconButton
-                    onClick={handleClose}
-                    edge="end"
-                    color="inherit"
-                    sx={{
-                        position: 'absolute',
-                        top: 8,
-                        right: '20px',
-                    }}
-                >
+        <>
+        <div
+            className='modal'
+            style={{
+                display: isOpen ? 'block' : 'none',
+                position: 'fixed',
+                top: '10%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '80%',
+                maxWidth: '800px',
+                backgroundColor: theme.palette.mode === 'dark' ? '#212121' : '#f2f2f2',
+                borderRadius: '16px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                zIndex: 1000,
+                overflowY: 'auto',
+                maxHeight: '80vh',
+                boxShadow: '0 1px 15px rgba(0, 0, 0, 0.6)',
+            }}
+        >
+            {/* Fixed Title and Close Icon */}
+            <div style={{ position: 'sticky', top: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: theme.palette.mode === 'dark' ? '#212121' : '#f2f2f2', marginBottom: '5px' }}>
+                <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, marginLeft: '20px' }}>Applicant Details</h2>
+                <IconButton onClick={handleClose} color="inherit" style={{ marginRight: '20px' }}>
                     <CloseIcon />
                 </IconButton>
-            </DialogTitle>
-            <DialogContent dividers sx={{ backgroundColor: theme.palette.mode === 'dark' ? '#242424' : '#e0e0e0' }}>
+            </div>
+
+            {/* Applicant Details Content */}
+            <div style={{
+                  padding: '0 20px 20px 20px',
+            }}>
                 {/* Applicant Information */}
                 {applicantData && (
-                    <Card sx={{ mb: 2, backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0' }}>
-                        <CardHeader title="Personal Information" avatar={<PersonIcon />} />
+                    <div style={getCardStyles()}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <PersonIcon style={{ marginRight: '10px' }} />
+                            <h3 style={{ fontFamily: 'Poppins, sans-serif' }}>Personal Information</h3>
+                        </div>
                         <CardContent>
                             <div><strong>Name:</strong> {applicantData?.firstName} {applicantData?.lastName}</div>
                             <div><strong>Email:</strong> {applicantData?.email}</div>
@@ -115,15 +187,18 @@ const ApplicantDetailsPopup = ({ selectedRow, setSelectedRow }) => {
                             <div><strong>Gender:</strong> {applicantData?.gender}</div>
                             <div><strong>Age:</strong> {applicantData?.birthday ? calculateAge(applicantData.birthday) : 'N/A'}</div>
                         </CardContent>
-                    </Card>
+                    </div>
                 )}
 
                 <Divider sx={{ my: 2 }} />
 
                 {/* Education Section */}
                 {applicationData?.qualifications?.education && (
-                    <Card sx={{ mb: 2, backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0' }}>
-                        <CardHeader title="Education" avatar={<SchoolIcon />} />
+                    <div style={getCardStyles()}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <SchoolIcon style={{ marginRight: '10px' }} />
+                            <h3 style={{ fontFamily: 'Poppins, sans-serif' }}>Education</h3>
+                        </div>
                         <CardContent>
                             {applicationData?.qualifications?.education.map((edu, index) => (
                                 <div key={index}>
@@ -135,13 +210,16 @@ const ApplicantDetailsPopup = ({ selectedRow, setSelectedRow }) => {
                                 </div>
                             ))}
                         </CardContent>
-                    </Card>
+                    </div>
                 )}
 
                 {/* Experience Section */}
                 {applicationData?.qualifications?.experience && (
-                    <Card sx={{ mb: 2, backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0' }}>
-                        <CardHeader title="Experience" avatar={<WorkIcon />} />
+                    <div style={getCardStyles()}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <WorkIcon style={{ marginRight: '10px' }} />
+                            <h3 style={{ fontFamily: 'Poppins, sans-serif' }}>Experience</h3>
+                        </div>
                         <CardContent>
                             {applicationData?.qualifications?.experience.map((exp, index) => (
                                 <div key={index}>
@@ -153,14 +231,17 @@ const ApplicantDetailsPopup = ({ selectedRow, setSelectedRow }) => {
                                 </div>
                             ))}
                         </CardContent>
-                    </Card>
+                    </div>
                 )}
 
                 <Divider sx={{ my: 2 }} />
 
                 {/* Leaderboard Data Section */}
-                <Card sx={{ mb: 2, backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0' }}>
-                    <CardHeader title="Leaderboard Information" avatar={<LeaderboardIcon />} />
+                <div style={getCardStyles()}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <LeaderboardIcon style={{ marginRight: '10px' }} />
+                        <h3 style={{ fontFamily: 'Poppins, sans-serif' }}>Leaderboard Information</h3>
+                    </div>
                     <CardContent>
                         <div><strong>Score:</strong> {selectedRow?.score}</div>
                         <div><strong>Matched Hard Skills:</strong> {selectedRow?.matchedHardSkills?.join(', ') || 'N/A'}</div>
@@ -172,86 +253,73 @@ const ApplicantDetailsPopup = ({ selectedRow, setSelectedRow }) => {
                         <div><strong>Experience:</strong> {selectedRow?.experienceYears} years</div>
                         <div><strong>Has Minimum Experience:</strong> {selectedRow?.hasMinimumExperience ? 'Yes' : 'No'}</div>
                         <div><strong>Skill Match Percentage:</strong> {selectedRow?.skillMatchPercentage}%</div>
-                        <div><strong>Hard Skill Match Percentage:</strong> {selectedRow?.hardSkillMatchPercentage}%</div>
-                        <div><strong>Soft Skill Match Percentage:</strong> {selectedRow?.softSkillMatchPercentage}%</div>
                     </CardContent>
-                </Card>
+                </div>
 
                 <Divider sx={{ my: 2 }} />
 
-                {/* Application Details Section */}
-                {applicationData && (
-                    <Card sx={{ mb: 2, backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0' }}>
-                        <CardHeader title="Application Details" avatar={<WorkIcon />} />
-                        <CardContent>
-                            <div><strong>Application Status:</strong> {applicationData?.status}</div>
-                            <div><strong>Job Title:</strong> {applicationData?.jobTitle}</div>
-                            <div><strong>Job Type:</strong> {applicationData?.jobType}</div>
-                            <div><strong>Location:</strong> {applicationData?.location}</div>
-                            <div><strong>Application Date:</strong> {new Date(applicationData?.applicationDate).toLocaleDateString()}</div>
-                            <div><strong>Applied By:</strong> {applicationData?.appliedBy}</div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                <Divider sx={{ my: 2 }} />
-
-               {/* Schedule Interview Section */}
-<Card sx={{ mb: 2, backgroundColor: theme.palette.mode === 'dark' ? '#0a0a0a' : '#c0c0c0' }}>
-    <CardHeader title="Schedule Interview" avatar={<InterviewIcon />} />
-    <CardContent>
-        <TextField
-            label="Interview Date"
-            type="date"
-            value={interviewDate}
-            onChange={(e) => setInterviewDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            sx={{
-                mb: 2,
-                '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                        borderColor: theme.palette.mode === 'dark' ? '#ffffff' : '#000000', // Border color based on theme
-                    },
-                    '&:hover fieldset': {
-                        borderColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333333', // Hover color for a subtle effect
-                    },
-                },
-            }}
-        />
-        <TextField
-            label="Interviewers"
-            value={interviewers}
-            onChange={(e) => setInterviewers(e.target.value)}
-            fullWidth
-            sx={{
-                mb: 2,
-                '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                        borderColor: theme.palette.mode === 'dark' ? '#ffffff' : '#000000', // Border color based on theme
-                    },
-                    '&:hover fieldset': {
-                        borderColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333333', // Hover color for a subtle effect
-                    },
-                },
-            }}
-        />
-        <Button
-            onClick={handleInterviewSubmit}
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{
-                height: '56px', // Adjust the height as desired
-            }}
-        >
-            Schedule Interview
-        </Button>
-    </CardContent>
-</Card>
-
-            </DialogContent>
-        </Dialog>
+                {/* Schedule Interview Section */}
+                <div style={getCardStyles()}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <InterviewIcon style={{ marginRight: '10px' }} />
+                        <h3 style={{ fontFamily: 'Poppins, sans-serif' }}>Schedule Interview</h3>
+                    </div>
+                    <CardContent>
+                        <TextField
+                            label="Interview Date"
+                            type="date"
+                            value={interviewDate}
+                            onChange={(e) => setInterviewDate(e.target.value)}
+                            InputLabelProps={{ shrink: true }}
+                            fullWidth
+                            sx={{
+                                mb: 2,
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333',
+                                    },
+                                },
+                            }}
+                        />
+                        <TextField
+                            label="Interviewers"
+                            value={interviewers}
+                            onChange={(e) => setInterviewers(e.target.value)}
+                            fullWidth
+                            sx={{
+                                mb: 2,
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: theme.palette.mode === 'dark' ? '#ffffff' : '#000000',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: theme.palette.mode === 'dark' ? '#e0e0e0' : '#333',
+                                    },
+                                },
+                            }}
+                        />
+                        <Button
+                            onClick={handleInterviewSubmit}
+                            variant="contained"
+                            sx={buttonStyles}
+                        >
+                            Schedule Interview
+                        </Button>
+                    </CardContent>
+                </div>
+            </div>
+           
+        </div>
+         <MessagePopup
+         message={message}
+         messageType={messageType}
+         open={openMessage}
+         onClose={handleCloseMessage}
+     />
+    </>
     );
 };
 

@@ -2,3 +2,6 @@
 *{
   font-family: "Poppins", serif;
 }
+.modal::-webkit-scrollbar {
+    display: none;
+}
