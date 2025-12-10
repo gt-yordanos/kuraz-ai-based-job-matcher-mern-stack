@@ -91,7 +91,7 @@ const KurazAIApp = ({ onClose }) => {
 
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
       const result = await model.generateContent(prompt);
       const assistantResponse = result?.response?.candidates?.[0]?.content?.parts?.[0]?.text || 
