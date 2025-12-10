@@ -38,7 +38,6 @@ const AboutUs = () => {
 
   const paragraphStyle = {
     marginBottom: '44px',
-    marginBottom: '44px',
     fontSize: isSmallScreen ? '14px' : '18px',
     paddingLeft: isSmallScreen ? '4px' : '60px',
     paddingRight: isSmallScreen ? '4px' : '60px',
